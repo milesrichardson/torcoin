@@ -52,6 +52,9 @@ I have not thought too much about this.
 - Must be easily deployable in datacenters
 - This is an appealing proposition because it's an easy way for server operators to get bitcoin without paying directly for it
 
+
+---
+
 ## 2. Auction Based Tor Bridge Distribution
 
 This is the original problem I talked to you about researching. 

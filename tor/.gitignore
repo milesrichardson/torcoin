@@ -1,0 +1,191 @@
+# Editor droppings
+\#*\#
+.#*
+*~
+*.swp
+# C stuff
+*.o
+*.obj
+# Diff droppings
+*.orig
+*.rej
+# gcov stuff
+*.gcno
+*.gcov
+*.gcda
+# latex stuff
+*.aux
+*.dvi
+*.blg
+*.bbl
+*.log
+# Autotools stuff
+.deps
+.dirstamp
+# Stuff made by our makefiles
+*.bak
+# Python droppings
+*.pyc
+
+# /
+/Makefile
+/Makefile.in
+/aclocal.m4
+/autom4te.cache
+/build-stamp
+/compile
+/configure
+/Doxyfile
+/orconfig.h
+/orconfig.h.in
+/config.cache
+/config.log
+/config.status
+/config.guess
+/config.sub
+/conftest*
+/micro-revision.*
+/patch-stamp
+/stamp-h
+/stamp-h.in
+/stamp-h1
+/test-driver
+/tor.sh
+/tor.spec
+/depcomp
+/install-sh
+/missing
+/mkinstalldirs
+/Tor*Bundle.dmg
+/tor-*-win32.exe
+
+# /contrib/
+/contrib/Makefile
+/contrib/Makefile.in
+/contrib/tor.sh
+/contrib/torctl
+/contrib/torify
+/contrib/*.pyc
+/contrib/*.pyo
+/contrib/tor.logrotate
+/contrib/tor.wxs
+
+# /contrib/suse/
+/contrib/suse/tor.sh
+/contrib/suse/Makefile.in
+/contrib/suse/Makefile
+
+# /debian/
+/debian/files
+/debian/micro-revision.i
+/debian/patched
+/debian/tor
+/debian/tor.postinst.debhelper
+/debian/tor.postrm.debhelper
+/debian/tor.prerm.debhelper
+/debian/tor.substvars
+
+# /doc/
+/doc/Makefile
+/doc/Makefile.in
+/doc/doxygen
+/doc/tor.1
+/doc/tor.1.in
+/doc/tor.html
+/doc/tor.html.in
+/doc/tor.1.xml
+/doc/tor-fw-helper.1
+/doc/tor-fw-helper.1.in
+/doc/tor-fw-helper.html
+/doc/tor-fw-helper.html.in
+/doc/tor-fw-helper.1.xml
+/doc/tor-gencert.1
+/doc/tor-gencert.1.in
+/doc/tor-gencert.html
+/doc/tor-gencert.html.in
+/doc/tor-gencert.1.xml
+/doc/tor-resolve.1
+/doc/tor-resolve.1.in
+/doc/tor-resolve.html
+/doc/tor-resolve.html.in
+/doc/tor-resolve.1.xml
+/doc/torify.1
+/doc/torify.html
+/doc/torify.1.xml
+
+# /doc/spec/
+/doc/spec/Makefile
+/doc/spec/Makefile.in
+
+# /src/
+/src/Makefile
+/src/Makefile.in
+
+# /src/common/
+/src/common/Makefile
+/src/common/Makefile.in
+/src/common/common_sha1.i
+/src/common/libor.a
+/src/common/libor-testing.a
+/src/common/libor.lib
+/src/common/libor-crypto.a
+/src/common/libor-crypto-testing.a
+/src/common/libor-crypto.lib
+/src/common/libor-event.a
+/src/common/libor-event-testing.a
+/src/common/libor-event.lib
+/src/common/libcurve25519_donna.a
+/src/common/libcurve25519_donna.lib
+
+# /src/config/
+/src/config/Makefile
+/src/config/Makefile.in
+/src/config/sample-server-torrc
+/src/config/torrc
+/src/config/torrc.sample
+
+# /src/or/
+/src/or/Makefile
+/src/or/Makefile.in
+/src/or/or_sha1.i
+/src/or/tor
+/src/or/tor.exe
+/src/or/tor-cov
+/src/or/tor-cov.exe
+/src/or/libtor.a
+/src/or/libtor-testing.a
+/src/or/libtor.lib
+
+# /src/test
+/src/test/Makefile
+/src/test/Makefile.in
+/src/test/bench
+/src/test/bench.exe
+/src/test/test
+/src/test/test-bt-cl
+/src/test/test-child
+/src/test/test-ntor-cl
+/src/test/test.exe
+/src/test/test-bt-cl.exe
+/src/test/test-child.exe
+/src/test/test-ntor-cl.exe
+
+# /src/tools/
+/src/tools/tor-checkkey
+/src/tools/tor-resolve
+/src/tools/tor-gencert
+/src/tools/tor-checkkey.exe
+/src/tools/tor-resolve.exe
+/src/tools/tor-gencert.exe
+/src/tools/Makefile
+/src/tools/Makefile.in
+
+# /src/tools/tor-fw-helper/
+/src/tools/tor-fw-helper/tor-fw-helper
+/src/tools/tor-fw-helper/tor-fw-helper.exe
+/src/tools/tor-fw-helper/Makefile
+/src/tools/tor-fw-helper/Makefile.in
+
+# /src/win32/
+/src/win32/Makefile
+/src/win32/Makefile.in

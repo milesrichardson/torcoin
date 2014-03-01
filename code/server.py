@@ -1,3 +1,7 @@
+'''
+	https://twistedmatrix.com/documents/12.0.0/core/howto/servers.html
+'''
+
 from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor
@@ -116,12 +120,12 @@ class Tchain(LineReceiver):
 
 class TchainFactory(Factory):
 
-	def __init__(self):
-		self.pos = 0
+	def __init__(self, pos):
+		self.pos = pos
 		self.users = {}
 
 	def buildProtocol(self, addr):
 		return Tchain(self.pos, self.users)
 
-reactor.listenTCP(8123, TchainFactory())
+reactor.listenTCP(8123, TchainFactory(1))
 reactor.run()

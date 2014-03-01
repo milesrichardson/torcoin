@@ -1,3 +1,5 @@
-argparse==1.2.1
+Twisted==13.2.0
+pycrypto==2.6.1
 wsgiref==0.1.2
 yolk==0.4.3
+zope.interface==4.1.0

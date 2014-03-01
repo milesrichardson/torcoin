@@ -21,3 +21,7 @@ else:
 
 m = hashlib.md5(received_hash + hash_attempt)
 print m.hexdigest()
+
+# The next part of the code will be in the server
+import StoreHash
+StoreHash.storeInHashTable("1", m.hexdigest())

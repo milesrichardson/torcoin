@@ -22,3 +22,7 @@ for i in xrange(argc-1, 2, -2):
     print "0"
     exit(-1)
 print "1"
+
+# Before TCVerify is run, the server will have to retrieve its own key
+# import StoreHash
+# StoreHash.retrieveFromTable("1")

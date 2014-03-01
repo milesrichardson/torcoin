@@ -2,50 +2,126 @@ from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor
 
-class Chat(LineReceiver):
+class Tchain(LineReceiver):
+	'''
+		Protocol for passing messages between nodes. Capable of handling multiple
+		open connections. e.g. If server.pos=1, will have open connection with 
+		client_0 (node on the left) and client_2 (node on the right). Example:
 
-    def __init__(self, users):
-        self.users = users
-        self.name = None
-        self.state = "GETNAME"
+				server.pos = 1
 
-    def connectionMade(self):
-        self.sendLine("What's your name?")
+				# Chat with server, client_0
+				server: I am position 1. What's your position?
+				client_0: 0
 
-    def connectionLost(self, reason):
-        if self.users.has_key(self.name):
-            del self.users[self.name]
+				# Chat with server, client_2
+				server: I am position 1. What's your position?
+				client_2: 2
 
-    def lineReceived(self, line):
-        if self.state == "GETNAME":
-            self.handle_GETNAME(line)
-        else:
-            self.handle_CHAT(line)
+				# All messages from client_0 go to handler_REC_L ("from the left")
+				# All messages from client_2 go to handler_REC_R ("from the right")
 
-    def handle_GETNAME(self, name):
-        if self.users.has_key(name):
-            self.sendLine("Name taken, please choose another.")
-            return
-        self.sendLine("Welcome, %s!" % (name,))
-        self.name = name
-        self.users[name] = self
-        self.state = "CHAT"
+		Tchain protocol is initialized by TchainFactory, which should provide the
+		args as specified in the Tchain constructor.
+	'''
 
-    def handle_CHAT(self, message):
-        message = "<%s> %s" % (self.name, message)
-        for name, protocol in self.users.iteritems():
-            if protocol != self:
-                protocol.sendLine(message)
+	def __init__(self, pos, users):
+		'''
+			pos = integer position of the server
+			users = dictionary of currently connected users (left and/or right)
+		'''
+		self.users = users	# List of connected peers (should be max left, right)
+		self.pos = pos			# Integer representation of our position
+		self.sender = None	# String representation of sender, in {"0","1","2","3"}
+		self.sender_pos = 0	# Integer representation of sender, in {0,1,2,3}
+		self.state = "GETSENDER" # Current state of protocol ("GETSENDER" or else)
 
+	def connectionMade(self):
+		self.sendLine("I am position %d. What's your position?" % self.pos)
 
-class ChatFactory(Factory):
+	def connectionLost(self, reason):
+		if self.users.has_key(self.sender):
+			del self.users[self.sender]
 
-    def __init__(self):
-        self.users = {} # maps user names to Chat instances
+	def lineReceived(self, line):
+		if self.state == "GETSENDER":
+			self.handle_GETSENDER(line)
+		else:
+			self.handle_REC(line)
 
-    def buildProtocol(self, addr):
-        return Chat(self.users)
+	def handle_GETSENDER(self, sender):
+		'''
+			Handler for identification. Node on left or right sends its position
+			as 'sender'.  e.g. In torcoin chain, if I am client (pos=0), A (pos=1)
+			identifies as sender=1. We use this to determine if we received a 
+			message from the right or the left.
+		'''
 
+		try:
+			self.sender_pos = int(sender)
+			if self.sender_pos < 0 or self.sender_pos > 3:
+				raise Exception
+			if self.users.has_key(sender):
+				raise Exception
+		except Exception:
+			self.sendLine("Invalid position specified. Must be in {0,1,2,3} and not\
+										 already taken.")
+			return
 
-reactor.listenTCP(8123, ChatFactory())
+		self.sendLine("Welcome, %s!" % (sender,))
+		self.sender = sender
+		self.users[sender] = self
+		self.state = "CHAT"
+
+	def handle_REC(self, message):
+		'''
+			Determine if message received from left or right, and call the 
+			appropriate handler.
+		'''
+
+		handler = None
+
+		if self.pos < self.sender_pos:
+			handler = self.handle_REC_R
+
+		elif self.pos > self.sender_pos:
+			handler = self.handle_REC_L
+
+		# Only other possibility is self.pos == sender_pos ... which makes no sense
+		if handler is None:
+			raise Exception('Cannot receive from myself!')
+
+		# Call the appropriate handler
+		handler(message)
+
+	def handle_REC_R(self, message):
+		''' Handler for messages received from right. '''
+
+		print 'Received from right'
+
+		message = "REC_R: <%s> %s" % (self.sender, message)
+		for sender, protocol in self.users.iteritems():
+			# if protocol != self:
+			protocol.sendLine(message)
+
+	def handle_REC_L(self, message):
+		''' Handler for messages received from left. '''
+
+		print 'Received from left'
+
+		message = "REC_L: <%s> %s" % (self.sender, message)
+		for sender, protocol in self.users.iteritems():
+			# if protocol != self:
+			protocol.sendLine(message)
+
+class TchainFactory(Factory):
+
+	def __init__(self):
+		self.pos = 0
+		self.users = {}
+
+	def buildProtocol(self, addr):
+		return Tchain(self.pos, self.users)
+
+reactor.listenTCP(8123, TchainFactory())
 reactor.run()

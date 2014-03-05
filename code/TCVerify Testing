@@ -1,3 +1,4 @@
+To generate:
 K0 = 1
 T0 = c4ca4238a0b923820dcc509a6f75849b
 K1 = 2
@@ -6,3 +7,12 @@ K2 = 3
 T2 = 3282dcdf73cb93077d58ed412edd882f
 K3 = 4
 T3 = d0ae785bcefa9b0565da027fc5b6b06e
+
+To Verify:
+
+python TCVerify.py 0 c4ca4238a0b923820dcc509a6f75849b 2 80cf219b4993391f6a6a0c08096c5ecb 3  3282dcdf73cb93077d58ed412edd882f 4 d0ae785bcefa9b0565da027fc5b6b06e
+
+python TCVerify.py 1 80cf219b4993391f6a6a0c08096c5ecb 3  3282dcdf73cb93077d58ed412edd882f 4 
+d0ae785bcefa9b0565da027fc5b6b06e
+
+python TCVerify.py 2 3282dcdf73cb93077d58ed412edd882f 4 d0ae785bcefa9b0565da027fc5b6b06e

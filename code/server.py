@@ -3,10 +3,12 @@
 '''
 
 from twisted.internet.protocol import Factory
+from twisted.protocols import basic
 from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor
 import TorCoin
 import StoreHash
+import sys
 
 class Tchain(LineReceiver):
 	'''
@@ -43,6 +45,7 @@ class Tchain(LineReceiver):
 		self.state = "GETSENDER" # Current state of protocol ("GETSENDER" or else)
 
 	def connectionMade(self):
+		print 'hello!!!'
 		self.sendLine("I am position %d. What's your position?" % self.pos)
 
 	def connectionLost(self, reason):
@@ -50,10 +53,22 @@ class Tchain(LineReceiver):
 			del self.users[self.sender]
 
 	def lineReceived(self, line):
+		print 'Received message: ' + line
+
 		if self.state == "GETSENDER":
 			self.handle_GETSENDER(line)
 		else:
 			self.handle_REC(line)
+
+	def sendMessage(self, target, sender):
+		if target == 2:
+			host = '127.0.0.1'
+			port = 8122
+
+		factory = protocol.ClientFactory()
+		factory.protocol = TchainClientProtocol
+		reactor.connectTCP(host, port, factory)
+		# reactor.run()
 
 	def handle_GETSENDER(self, sender):
 		'''
@@ -143,5 +158,6 @@ class TchainFactory(Factory):
 	def buildProtocol(self, addr):
 		return Tchain(self.pos, self.users)
 
-reactor.listenTCP(8123, TchainFactory(1))
-reactor.run()
+if __name__ == '__main__':
+	reactor.listenTCP(8120 + int(sys.argv[1]), TchainFactory(sys.argv[1]))
+	reactor.run()

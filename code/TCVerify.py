@@ -4,7 +4,7 @@ import hashlib
 argc = len(sys.argv)
 # print "Argc: " + str(argc)
 if (argc < 3 ):
-  print "Usage: TCVerify Position Received Hash1 Received Key 1 ..."
+  print "Usage: TCVerify <Position> <Received Hash1> <Received Key 1> ..."
   exit(-1)
 
 position = sys.argv[1]

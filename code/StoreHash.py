@@ -6,20 +6,20 @@
 
 import cPickle as pickle
 
-def storeInHashTable(ip, hash_value):
+def storeInHashTable(table_name, ip, hash_value):
   try:
-    hashes = pickle.load( open( "hashes_forwarded.pickle", "rb" ) )
+    hashes = pickle.load( open( table_name + "_hashes_forwarded.pickle", "rb" ) )
   except IOError:
     hashes = {}
   hashes[ip] = hash_value
-  pickle.dump( hashes, open( "hashes_forwarded.pickle", "wb" ) )
+  pickle.dump( hashes, open( table_name + "_hashes_forwarded.pickle", "wb" ) )
 
-def retrieveFromTable(ip):
-  hashes = pickle.load( open( "hashes_forwarded.pickle", "rb" ))
+def retrieveFromTable(table_name, ip):
+  hashes = pickle.load( open( table_name + "_hashes_forwarded.pickle", "rb" ))
   if ip in hashes:
     hash_value = hashes[ip]
     del hashes[ip]
-    pickle.dump( hashes, open( "hashes_forwarded.pickle", "wb" ) )
+    pickle.dump( hashes, open( table_name + "_hashes_forwarded.pickle", "wb" ) )
     return hash_value
   else:
     return "Not Found"

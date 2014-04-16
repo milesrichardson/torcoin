@@ -4,137 +4,78 @@ We now discuss the main components necessary to realize a practical Tor
 incentive system while identifying some open research and development problems.
 
 \subsection{Overview}
+We propose a system that measures bandwidth contributed to the Tor network to produce incentivise the addition of nodes to the Tor network.
+The system measures the bandwidth contributed by each relay in the Tor network and rewards them with a 'TorCoin'. A Torcoin is an AltCoin that uses a bandwidth-intensive protocol as its proof-of-work. Thus, to produce a TorCoin, a relay must have transmitted a certain amount of Tor traffic.
+To reduce the system's vulnerability to attackers and possible reduction of anonymity, we also utilize a system of 'Ephemeral Paths' to randomly assign relays to clients.
+These TorCoins can then be traded at an exchange for other AltCoins or other goods. This forms the basis of our incentivization scheme. This is different from systems that propose differentiated service\cite{dovrolis1999case, dovrolis2002proportional}, since we do not propose to make the clients pay for access to the network. The coins are a byproduct of the usage of the system.
 
-We propose a system that uses both performance and market mechanisms to produce
-incentives to contribute bandwidth to Tor. We propose that relays support a new
-circuit scheduler based on Proportionally Differentiated
-Services~\cite{dovrolis1999case, dovrolis2002proportional} that is capable of
-proportionally prioritizing traffic belonging to different service classes. To
-receive scheduling priority, clients first purchase anonymous electronic cash
-(\ae{cash}) from a federated bank that is run by the existing Tor directory
-authorities and backed by a fully decentralized ledger. Clients then identify
-the desired service class to the Tor relays by sending \ae{cash} payments during
-circuit usage, and the relays prioritize traffic accordingly. Relays will be
-measured and those that are providing useful service to Tor will be awarded
-\ae{cash} in return, allowing them to either receive traffic priority when using
-Tor as a client or exchange their \ae{cash} for other goods and services on the
-open market. For experimental purposes, we propose that the incentive system be
-deployed as a secondary network that remains linked to the existing network.
-
-\subsection{Proof of Useful Service}
-
-In order to create incentives for users to contribute to Tor, we will need a
-system that is capable of verifying that useful service was actually provided by
-system participants. While useful service is certainly not limited to bandwidth,
-we focus on it here as it is currently the most demanded resource.
-
-\subsubsection{Bandwidth}
-
-The current Tor bandwidth measurement scheme has been shown to be easily
-manipulable~\cite{biryukov2013trawling}. An alternative, and the
-state-of-the-art in Tor bandwidth measurement, is called
-EigenSpeed~\cite{snader2009eigenspeed, snader2011improving}.
-
-In EigenSpeed, relays opportunistically measure their interactions with other
-relays and send the observation vectors to the authorities. The authorities
-combine the measurements from all relays using principal component analysis
-(PCA), and produce a set of authoritative weights that can be distributed via
-the Tor consensus file. \todo[in progress]
-
+\subsection{Ephemeral Paths}
+We propose the novel idea of ephemeral Tor networks, where a \textit{group} of n clients at any given time form a consensus on an assignment of n routes to n clients, such that each route is publicly verifiable but privately addressable. We adhere to the following constraints:
 \begin{itemize}
-\item Discuss Eigenspeed.
-\item Needs to work for all circuit positions.
-\item A solution will need to account for bandwidth in both directions through a circuit, and work for all circuit positions
+  \item No client in the group can generate its own route.
+  \item Every resulting route has a unique public key.
+  \item No client in the group can know the route assigned to another client in the group.
+  \item Any client can verify that a given public key represents a route assigned to a client in the current group.
 \end{itemize}
 
-\subsubsection{Open Problems}
+The Tor directory servers will create the groups using the temporal locality of the clients connecting to them, but also ensure that their is geographical and other diversity in a group. This is to ensure that adversaries cannot deterministically place themselves in a single group by connecting at the same time.
+The Tor directory server will then initiate the setup protocol amongst the clients in each group. Each group will then perform a series of Neff Shuffles to produce a random combination of routes for each client in the group. This will be combined with El Gamal encryption to preserve anonymity within the group.
 
--does not handle asymmetric bandwidth (which is why it 'works' in Tor)
+\subsubsection{Decentralized Neff Shuffle for Consensus Tor Route Assignment to n Clients}
+We perform a series of Neff shuffles so that each client in the group is assigned one \textit{route} consisting of an entry, middle and exit relay. The route also has a publicly verifiable shared secret. That is, a route can collectively sign a TorCoin (explained later) such that any client in the group can verify that the signature came from a route assigned to another client in the group.
 
--how to measure the fastest relays
+\paragraph{Implementation of Neff Shuffle}
 
--how to prevent sybil attacks by malicious collectives
+THIS SECTION NEEDS TO BE MADE CLEARER / DIAGRAM
 
--how to measure nodes in various positions in the circuit
+The clients are numbered 1 through N
 
--evaluation and security analysis
+Entry relays 1 to Me; 
 
-\subsection{Rewards for Providing Service}
+Middle relays: 1 through Mm; 
 
-In our incentive proposal, the above scheduler would replace Tor's existing
-circuit scheduler. Any number of classes can be configured as well as the prices
-and proportions between them. We suggest three service classes: basic (free),
-standard, and premium. Clients can select their priority class by supplying the
-correct number of \ae{cash} independently to each relay in their circuit, and
-each \ae{cash} token can provide the selected priority for a configurable amount
-of data.
+Exit relays: 1 through Mx.
 
-\todo[How to handle verification that the desired service was provided?]
+1.  Each list of relays and clients goes through an independent Neff shuffle. The shuffled lists are concatenated, producing a shuffled 4xN matrix. Each client will have one row assigned to it, which only that client can verifiably associate with. This row represents the route for that client.
 
-We acknowledge that traffic priority will fundamentally allow users that are
-categorized into different service classes to be distinguished from one another,
-which may result in a partitioning of Tor's anonymity set. However, as Johnson
-\etal argue~\cite{johnson2013onions}, users with lower security requirements may
-in fact be willing to trade off reduced security for improved flexibility and
-performance. Further, a faster network that is more flexible (clients may
-specify their desired performance level) may attract a significant number of new
-users and result in a net increase of both the ``payer" and ``non-payer" anonymity
-sets. We note that it is important to make clear to users the risks and
-trade-offs they assume by participating in such a network.
+2.  Each client can use their own private key to find out their own row and assigned relays after the shuffle, but no one else can.
 
-\subsection{Accountability}
+3.  The directory server generates a public and private key for all members of the row. This functions as the shared secret for the route.
 
-The ``bank'' provides the transaction processing services necessary for the tokens to function as a currency. The functions are enumerated below:
-\begin{itemize}
-\item Currency creation: The bank will issue new currency as a reward for computing some useful service. In the context of Tor, this means printing new currency in exchange for showing publicly verifiable evidence of providing bandwidth to the network. It would also be reasonable, for example, for new currency to be created by trusted administrators, for the purpose of providing currency tokens to new users.
-\item Currency redemption: Users can redeem currency for preferential service in the Tor network.
-\item Checking account functionality: The bank will maintain a ledger of balances associated with public keys. Signed messages can be used to transfer quantities from one account to another. These are immediately publicly verifiable. Checking accounts are not truly private.
-\item “Cash” exchanges in and out of accounts. In order to regain unlinkability, money can be transferred from a checking account to a “cash pool” and back out again.  
-\end{itemize}
+It may be possible to use cryptographic accumulators along with the Neff shuffle. In that case, it will not be necessary to keep all the public keys generated in part 3. Instead, the keys may be used to generate a cryptographic accumulator and this accumulator can be used to provide a zero-knowledge verification of group-membership.
 
-Conceptually other schemes are possible; in particular, we could do away with the ``checking account'' functionality, and require that currency creation, transfers, and redemption use only the cash layer. 
-However we think that having checking accounts available as an intermediate layer is useful\anote{I guess it's hard to articulate why...}, and better reflects the architecture of existing systems like Bitcoin, Zerocoin, and OpenTransactions.
+We can then generate a publicly verifiable shared secret amongst the relays in any given route (a row in the 4XN matrix). That is, a route can collectively sign a TorCoin such that any client in the consensus group can verify that the signature came from a route assigned to another client in the consensus group.
 
-One key design goal for the bank implementation is \emph{accountability}.
-We typically envision that the bank will be run by (a quorum) of semi-trusted servers, such as the directory servers which are currently part of Tor’s reliance set. On the other hand, despite admitting that we intend to allow some reliance on these servers, we will still seek to minimize reliance on them as much as possible. 
-There are at least two good reasons for this:
-\begin{enumerate}
-\item The less trust is required, generally the less expensive it is to secure and maintain the servers.
-\item We would like to optionally be able to replace the semi-trusted transaction-processing server with a large-scale public distributed process, in the same fashion as Bitcoin mining. 
-It is conceptually simpler to begin with a scheme using a third party.
-\end{enumerate}
-\anote{Calling the “bank” (although this is a misnomer - a “notary” better captures, as it timestamps, signs, and checks basic validity conditions of transactions, but does not lend money or otherwise have economic stake in the transactions).}
+\subsubsection{Proof of Bandwidth}
+Once the routes are setup, we can prove bandwidth transfer through the following protocol:
+Every n Tor packets, the client sends an extra packet (“the Torcoin packet”) containing an hash attempt likely to generate a TorCoin. Relay A gets it, generates a temporary private key Ka (generated using the route shared key) and hashes the received packet and this key. It then forwards it to B, which does the same thing, with its own private temporary key Kb. Similarly on to C. C can now add its own Kc, and if it generates a hash with a given number of zeros, it can claim to have found a TorCoin.
+\begin{verbatim}
+Client sends to A: T0 (its hash attempt)
+A sends to B     : Hash(T0 + K1) = Ta # K1 is A's temporary private key.
+B sends to C     : Hash(Ta + K2) = Tb # K2 is B’s temporary private key.
+C computes       : Hash(Tb + K3) = Tc # K3 is C’s temporary private key.
+C sends to B     : (Tc, K3) to verify.
+B sends to A     : (Tc, K3, Tb, K2) to verify.
+A sends to client: (Tc, K3, Tb, K2, Ta, K1) to verify.
+Once the client has verified the hash, we can confirm that the data has made a 
+round trip through the route. This completes the proof of bandwidth.
+\end{verbatim}
 
-We will achieve accountability by adhering to the following guidelines:
-\begin{itemize}
-\item All messages sent from the bank should be publicly verifiable. Any incorrect action should be detectable, and publicly verifiable evidence should be obtained. 
-This is essentially the “covert security” model\citeme.
-\item The bank should maintain no secret information about clients. 
-If an adversary is eavesdropping on the server, it should not be able to compromise. 
-This implies it is safe to publish all interactions with the bank.
-\item Optionally, if a broadcast channel is available (such as the Bitcoin blockchain, arguably), then interactions with the bank may be conducted over this broadcast channel, thereby guaranteeing that the bank cannot selectively refuse service to clients. 
-Otherwise, the server may simply refuse to process some requests and the client would not be able prove that the requests were actually sent.
-\end{itemize}
+\subsubsection{TorCoin}
+We can also implement an AltCoin based on the proof-of-work concept in the following manner:
+\begin{verbatim}
+If (Tc = '000...')
+  If the client succesfully verifies the hash
+    It adds the coin to the blockchain with the following information:
+    1. Client’s public key
+    2. Route Shared key (Lets any other group member verify that the route is 
+       genuine. See accumulator/Neff’s key.)
+    3. TorCoin Hash
+    It then gives 1/3rd of the coin to each of the relays in the route. (If the 
+    client is rogue, can we identify and kick the client off?)
+\end{verbatim}
 
-\paragraph{Communication medium and Gossip Protocol}
-The value of ``public auditability'' relies on the assumption that there is a public communication medium (generally called a ``gossip network'') such that sufficiently motivated members of the public will circulate all messages, and will process the messages looking for instances of misbehavior.
-\anote{There is a lot more to discuss here - does anyone have an incentive to check all this? It's possible to hire public auditors (at least they're not trusted with private information), but how do we know they're working correctly? It's possible to offer incentives/bounties to encourage members of the public to collect data and check it, but if misbehavior is rare, the incentives might not be effective. It may not be necessary to check every piece of data, instead random checking (in a distributed fashion) might suffice. These problems are not at all unique to our problem, but instead are all relevant to the recent trend in ``certificate transparency.''}
-
-\paragraph{Availability of Existing implementations}
-\begin{itemize}
-\item OpenTransactions: based on the Lucre\citeme implementation (by Ben Laurie) of Chaumian-style ecash tokens based on blind signatures. This protocol is not publicly verifiable \anote{I'm not totally sure} - this means that either the server's secret key or the client's secret key is necessary to prove that a message is faulty. Additionally, the existing implementation is vulnerable to a privacy-compromising attack from a malicious server; possible countermeasures are described in documentation included with Lucre.
-\item Zerocoin: Zerocoin is a publicly verifiable (and public coin) cash system, intended as a modification (or alternative) to Bitcoin. Instead of asking the server to sign a blinded token, a client adds a commitment to a token into a cryptographic accumulator. To withdraw the coin, the client reveals its token and proves (in zero knowledge) that the token is a valid opening of \emph{some} commitment in the accumulator.
-\end{itemize}
-
-\paragraph{Integration With Bitcoin}
-\anote{this probably belongs in its own section?}
-Although we have described the bank system as something to be run by one or more servers, by requiring that the protocol is publicly verifiable, it may also be possible to implement the bank as an ``altcoin'', i.e. a Bitcoin-like public network.
-
-In order for this to work, an additional requirement to public verifiability is that the bank must be ``public coin'', meaning it does not need to generate any private keys. This is because the participants in the network (i.e. the miners) include anonymous members of the public, and hence includes adversaries. As mentioned, Zerocoin is public coin and therefore suitable for this purpose. Other publicly verifiable ecash protocols such as those of Lysanka and Camendisch\citeme are publicly verifiable but not public coin.
-
-There are a variety of ways of integrating with Bitcoin \anote{summarize these from Futurecoin}:
-\begin{itemize}
-\item as a modification to Bitcoin
-\item as a separate system
-\item as an overlay system using Bitcoin just as a transaction log (i.e., Mastercoin or coloredcoins)
-\end{itemize}
+\subsection{Robustness to attack}
+The entire reason for constructing the elaborate ephemeral routes algorithm is to make the Torcoin system robust to attackers.
+Due to the random group selection system, it is hard for attackers to deterministically place themselves in a group. In addition, because the attacker needs to control all four components fo a route to mint a TorCoin fraudulently, even if the adversaries control up to half the network, there is a probability of only 1/16 that an adversary client gets a path of three colluding relays. In practice, gaining control of half of the entire Tor client and relay network is practically impossible. 
+A separate rate-limiting mechanism can be deployed to detect dishonest relays and assign them a lower weightage in the path selection procedure. An independent verification authority, such as one based on Eigenspeed, could be used to detect these discrepancies.

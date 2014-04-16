@@ -6,6 +6,8 @@ from twisted.internet.protocol import Factory
 from twisted.protocols import basic
 from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor
+import TorCoin
+import StoreHash
 import sys
 
 class Tchain(LineReceiver):
@@ -128,10 +130,24 @@ class Tchain(LineReceiver):
 
 		print 'Received from left'
 
-		message = "REC_L: <%s> %s" % (self.sender, message)
+		message_wrapped = "REC_L: <%s> %s" % (self.sender, message)
 		for sender, protocol in self.users.iteritems():
 			# if protocol != self:
-			protocol.sendLine(message)
+			protocol.sendLine(message_wrapped)
+
+		# Torcoin packet structure: TCATTEMPT:<HASH>
+		message_split = message.split(":") 
+		print message_split
+		if message_split[0] == 'TCATTEMPT': # figure out how to distinguish torcoin packet
+			for sender, protocol in self.users.iteritems(): # figure out how to get to right relay directly
+				print str(sender) + " " + str( self.pos + 1)
+				if str(sender) == str(self.pos + 1): # This guy is the relay to the right
+					hash_attempt = "42" # my hash attempt
+					received_hash = message_split[1] 
+					hash_value = TorCoin.tc_generate(self.pos, hash_attempt, received_hash)
+					# import StoreHash
+					# StoreHash.storeInHashTable(self.pos + 1, hash_value) # self.pos + 1 is a substitute for IP address
+					protocol.sendLine('TCATTEMPT:' + hash_value)
 
 class TchainFactory(Factory):
 

@@ -1,0 +1,118 @@
+\documentclass[twocolumn,10pt]{article}
+\usepackage{styles/usenix}
+\usepackage{times}
+
+\usepackage{cite}
+\usepackage{balance}
+%\usepackage{bibspacing} % remove me if references are too tight
+%\setlength{\bibspacing}{\baselineskip}
+
+% fix the math symbols that the usenix style (mathptmx) changed
+\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+
+\usepackage[pdftex]{graphicx}
+\graphicspath{{figures/}}
+\DeclareGraphicsExtensions{.pdf}
+
+\usepackage[cmex10]{amsmath}
+\interdisplaylinepenalty=2500
+
+\usepackage[caption=false,font=footnotesize]{subfig}
+
+\usepackage{xspace}
+%usepackage{appendix}
+
+% rotated table text
+\usepackage{rotating}
+\usepackage{multirow}
+\usepackage{multicol}
+
+\usepackage[hyphens]{url}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[colorlinks=true, citecolor=OliveGreen, linkcolor=BrickRed, urlcolor=MidnightBlue, final, pdftex]{hyperref}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% Using watermark (this will mess up top/bottom margins)
+\usepackage{styles/pdfdraftcopy}
+\draftcolor{gray20}
+\draftstring{
+\begin{minipage}{17cm}
+\begin{center}
+\  DRAFT - \today\\Not approved for public release
+\end{center}
+\end{minipage}
+}
+\draftfontsize{36pt}
+
+\hypersetup
+{
+    pdfauthor={Rob Jansen, Paul Syverson, Nicholas Hopper},
+    pdfsubject={Anonymous communication, experimentation},
+    pdftitle={Throttling Tor Bandwidth Parasites},
+    pdfkeywords={Anonymity, Tor, Throttling, Experimentation, Simulation}
+}
+
+% custom commands
+\newcommand{\etal}{{\em et~al.}~}
+\newcommand{\naive}{na\"{\i}ve }
+%\newcommand{\point}[1]{\vspace{2mm} \noindent\textbf{#1}}
+\newcommand{\point}[1]{\noindent\textbf{#1}.}
+\newcommand{\citeme}{\textbf{\color{red}CITE NEEDED! \xspace}}
+\newcommand{\checkme}[1][check me]{\textbf{\color{red}NEEDS REVIEW!--{#1} \xspace}}
+\renewcommand{\S}{Section~}
+
+% Alter some LaTeX defaults for better treatment of figures:
+\renewcommand{\textfraction}{0.07}  % allow minimal text w. figs
+\renewcommand{\floatpagefraction}{0.7}  % require fuller float pages
+\renewcommand{\dblfloatpagefraction}{0.7}   % require fuller float pages
+
+% space between paragraphs
+%\setlength{\parskip}{1.5mm plus 1.25mm minus 1.25mm}
+%\setlength{\parskip}{0.5mm plus 0.25mm minus 0.25mm}
+
+\clubpenalty=9999
+\widowpenalty=9999
+
+%make title bold and 14 pt font (Latex default is non-bold, 16 pt)
+\title{Throttling Tor Bandwidth Parasites}
+\author{
+{\rm Rob Jansen}\hspace{2.2cm}{\rm Paul Syverson}\\
+U.S. Naval Research Laboratory\\
+\{rob.g.jansen, paul.syverson\}@nrl.navy.mil
+\and
+{\rm Nicholas Hopper}\\
+University of Minnesota\\
+hopper@cs.umn.edu
+}
+
+%don't want date printed
+\date{}
+
+\begin{document}
+
+\maketitle
+
+% Use the following at camera-ready time to suppress page numbers.
+% Comment it out when you first submit the paper for review.
+%\thispagestyle{empty}
+
+\input{sections/abstract}
+\input{sections/introduction}
+\input{sections/model}
+\input{sections/experiments}
+\input{sections/related}
+\input{sections/conclusion}
+
+\balance
+{\footnotesize 
+\bibliographystyle{acm}
+\bibliography{references}
+}
+ 
+\nocite{*}
+
+%\clearpage
+%\input{sections/appendix}
+
+\end{document}

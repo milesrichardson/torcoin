@@ -1,0 +1,142 @@
+\documentclass{styles/llncs} 
+%\usepackage{times}
+%\usepackage[margin=1in, paperwidth=8.5in, paperheight=11in]{geometry}
+
+% bib stuff
+\usepackage{cite}
+\usepackage{balance}
+
+\pagestyle{empty}
+
+% math fonts
+\usepackage{amstext}
+\usepackage{amsfonts} 
+\usepackage[cmex10]{amsmath}
+% fix the math symbols that the usenix style (mathptmx) changed
+\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+\interdisplaylinepenalty=2500
+
+% paths and extensions for graphic files
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\DeclareGraphicsExtensions{.pdf}
+
+\usepackage{floatflt}
+\usepackage[caption=false,font=footnotesize]{subfig}
+%\captionsetup[subfloat]{listofformat=parens}
+
+% tables
+\usepackage{tabularx}
+\usepackage{multirow}
+%\usepackage{multicol} 
+
+\usepackage{url}
+\usepackage{xspace}
+\usepackage[usenames,dvipsnames]{color}
+
+% label the appendices
+%\usepackage{appendix}
+
+% reduce space between bib items
+% \usepackage{natbib}
+% \setlength{\bibsep}{1pt}
+
+% add line numbers for feedback purposes
+% \usepackage{lineno}
+% \setpagewiselinenumbers
+% \modulolinenumbers[1]
+% \linenumbers
+
+% Using watermark (this will mess up top/bottom margins)
+\usepackage{styles/pdfdraftcopy}
+\draftcolor{gray20}
+\draftstring{
+\begin{minipage}{17cm}
+\begin{center}
+\  DRAFT - \today\\Not approved for public release
+\end{center}
+\end{minipage}
+}
+\draftfontsize{36pt}
+
+% should be loaded last (but before algorithm*) -colored links and refs
+\usepackage[colorlinks=true, citecolor=OliveGreen, linkcolor=BrickRed, urlcolor=MidnightBlue, final, pdftex]{hyperref}
+
+\hypersetup
+{
+    pdfauthor={Aaron Johnson, Rob Jansen, Paul Syverson},
+    pdfsubject={Anonymous communication, finantial cryptography},
+    pdftitle={},
+    pdfkeywords={Anonymity, Tor}
+}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% space between sections
+\renewcommand{\subparagraph}{} % needed to get titlesec to compile
+\usepackage[small,compact]{titlesec}
+\titlespacing{\section}{0pt}{3mm plus 1mm minus 1mm}{2mm plus 1mm minus 1mm}
+% \titlespacing{\subsection}{0pt}{2mm plus 1mm minus 1mm}{1mm plus 1mm minus 1mm}
+% \titlespacing{\subsubsection}{0pt}{2mm plus 1mm minus 1mm}{1mm plus 1mm minus 1mm}
+
+% custom commands
+\newcommand{\etal}{{\em et al.\ }}
+\newcommand{\naive}{na\"{\i}ve }
+\newcommand{\point}[1]{\noindent\textbf{#1}.}
+\newcommand{\citeme}{\textbf{\color{red}CITE NEEDED! \xspace}}
+\newcommand{\checkme}[1][check me]{\textbf{\color{red}NEEDS REVIEW!--{#1} \xspace}}
+\renewcommand{\S}{Section\xspace}
+
+% \date{}
+\title{Onions for Sale: Putting Privacy on the Market}
+%\author{
+%Aaron Johnson, Rob Jansen, and Paul Syverson\\
+%U.S. Naval Research Laboratory\\
+%\{aaron.m.johnson, rob.g.jansen, paul.syverson\}@nrl.navy.mil
+%}
+
+\author{Aaron Johnson \and Rob Jansen \and Paul Syverson}
+\institute{
+	U.S. Naval Research Laboratory\\
+	\email{\{aaron.m.johnson, rob.g.jansen, paul.syverson\}@nrl.navy.mil}
+}
+
+% Alter some LaTeX defaults for better treatment of figures:
+% \renewcommand{\textfraction}{0.07}  % allow minimal text w. figs
+% \renewcommand{\floatpagefraction}{0.7}  % require fuller float pages
+% \renewcommand{\dblfloatpagefraction}{0.7}   % require fuller float pages
+
+\begin{document}
+
+% \pagenumbering{arabic}
+
+% \clubpenalty=9999
+% \widowpenalty=9999 
+
+% space between paragraphs
+% \setlength{\parskip}{0.5mm plus 0.25mm minus 0.25mm}
+
+\maketitle
+\thispagestyle{empty}
+
+Example paper template.
+
+%\input{sections/abstract}
+%\input{sections/introduction}
+%\input{sections/model}
+%\input{sections/experiments}
+%\input{sections/related}
+%\input{sections/conclusion}
+
+{ \footnotesize %\scriptsize %\footnotesize %\small
+\bibliographystyle{styles/splncs}
+\balance\bibliography{references}
+}
+
+\nocite{*}
+
+%\clearpage
+%\input{sections/appendix}
+
+\end{document}

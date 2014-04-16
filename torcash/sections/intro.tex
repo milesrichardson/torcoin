@@ -1,0 +1,34 @@
+\section{Introduction}
+
+Tor is the most popular deployed anonymous communication system, currently
+transferring over 8 GiB/s in aggregate~\cite{tornetmet}. The bandwidth that Tor
+requires to function is donated by altruistic volunteers at a cost without any
+direct return on their investment. As a result, Tor has primarily grown through
+the use social and political means. It is a commonly held belief in the Tor
+community that utilizing volunteer resources without providing an incentive to
+contribute is not a viable long-term strategy for growing the network. How to
+recruit new bandwidth providers to the Tor network while maintaining anonymity
+is a well studied problem~\cite{raykova-pet2008, wpes09-xpay, incentives-fc10,
+ccs10-braids, acsac11-tortoise, jansen2013lira, johnson2013onions}. However,
+none of this work has led to any of a number of practical changes in Tor that
+would be required to move to an incentive-based resource model for a variety of
+reasons.
+
+This paper has two major goals:
+\begin{enumerate}
+\item to identify the requirements, challenges, and trade-offs in designing an
+incentive scheme for the popular operational Tor Network; and 
+\item to propose an incentive-based Tor Network architecture with acceptable
+trade-offs while presenting an approach to realizing it with mostly existing
+technologies and some additional development.
+\end{enumerate}
+We hope to illuminate the challenges and research problems in a way that will
+provoke useful discussion in the community while creating a useful base for
+future research in this area.
+
+We begin in \S\ref{reqs} by identifying the requirements and challenges involved
+in designing an incentive scheme for Tor while discussing the potential impacts
+that various design decisions may have on the existing network and its
+operators. We then propose a technical architecture based on existing
+technologies in \S\ref{arch}, discuss related work in \S\ref{rel}, and present
+several remaining research problems while concluding in \S\ref{conc}.

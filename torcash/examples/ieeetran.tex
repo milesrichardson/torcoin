@@ -1,0 +1,101 @@
+\documentclass[10pt, conference, compsocconf]{styles/IEEEtran}
+\usepackage{cite}
+\usepackage{balance}
+
+\usepackage[pdftex]{graphicx}
+\graphicspath{{figures/}}
+\DeclareGraphicsExtensions{.pdf}
+
+\usepackage[cmex10]{amsmath}
+\interdisplaylinepenalty=2500
+% \usepackage{algorithmic}
+\usepackage[caption=false,font=footnotesize]{subfig}
+
+\usepackage{url}
+\usepackage[usenames,dvipsnames]{color}
+
+% should be loaded last (but before algorithm*) -colored links and refs
+\usepackage[colorlinks=true, citecolor=OliveGreen, linkcolor=BrickRed, urlcolor=MidnightBlue, final, pdftex]{hyperref}
+\hypersetup
+{
+    pdfauthor={Authors},
+    pdfsubject={Subject},
+    pdftitle={Title},
+    pdfkeywords={Keywords}
+}
+
+\usepackage{xspace}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% Using watermark (this will mess up top/bottom margins)
+\usepackage{styles/pdfdraftcopy}
+\draftcolor{gray20}
+\draftstring{
+\begin{minipage}{17cm}
+\begin{center}
+\  DRAFT - \today\\Not approved for public release
+\end{center}
+\end{minipage}
+}
+\draftfontsize{36pt}
+
+% custom commands
+\newcommand{\etal}{{\em et al.}}
+\newcommand{\naive}{na\"{\i}ve }
+%\newcommand{\point}[1]{\vspace{2mm} \noindent\textbf{#1}}
+\newcommand{\point}[1]{\noindent\textbf{#1}.}
+\newcommand{\todo}[1]{\textbf{\color{red}[TODO: #1]}}
+\renewcommand{\S}{Section~}
+
+\title{Paper Title Placeholder}
+
+\author{
+\IEEEauthorblockN{Author1}
+\IEEEauthorblockA{Institution1\\
+Email1}
+\and
+\IEEEauthorblockN{Author2}
+\IEEEauthorblockA{Institution1\\
+Email2}
+}
+
+\begin{document}
+
+\maketitle
+
+\input{sections/abstract}
+% \begin{IEEEkeywords}
+% anonymity; throttling; experimentation; Tor;
+% \end{IEEEkeywords}
+\input{sections/introduction}
+\input{sections/model}
+\input{sections/experiments}
+\input{sections/related}
+\input{sections/conclusion}
+
+%\point{Acknowledgments}
+% \section*{Acknowledgments}
+% We thank the anonymous reviewers for their feedback and suggestions.
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{22}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+ 
+\newcommand{\BIBdecl}{\setlength{\itemsep}{0\baselineskip plus 0.1\baselineskip minus 0.1\baselineskip}}
+\balance
+{\footnotesize 
+\bibliographystyle{styles/IEEEtran}
+\bibliography{references}
+}
+
+\nocite{*}
+ 
+%\clearpage
+%\input{sections/appendix}
+
+\end{document}

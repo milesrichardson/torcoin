@@ -1,0 +1,140 @@
+\section{Proposed Architecture} \label{arch}
+
+We now discuss the main components necessary to realize a practical Tor
+incentive system while identifying some open research and development problems.
+
+\subsection{Overview}
+
+We propose a system that uses both performance and market mechanisms to produce
+incentives to contribute bandwidth to Tor. We propose that relays support a new
+circuit scheduler based on Proportionally Differentiated
+Services~\cite{dovrolis1999case, dovrolis2002proportional} that is capable of
+proportionally prioritizing traffic belonging to different service classes. To
+receive scheduling priority, clients first purchase anonymous electronic cash
+(\ae{cash}) from a federated bank that is run by the existing Tor directory
+authorities and backed by a fully decentralized ledger. Clients then identify
+the desired service class to the Tor relays by sending \ae{cash} payments during
+circuit usage, and the relays prioritize traffic accordingly. Relays will be
+measured and those that are providing useful service to Tor will be awarded
+\ae{cash} in return, allowing them to either receive traffic priority when using
+Tor as a client or exchange their \ae{cash} for other goods and services on the
+open market. For experimental purposes, we propose that the incentive system be
+deployed as a secondary network that remains linked to the existing network.
+
+\subsection{Proof of Useful Service}
+
+In order to create incentives for users to contribute to Tor, we will need a
+system that is capable of verifying that useful service was actually provided by
+system participants. While useful service is certainly not limited to bandwidth,
+we focus on it here as it is currently the most demanded resource.
+
+\subsubsection{Bandwidth}
+
+The current Tor bandwidth measurement scheme has been shown to be easily
+manipulable~\cite{biryukov2013trawling}. An alternative, and the
+state-of-the-art in Tor bandwidth measurement, is called
+EigenSpeed~\cite{snader2009eigenspeed, snader2011improving}.
+
+In EigenSpeed, relays opportunistically measure their interactions with other
+relays and send the observation vectors to the authorities. The authorities
+combine the measurements from all relays using principal component analysis
+(PCA), and produce a set of authoritative weights that can be distributed via
+the Tor consensus file. \todo[in progress]
+
+\begin{itemize}
+\item Discuss Eigenspeed.
+\item Needs to work for all circuit positions.
+\item A solution will need to account for bandwidth in both directions through a circuit, and work for all circuit positions
+\end{itemize}
+
+\subsubsection{Open Problems}
+
+-does not handle asymmetric bandwidth (which is why it 'works' in Tor)
+
+-how to measure the fastest relays
+
+-how to prevent sybil attacks by malicious collectives
+
+-how to measure nodes in various positions in the circuit
+
+-evaluation and security analysis
+
+\subsection{Rewards for Providing Service}
+
+In our incentive proposal, the above scheduler would replace Tor's existing
+circuit scheduler. Any number of classes can be configured as well as the prices
+and proportions between them. We suggest three service classes: basic (free),
+standard, and premium. Clients can select their priority class by supplying the
+correct number of \ae{cash} independently to each relay in their circuit, and
+each \ae{cash} token can provide the selected priority for a configurable amount
+of data.
+
+\todo[How to handle verification that the desired service was provided?]
+
+We acknowledge that traffic priority will fundamentally allow users that are
+categorized into different service classes to be distinguished from one another,
+which may result in a partitioning of Tor's anonymity set. However, as Johnson
+\etal argue~\cite{johnson2013onions}, users with lower security requirements may
+in fact be willing to trade off reduced security for improved flexibility and
+performance. Further, a faster network that is more flexible (clients may
+specify their desired performance level) may attract a significant number of new
+users and result in a net increase of both the ``payer" and ``non-payer" anonymity
+sets. We note that it is important to make clear to users the risks and
+trade-offs they assume by participating in such a network.
+
+\subsection{Accountability}
+
+The ``bank'' provides the transaction processing services necessary for the tokens to function as a currency. The functions are enumerated below:
+\begin{itemize}
+\item Currency creation: The bank will issue new currency as a reward for computing some useful service. In the context of Tor, this means printing new currency in exchange for showing publicly verifiable evidence of providing bandwidth to the network. It would also be reasonable, for example, for new currency to be created by trusted administrators, for the purpose of providing currency tokens to new users.
+\item Currency redemption: Users can redeem currency for preferential service in the Tor network.
+\item Checking account functionality: The bank will maintain a ledger of balances associated with public keys. Signed messages can be used to transfer quantities from one account to another. These are immediately publicly verifiable. Checking accounts are not truly private.
+\item “Cash” exchanges in and out of accounts. In order to regain unlinkability, money can be transferred from a checking account to a “cash pool” and back out again.  
+\end{itemize}
+
+Conceptually other schemes are possible; in particular, we could do away with the ``checking account'' functionality, and require that currency creation, transfers, and redemption use only the cash layer. 
+However we think that having checking accounts available as an intermediate layer is useful\anote{I guess it's hard to articulate why...}, and better reflects the architecture of existing systems like Bitcoin, Zerocoin, and OpenTransactions.
+
+One key design goal for the bank implementation is \emph{accountability}.
+We typically envision that the bank will be run by (a quorum) of semi-trusted servers, such as the directory servers which are currently part of Tor’s reliance set. On the other hand, despite admitting that we intend to allow some reliance on these servers, we will still seek to minimize reliance on them as much as possible. 
+There are at least two good reasons for this:
+\begin{enumerate}
+\item The less trust is required, generally the less expensive it is to secure and maintain the servers.
+\item We would like to optionally be able to replace the semi-trusted transaction-processing server with a large-scale public distributed process, in the same fashion as Bitcoin mining. 
+It is conceptually simpler to begin with a scheme using a third party.
+\end{enumerate}
+\anote{Calling the “bank” (although this is a misnomer - a “notary” better captures, as it timestamps, signs, and checks basic validity conditions of transactions, but does not lend money or otherwise have economic stake in the transactions).}
+
+We will achieve accountability by adhering to the following guidelines:
+\begin{itemize}
+\item All messages sent from the bank should be publicly verifiable. Any incorrect action should be detectable, and publicly verifiable evidence should be obtained. 
+This is essentially the “covert security” model\citeme.
+\item The bank should maintain no secret information about clients. 
+If an adversary is eavesdropping on the server, it should not be able to compromise. 
+This implies it is safe to publish all interactions with the bank.
+\item Optionally, if a broadcast channel is available (such as the Bitcoin blockchain, arguably), then interactions with the bank may be conducted over this broadcast channel, thereby guaranteeing that the bank cannot selectively refuse service to clients. 
+Otherwise, the server may simply refuse to process some requests and the client would not be able prove that the requests were actually sent.
+\end{itemize}
+
+\paragraph{Communication medium and Gossip Protocol}
+The value of ``public auditability'' relies on the assumption that there is a public communication medium (generally called a ``gossip network'') such that sufficiently motivated members of the public will circulate all messages, and will process the messages looking for instances of misbehavior.
+\anote{There is a lot more to discuss here - does anyone have an incentive to check all this? It's possible to hire public auditors (at least they're not trusted with private information), but how do we know they're working correctly? It's possible to offer incentives/bounties to encourage members of the public to collect data and check it, but if misbehavior is rare, the incentives might not be effective. It may not be necessary to check every piece of data, instead random checking (in a distributed fashion) might suffice. These problems are not at all unique to our problem, but instead are all relevant to the recent trend in ``certificate transparency.''}
+
+\paragraph{Availability of Existing implementations}
+\begin{itemize}
+\item OpenTransactions: based on the Lucre\citeme implementation (by Ben Laurie) of Chaumian-style ecash tokens based on blind signatures. This protocol is not publicly verifiable \anote{I'm not totally sure} - this means that either the server's secret key or the client's secret key is necessary to prove that a message is faulty. Additionally, the existing implementation is vulnerable to a privacy-compromising attack from a malicious server; possible countermeasures are described in documentation included with Lucre.
+\item Zerocoin: Zerocoin is a publicly verifiable (and public coin) cash system, intended as a modification (or alternative) to Bitcoin. Instead of asking the server to sign a blinded token, a client adds a commitment to a token into a cryptographic accumulator. To withdraw the coin, the client reveals its token and proves (in zero knowledge) that the token is a valid opening of \emph{some} commitment in the accumulator.
+\end{itemize}
+
+\paragraph{Integration With Bitcoin}
+\anote{this probably belongs in its own section?}
+Although we have described the bank system as something to be run by one or more servers, by requiring that the protocol is publicly verifiable, it may also be possible to implement the bank as an ``altcoin'', i.e. a Bitcoin-like public network.
+
+In order for this to work, an additional requirement to public verifiability is that the bank must be ``public coin'', meaning it does not need to generate any private keys. This is because the participants in the network (i.e. the miners) include anonymous members of the public, and hence includes adversaries. As mentioned, Zerocoin is public coin and therefore suitable for this purpose. Other publicly verifiable ecash protocols such as those of Lysanka and Camendisch\citeme are publicly verifiable but not public coin.
+
+There are a variety of ways of integrating with Bitcoin \anote{summarize these from Futurecoin}:
+\begin{itemize}
+\item as a modification to Bitcoin
+\item as a separate system
+\item as an overlay system using Bitcoin just as a transaction log (i.e., Mastercoin or coloredcoins)
+\end{itemize}

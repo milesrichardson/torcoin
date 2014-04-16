@@ -1,5 +1,30 @@
 \section{Introduction}
 
+The Tor network is too popular for its own good. Currently, a group of volunteers donates server resources to support the Tor network. Unfortunately the 8 GiB/s of aggregate bandwidth~\cite{tornetmet} is not enough to support the increasing traffic loads without sacrificing speed. So, Tor is slow. This is a major inhibitor to adoption. 
+
+Relying on donated resources is an unsustainable approach to growing the Tor network. Many members of the community agree with this, and have extensively studied the problem of incentivizing Tor, while retaining anonymity.~\cite{raykova-pet2008, wpes09-xpay, incentives-fc10,
+ccs10-braids, acsac11-tortoise, jansen2013lira, johnson2013onions}. Despite their efforts, they introduced no practical changes to the Tor project that provided an incentive scheme for relay operators.
+
+We propose a radical rethinking of the Tor network architecture. Specifically, we propose a three-actor architecture. Our proposal enables relay operators to earn bandwidth, clients to pay for increased bandwidth allocation, and network operators to collect a platform fee.
+
+We present an architecture that solves this problem with an \"overlay\" software. That is, we do not modify the core Tor code; our system runs on top of it. This overlay software provides an architecture supporting the following three roles:
+
+\begin{itemize}
+\item \textbf{Administrators} of the network
+\subitem Host directory servers
+\subitem Receive a fee for all transactions on the network
+\item \textbf{Hosts} of the relay servers
+\subitem Provide servers running Tor, configured as relay
+\subitem Earn money proportional to bytes of bandwidth transferred
+\item \texbf{Clients} of the network
+\subitem Use the network for free
+\subitem Can pay to increase bandwidth allocation
+\end{itemize}
+
+We realize that this is a politically challenging proposition, since it provides an incentive for current Tor relays to leave the Tor project network in favor of a new, monetized network. However, we contend that no political barriers exist to actually launching this system. Because, the Tor project is distibuted under a license allowing for commercial redistribution, we 
+
+
+
 Tor is the most popular deployed anonymous communication system, currently
 transferring over 8 GiB/s in aggregate~\cite{tornetmet}. The bandwidth that Tor
 requires to function is donated by altruistic volunteers at a cost without any

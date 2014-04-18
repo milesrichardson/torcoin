@@ -58,6 +58,7 @@ class Tchain(LineReceiver):
 		if self.state == "GETSENDER":
 			self.handle_GETSENDER(line)
 		else:
+			print "Length of line:" + str(len(line))
 			self.handle_REC(line)
 
 	def sendMessage(self, target, sender):
@@ -135,7 +136,7 @@ class Tchain(LineReceiver):
 			if TorCoin.tc_verify(self.pos, stored_hash_value, message_split[1:]):
 				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
 					if str(receiver) == str(self.pos - 1):
-						protocol.sendLine('TCVERIFY:' + stored_hash_attempt + ":" + stored_hash_value + ":" + ":".join(message_split[1:]))		
+						protocol.sendLine('TCVERIFY:' + str(stored_hash_attempt) + ":" + str(stored_hash_value) + ":" + ":".join(message_split[1:]))
 			else:
 				print 'ERROR'
 
@@ -162,7 +163,7 @@ class Tchain(LineReceiver):
 			if self.pos == 3:
 				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
 					if str(receiver) == str(self.pos - 1):
-						protocol.sendLine('TCVERIFY:' + hash_attempt + ":" + hash_value)
+						protocol.sendLine('TCVERIFY:' + str(hash_attempt) + ":" + hash_value)
 			else:
 				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
 					if str(receiver) == str(self.pos + 1): # This guy is the relay to the right

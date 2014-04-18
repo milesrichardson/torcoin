@@ -6,7 +6,7 @@ LATEX=pdflatex
 all: paper tidy
 
 paper: $(MAIN).tex
-	$(LATEX) $(MAIN)
+	$(LATEX) -shell-escape $(MAIN)
 	bibtex $(MAIN)
 	$(LATEX) $(MAIN)
 	$(LATEX) $(MAIN)

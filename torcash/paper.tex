@@ -18,8 +18,9 @@
 
 % paths and extensions for graphic files
 \usepackage{graphicx}
+\usepackage[outdir=figures/]{epstopdf}
 \graphicspath{{figures/}}
-\DeclareGraphicsExtensions{.pdf}
+% \DeclareGraphicsExtensions{.pdf}
 
 \usepackage{floatflt}
 \usepackage[caption=false,font=footnotesize]{subfig}
@@ -64,8 +65,8 @@
 
 \hypersetup
 {
-    pdfauthor={Rob Jansen, Miles Richardson, Mainak Ghosh, Bryan Ford},
-    pdfsubject={Anonymous communication, finantial cryptography},
+    pdfauthor{Bryan Ford, Miles Richardson, Mainak Ghosh},
+    pdfsubject={TorCoin},
     pdftitle={},
     pdfkeywords={Incentive, Monetize, Anonymity, Tor}
 }
@@ -91,16 +92,13 @@
 \newcommand{\anote}[1]{{\color{magenta}{#1}}}
 
 % \date{}
-\title{On the Current Feasibility, Incentives, and Social Implications of Tor Monetization}
+\title{TorCoin}
 
-\author{Rob Jansen\inst{1} \and Miles Richardson\inst{2} \and Mainak Ghosh\inst{2} \and Bryan Ford\inst{2}}
+\author{Bryan Ford \and Miles Richardson \and Mainak Ghosh}
 
 \institute{
-	U.S. Naval Research Laboratory, Washington, DC\\
-	\email{\{rob.g.jansen\}@nrl.navy.mil}
-	\and
 	Yale University, New Haven, CT\\
-	\email{\{miles.richardson, mainak.ghosh, bryan.ford\}@yale.edu}
+	\email{\{bryan.ford, miles.richardson, mainak.ghosh\}@yale.edu}
 }
 
 % Alter some LaTeX defaults for better treatment of figures:
@@ -125,10 +123,10 @@
 \input{sections/intro}
 %\input{sections/background}
 %\input{sections/introduction}
-\input{sections/requirements}
+%\input{sections/requirements}
 \input{sections/architecture}
-%\input{sections/proof-of-bandwidth}
-\input{sections/discussion}
+\input{sections/results}
+%\input{sections/discussion}
 \input{sections/related}
 \input{sections/conclusion}
 
@@ -138,6 +136,6 @@
 }
 
 %\clearpage
-\input{sections/appendix}
+% \input{sections/appendix}
 
 \end{document}

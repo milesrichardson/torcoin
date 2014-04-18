@@ -5,8 +5,11 @@ incentive system while identifying some open research and development problems.
 
 \subsection{Overview}
 We propose a system that measures bandwidth contributed to the Tor network to produce incentivise the addition of nodes to the Tor network.
+
 The system measures the bandwidth contributed by each relay in the Tor network and rewards them with a 'TorCoin'. A Torcoin is an AltCoin that uses a bandwidth-intensive protocol as its proof-of-work. Thus, to produce a TorCoin, a relay must have transmitted a certain amount of Tor traffic.
+
 To reduce the system's vulnerability to attackers and possible reduction of anonymity, we also utilize a system of 'Ephemeral Paths' to randomly assign relays to clients.
+
 These TorCoins can then be traded at an exchange for other AltCoins or other goods. This forms the basis of our incentivization scheme. This is different from systems that propose differentiated service\cite{dovrolis1999case, dovrolis2002proportional}, since we do not propose to make the clients pay for access to the network. The coins are a byproduct of the usage of the system.
 
 \subsection{Ephemeral Paths}
@@ -18,7 +21,7 @@ We propose the novel idea of ephemeral Tor networks, where a \textit{group} of n
   \item Any client can verify that a given public key represents a route assigned to a client in the current group.
 \end{itemize}
 
-The Tor directory servers will create the groups using the temporal locality of the clients connecting to them, but also ensure that their is geographical and other diversity in a group. This is to ensure that adversaries cannot deterministically place themselves in a single group by connecting at the same time.
+The Tor directory servers will create the groups using the temporal locality of the clients connecting to them, but also ensure that there is geographical and other diversity in a group. This is to ensure that adversaries cannot deterministically place themselves in a single group by connecting at the same time.
 The Tor directory server will then initiate the setup protocol amongst the clients in each group. Each group will then perform a series of Neff Shuffles to produce a random combination of routes for each client in the group. This will be combined with El Gamal encryption to preserve anonymity within the group.
 
 \subsubsection{Decentralized Neff Shuffle for Consensus Tor Route Assignment to n Clients}
@@ -77,5 +80,7 @@ If (Tc = '000...')
 
 \subsection{Robustness to attack}
 The entire reason for constructing the elaborate ephemeral routes algorithm is to make the Torcoin system robust to attackers.
+
 Due to the random group selection system, it is hard for attackers to deterministically place themselves in a group. In addition, because the attacker needs to control all four components fo a route to mint a TorCoin fraudulently, even if the adversaries control up to half the network, there is a probability of only 1/16 that an adversary client gets a path of three colluding relays. In practice, gaining control of half of the entire Tor client and relay network is practically impossible. 
+
 A separate rate-limiting mechanism can be deployed to detect dishonest relays and assign them a lower weightage in the path selection procedure. An independent verification authority, such as one based on Eigenspeed, could be used to detect these discrepancies.

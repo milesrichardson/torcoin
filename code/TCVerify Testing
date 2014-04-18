@@ -22,9 +22,9 @@ Line lengths:
 42
 42
 42
-43
-78
-113
+64 + 8 + 2
+64 * 2 + 10
+64 * 3 + 10
 
 initial: TCATTEMPT:cfcd208495d565ef66e7dff9f98764da
 TCATTEMPT:9647a88d8e5fb8f5dfba475c6d3e6af5

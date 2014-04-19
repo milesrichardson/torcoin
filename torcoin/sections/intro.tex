@@ -1,0 +1,11 @@
+\section{Introduction}
+
+The Tor network suffers from slow speeds, because of a shortage of relay nodes, unsustainably provided by 
+altruistic volunteers. This is a well studied problem. Despite many attempts, researchers have failed to deploy a widely-adopted mechanism for compensating relay operators, while retaining anonymity of clients. ~\cite{raykova-pet2008, wpes09-xpay, incentives-fc10,
+ccs10-braids, acsac11-tortoise, jansen2013lira, johnson2013onions}.
+
+First, we propose a radical rethinking of the economic structure of the Tor anomymity network. Specifically, we introduce the idea of \textit{privacy service providers} (PSPs), analagous to internet service providers (ISPs) in current nomenclature. A PSP operates an independent Tor network. It charges clients for access, and pays relay operators per-megabit of bandwidth transferred.
+
+Second, we present an anonyimity-preserving software architecture to enable this economic model, without modifying the core codebase of Tor. We introduce `\textit{TorCoin}', an alternative cryptocurrency (altcoin) that relay operators can mine by transferring bandwidth. It uses the BitCoin protocol, but relies on proof-of-bandwidth instead of proof-of-computation.
+
+TorCoin enables the economic model to work. Relay operators install a \textit{TorCoin Miner}, which verifiably mints TorCoins per-mb of transfer. They also install a \textit{TorCoin Trader}, which sells their TorCoins on a \textit{TorCoin Exchange} for cash. Each PSP operates an exchange; clients pay cash to access the network, and the PSP pays cash to relays for TorCoins.

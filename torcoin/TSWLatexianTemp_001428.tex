@@ -18,9 +18,8 @@
 
 % paths and extensions for graphic files
 \usepackage{graphicx}
-\usepackage[outdir=figures/]{epstopdf}
 \graphicspath{{figures/}}
-% \DeclareGraphicsExtensions{.pdf}
+\DeclareGraphicsExtensions{.pdf}
 
 \usepackage{floatflt}
 \usepackage[caption=false,font=footnotesize]{subfig}
@@ -54,19 +53,19 @@
 \draftstring{
 \begin{minipage}{17cm}
 \begin{center}
-\  DRAFT - \today
+\  DRAFT - \today\\Not approved for public release
 \end{center}
 \end{minipage}
 }
-
 \draftfontsize{36pt}
 
 % should be loaded last (but before algorithm*) -colored links and refs
 \usepackage[colorlinks=true, citecolor=OliveGreen, linkcolor=BrickRed, urlcolor=MidnightBlue, final, pdftex]{hyperref}
 
-\hypersetup{
-    pdfauthor={Bryan Ford, Miles Richardson, Mainak Ghosh},
-    pdfsubject={TorCoin},
+\hypersetup
+{
+    pdfauthor={Rob Jansen, Miles Richardson, Mainak Ghosh, Bryan Ford},
+    pdfsubject={Anonymous communication, finantial cryptography},
     pdftitle={},
     pdfkeywords={Incentive, Monetize, Anonymity, Tor}
 }
@@ -92,13 +91,16 @@
 \newcommand{\anote}[1]{{\color{magenta}{#1}}}
 
 % \date{}
-\title{TorCoin}
+\title{On the Current Feasibility, Incentives, and Social Implications of Tor Monetization}
 
-\author{Bryan Ford \and Miles Richardson \and Mainak Ghosh}
+\author{Rob Jansen\inst{1} \and Miles Richardson\inst{2} \and Mainak Ghosh\inst{2} \and Bryan Ford\inst{2}}
 
 \institute{
+	U.S. Naval Research Laboratory, Washington, DC\\
+	\email{\{rob.g.jansen\}@nrl.navy.mil}
+	\and
 	Yale University, New Haven, CT\\
-	\email{\{bryan.ford, miles.richardson, mainak.ghosh\}@yale.edu}
+	\email{\{miles.richardson, mainak.ghosh, bryan.ford\}@yale.edu}
 }
 
 % Alter some LaTeX defaults for better treatment of figures:
@@ -121,10 +123,12 @@
 
 \input{sections/abstract}
 \input{sections/intro}
-\input{sections/economic\_architecture}
-\input{sections/software\_architecture}
-\input{sections/results}
-%\input{sections/discussion}
+%\input{sections/background}
+%\input{sections/introduction}
+\input{sections/requirements}
+\input{sections/architecture}
+%\input{sections/proof-of-bandwidth}
+\input{sections/discussion}
 \input{sections/related}
 \input{sections/conclusion}
 
@@ -134,6 +138,6 @@
 }
 
 %\clearpage
-% \input{sections/appendix}
+\input{sections/appendix}
 
 \end{document}

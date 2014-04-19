@@ -1,0 +1,29 @@
+\section{Introduction}
+
+\subsection{Launching a Secondary Tor Network}
+
+We will build a system that enables deployment of a secondary, monetized Tor network. Independent communities can launch a private or public network that routes traffic over Tor. In exchange for supplying bandwidth, relay servers receive a special cryptocurrency called a TorCoin.
+
+\subsection{TorCoin Mining}
+
+Relay servers mine TorCoins proportionally to the bandwidth they supply. This mining is analagous to Bitcoin mining, except its proof-of-work scheme is bandwidth-intensive instead of CPU-intensive. As such, a TorCoin represents bandwidth that was pushed over some relay server, somewhere in the Tor network, at some point in time. Therefore, TorCoins have inherent value, because relay operators can trade them in for cash. 
+
+\subsection{Exchanging TorCoins for Cash}
+
+\subsubsection{TorCoins are Valuable to Both Clients and Outsiders}
+
+A TorCoin has value to both clients and outsiders. For clients, a TorCoin has value because it represents bandwidth, which they demand and relays supply. For outsiders, TorCoin has value as an alternative cryptocurrency, also known as an “altcoin.” Increasingly, people are trading altcoins for arbitrage opportunities, money transferring vehicles, and speculative investment. So in this sense, TorCoin is similar to Namecoin, Zerocoin, and any other number of altcoins. 
+
+Because a TorCoin has value to both clients and outsiders, relays have two counterparties for exchanging Torcoins.
+
+\subsubsection{1. Charge clients for access to network}
+
+One can imagine a scheme in which clients must pay a price, in traditional currency (or even Bitcoin), to access the network. Some mechanism then transfers the traditional currency to the relays, in exchange for Torcoins, which the client can use to connect to the network. That is, any client connecting to the network must pay some number of TorCoins. 
+
+In this scenario, we have an open question: What happens to the Torcoins that the clients pay to the network? Relays already received cash for mining them and then selling them to clients via the exchange, so should they get the TorCoins back? This seems to be an ecomomic question, and a difficult one at that. So perhaps this next solution is a better one, as it's much more analagous to Bitcoin.
+
+\subsubsection{2. Keep Tor free, sell TorCoins to AltCoin traders}
+
+Because TorCoins have value outside of the relay-client relationship, they can also be exchanged outside of it. For example, relays who mine Torcoins could sell them on an Altcoin exchange, where traders set the price by trading amongst each other. Thus, relays can exchange Torcoins for cash without the client needing to pay for access to the network. Economically, this works because the relays create value by supplying anonymous bandwidth to clients, and then traders pay for that value as the supply of Torcoins grows.
+
+(This leads us to an important question: Is the supply of Torcoins finite? Much of the appeal of Bitcoins and Altcoins is their finite money supplies. But if Torcoins have a finite money supply, then eventually no more can be mined. Then there is no more incentive for relays to supply bandwidth. So, we have a catch-22. We need to always incentivize relays to provide bandwidth, but Altcoin traders prefer currencies with finite money supplies. One possible solution to this is to reset the money supply every time it reaches its limit -- or even to launch a new Altcoin each time.)

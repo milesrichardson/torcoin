@@ -22,9 +22,10 @@ We propose the novel idea of ephemeral Tor networks, where a \textit{group} of n
 \end{itemize}
 
 The Tor directory servers will create the groups using the temporal locality of the clients connecting to them, but also ensure that there is geographical and other diversity in a group. This is to ensure that adversaries cannot deterministically place themselves in a single group by connecting at the same time.
+
 The Tor directory server will then initiate the setup protocol amongst the clients in each group. Each group will then perform a series of Neff Shuffles to produce a random combination of routes for each client in the group. This will be combined with El Gamal encryption to preserve anonymity within the group.
 
-\subsubsection{Decentralized Neff Shuffle for Consensus Tor Route Assignment to n Clients}
+\subsubsection{Decentralized Neff Shuffle for Consensus Tor Route Assignment to n Clients IFFY BIT - PLEASE PAY ATTENTION}
 We perform a series of Neff shuffles so that each client in the group is assigned one \textit{route} consisting of an entry, middle and exit relay. The route also has a publicly verifiable shared secret. That is, a route can collectively sign a TorCoin (explained later) such that any client in the group can verify that the signature came from a route assigned to another client in the group.
 
 \paragraph{Implementation of Neff Shuffle}
@@ -49,7 +50,15 @@ It may be possible to use cryptographic accumulators along with the Neff shuffle
 
 We can then generate a publicly verifiable shared secret amongst the relays in any given route (a row in the 4XN matrix). That is, a route can collectively sign a TorCoin such that any client in the consensus group can verify that the signature came from a route assigned to another client in the consensus group.
 
-\subsubsection{Proof of Bandwidth}
+IFFY BITS
+
+The servers come together to create groups. They use Neff shuffles to create shuffled lists of Entry, middle and exit relays. They also shuffle a list of clients in the group. They then create a route-shared-key for each route based on some property of each participant (client and three relays). Each route-shared-key is also input into an accumulator so that anyone can verify if a route belonged to a group.
+
+The servers then inform the clients of [entry, middle, exit, route shared key, accumulator] and the relays are informed of their Access Control List (list of all the clients and relays they should accept connections from.)
+
+Problems: PSP has total information about who is connecting to whom. Prof. Ford probably has some idea about how to obfuscate this.
+
+\subsubsection{Proof of Bandwidth - Onion Hashing}
 Once the routes are setup, we can prove bandwidth transfer through the following protocol:
 Every n Tor packets, the client sends an extra packet (“the Torcoin packet”) containing an hash attempt likely to generate a TorCoin. Relay A gets it, generates a temporary private key Ka (generated using the route shared key) and hashes the received packet and this key. It then forwards it to B, which does the same thing, with its own private temporary key Kb. Similarly on to C. C can now add its own Kc, and if it generates a hash with a given number of zeros, it can claim to have found a TorCoin.
 \begin{verbatim}
@@ -65,15 +74,16 @@ round trip through the route. This completes the proof of bandwidth.
 \end{verbatim}
 
 \subsubsection{TorCoin}
-We can also implement an AltCoin based on the proof-of-work concept in the following manner:
+We can then implement an AltCoin based on the proof-of-work concept in the following manner:
 \begin{verbatim}
 If (Tc = '000...')
   If the client succesfully verifies the hash
     It adds the coin to the blockchain with the following information:
     1. Client’s public key
     2. Route Shared key (Lets any other group member verify that the route is 
-       genuine. See accumulator/Neff’s key.)
-    3. TorCoin Hash
+       genuine. See accumulator.)
+    3. Accumulator for the group.
+    4. TorCoin Hash
     It then gives 1/3rd of the coin to each of the relays in the route. (If the 
     client is rogue, can we identify and kick the client off?)
 \end{verbatim}

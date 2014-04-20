@@ -1,11 +1,12 @@
 \section{Introduction}
 
-The Tor network suffers from slow speeds, because of a shortage of relay nodes, unsustainably provided by 
-altruistic volunteers. This is a well studied problem. Despite many attempts, researchers have failed to deploy a widely-adopted mechanism for compensating relay operators, while retaining anonymity of clients. ~\cite{raykova-pet2008, wpes09-xpay, incentives-fc10,
-ccs10-braids, acsac11-tortoise, jansen2013lira, johnson2013onions}.
+The Tor network suffers from slow speeds, due to a shortage of relay nodes from volunteers. This is a well studied problem. But despite many attempts, researchers have failed to deploy a widely-adopted mechanism for compensating relay operators (hereon, ``hosts''), while retaining anonymity of clients. ~\cite{raykova-pet2008, wpes09-xpay, incentives-fc10,
+ccs10-braids, acsac11-tortoise, jansen2013lira, johnson2013onions}. We present a possible solution, and two novel ideas:
 
-First, we propose a radical rethinking of the economic structure of the Tor anomymity network. Specifically, we introduce the idea of \textit{privacy service providers} (PSPs), analagous to internet service providers (ISPs) in current nomenclature. A PSP operates an independent Tor network. It charges clients for access, and pays relay operators per-megabit of bandwidth transferred.
+\begin{enumerate}
+\item \textbf{TorCoin} is an alternative cryptocurrency, or altcoin, based on the BitCoin protocol. Unlike BitCoin, its proof-of-work scheme is bandwidth-intensive, rather than computationally-intensive. So to ``mine'' a TorCoin, a relay transfers bandwidth over the Tor network. Since relays can sell TorCoin on any existing altcoin exchange, TorCoin effectively compensates them for contributing bandwidth to the network.
 
-Second, we present an anonyimity-preserving software architecture to enable this economic model, without modifying the core codebase of Tor. We introduce `\textit{TorCoin}', an alternative cryptocurrency (altcoin) that relay operators can mine by transferring bandwidth. It uses the BitCoin protocol, but relies on proof-of-bandwidth instead of proof-of-computation.
+\item \textbf{TorPath} is a method for decentralized groups of ``Assignment Servers'', which extend traditional ``Directory Servers,'' to assign each client a Tor circuit that is publicly verifiable, but privately addressable. This allows TorPath to ``sign'' newly-minted TorCoins, so that anyone can verify a given TorCoin represents actual bandwidth transferred. 
+\end{enumerate}
 
-TorCoin enables the economic model to work. Relay operators install software allowing them to verifiably mint TorCoins per-mb of transfer, then sell them on a \textit{TorCoin Exchange} for cash. Each PSP operates an exchange; clients pay cash to access the network, and the PSP pays cash to relays for TorCoins.
+[More will go here, but let's see what the paper looks like before writing it.]

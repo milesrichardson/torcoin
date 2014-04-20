@@ -1,4 +1,4 @@
-\section{Software Architecture} \label{arch}
+\section{Proposed Architecture} \label{arch}
 
 We now discuss the main components necessary to realize a practical Tor
 incentive system while identifying some open research and development problems.
@@ -13,54 +13,37 @@ To reduce the system's vulnerability to attackers and possible reduction of anon
 These TorCoins can then be traded at an exchange for other AltCoins or other goods. This forms the basis of our incentivization scheme. This is different from systems that propose differentiated service\cite{dovrolis1999case, dovrolis2002proportional}, since we do not propose to make the clients pay for access to the network. The coins are a byproduct of the usage of the system.
 
 \subsection{Ephemeral Paths}
-We propose the novel idea of ephemeral Tor networks, where a \textit{group} of n clients at any given time form a consensus on an assignment of n routes to n clients, such that each route is publicly verifiable but privately addressable. We adhere to the following constraints:
+The TorCoin system adheres to the following constraints:
 \begin{itemize}
   \item No client in the group can generate its own route.
-  \item Every resulting route has a unique public key.
+  \item Every resulting route has a unique public key (Route signature).
   \item No client in the group can know the route assigned to another client in the group.
-  \item Any client can verify that a given public key represents a route assigned to a client in the current group.
+  \item Any interested party can verify that a given public key represents a route assigned to a client in the current group.
 \end{itemize}
 
+\subsubsection{Setup}
 The Tor directory servers will create the groups using the temporal locality of the clients connecting to them, but also ensure that there is geographical and other diversity in a group. This is to ensure that adversaries cannot deterministically place themselves in a single group by connecting at the same time.
 
-The Tor directory server will then initiate the setup protocol amongst the clients in each group. Each group will then perform a series of Neff Shuffles to produce a random combination of routes for each client in the group. This will be combined with El Gamal encryption to preserve anonymity within the group.
+A group consists of the first n = 1000 or so clients that have connected to the Assigning servers. In practice, we expect the number n to be modulated so that groups are being created every 10 seconds or so. Also, we will ensure diversity in the group by ensuring that a group consists of a majority of the Assigning servers. Thus, if there are 10 Assigning Servers in the entire network, a group must consist of atleast 6 of them.
 
-\subsubsection{Decentralized Neff Shuffle for Consensus Tor Route Assignment to n Clients IFFY BIT - PLEASE PAY ATTENTION}
-We perform a series of Neff shuffles so that each client in the group is assigned one \textit{route} consisting of an entry, middle and exit relay. The route also has a publicly verifiable shared secret. That is, a route can collectively sign a TorCoin (explained later) such that any client in the group can verify that the signature came from a route assigned to another client in the group.
 
-\paragraph{Implementation of Neff Shuffle}
+\subsubsection{Route Assignment using Neff shuffles}
+Once all the clients have filled up the group, the Assigning Servers in the group initiate the process of route assignment.
+\begin{enumerate}
+  \item Three groups of two Assigning Servers are chosen from those in the group.
+  \item Each group of Assigning servers uses a unique Neff shuffle to create shuffled lists of entry, middle and exit relays. The ith client in the group is thus matched up with the ith entry, middle and exit relay to form a 'route'.
+  \item The servers then create a route-signature for each route based on some property of each participant (client and three relays).
+  \item Each route-signature is then input into a cryptographic accumulator so that anyone can verify if a route belonged to a group. This accumulator is published in a publicly available log along with the timestamp of the group creation.
+\end{enumerate}
 
-THIS SECTION NEEDS TO BE MADE CLEARER / DIAGRAM
+Each server then sends each client in the group one piece of data. Eg: The servers that assigned the entry relays send each client its ownentry relay. Similarly, the middle and exit relays and the route signatures are also communicated in the same way. 
+For each relay, the servers send an Access Control List. This is a list of all the relays and clients that the relay should accept connections from, as well as the route signatures for each.
 
-The clients are numbered 1 through N
-
-Entry relays 1 to Me; 
-
-Middle relays: 1 through Mm; 
-
-Exit relays: 1 through Mx.
-
-1.  Each list of relays and clients goes through an independent Neff shuffle. The shuffled lists are concatenated, producing a shuffled 4xN matrix. Each client will have one row assigned to it, which only that client can verifiably associate with. This row represents the route for that client.
-
-2.  Each client can use their own private key to find out their own row and assigned relays after the shuffle, but no one else can.
-
-3.  The directory server generates a public and private key for all members of the row. This functions as the shared secret for the route.
-
-It may be possible to use cryptographic accumulators along with the Neff shuffle. In that case, it will not be necessary to keep all the public keys generated in part 3. Instead, the keys may be used to generate a cryptographic accumulator and this accumulator can be used to provide a zero-knowledge verification of group-membership.
-
-We can then generate a publicly verifiable shared secret amongst the relays in any given route (a row in the 4XN matrix). That is, a route can collectively sign a TorCoin such that any client in the consensus group can verify that the signature came from a route assigned to another client in the consensus group.
-
-IFFY BITS
-
-The servers come together to create groups. They use Neff shuffles to create shuffled lists of Entry, middle and exit relays. They also shuffle a list of clients in the group. They then create a route-shared-key for each route based on some property of each participant (client and three relays). Each route-shared-key is also input into an accumulator so that anyone can verify if a route belonged to a group.
-
-The servers then inform the clients of [entry, middle, exit, route shared key, accumulator] and the relays are informed of their Access Control List (list of all the clients and relays they should accept connections from.)
-
-Problems: PSP has total information about who is connecting to whom. Prof. Ford probably has some idea about how to obfuscate this.
+In this way, no single server is aware of any client's entire path through the network, preserving their anonymity. Since each relay is confirmed by atleast two servers, it is also robust to rogue servers. 
 
 \subsubsection{Proof of Bandwidth - Onion Hashing}
 Once the routes are setup, we can prove bandwidth transfer through the following protocol:
-Every n Tor packets, the client sends an extra packet (“the Torcoin packet”) containing an hash attempt likely to generate a TorCoin. Relay A gets it, generates a temporary private key Ka (generated using the route shared key) and hashes the received packet and this key. It then forwards it to B, which does the same thing, with its own private temporary key Kb. Similarly on to C. C can now add its own Kc, and if it generates a hash with a given number of zeros, it can claim to have found a TorCoin.
+Every m Tor packets, the client sends an extra packet (“the Torcoin packet”) containing an hash attempt likely to generate a TorCoin. Relay A gets it, generates a temporary private key Ka (generated using the route shared key) and hashes the received packet and this key. It then forwards it to B, which does the same thing, with its own private temporary key Kb. Similarly on to C. C can now add its own Kc, and if it generates a hash with a given number of zeros, it can claim to have found a TorCoin.
 \begin{verbatim}
 Client sends to A: T0 (its hash attempt)
 A sends to B     : Hash(T0 + K1) = Ta # K1 is A's temporary private key.
@@ -79,18 +62,23 @@ We can then implement an AltCoin based on the proof-of-work concept in the follo
 If (Tc = '000...')
   If the client succesfully verifies the hash
     It adds the coin to the blockchain with the following information:
-    1. Client’s public key
+    0. Timestamp of group.
+    1. Client’s public key.
     2. Route Shared key (Lets any other group member verify that the route is 
        genuine. See accumulator.)
-    3. Accumulator for the group.
-    4. TorCoin Hash
+    4. TorCoin Hash.
     It then gives 1/3rd of the coin to each of the relays in the route. (If the 
     client is rogue, can we identify and kick the client off?)
 \end{verbatim}
+This information in the blockchain will enable any interested party to verify if the route came from a legitimate group formed by the directory servers. This can be done by taking the route signature and comparing it with the publicly available accumulators. 
+
+The properties of the Altcoin will then take over, with clients building on the blockchain with more and more TorCoins that they mine through this process.
 
 \subsection{Robustness to attack}
 The entire reason for constructing the elaborate ephemeral routes algorithm is to make the Torcoin system robust to attackers.
 
-Due to the random group selection system, it is hard for attackers to deterministically place themselves in a group. In addition, because the attacker needs to control all four components fo a route to mint a TorCoin fraudulently, even if the adversaries control up to half the network, there is a probability of only 1/16 that an adversary client gets a path of three colluding relays. In practice, gaining control of half of the entire Tor client and relay network is practically impossible. 
+Due to the random group selection system, it is hard for attackers to deterministically place themselves in a group. To make the system even more secure, the servers can randomize group assignment instead of just taking temporal locality to be the criterion.
 
-A separate rate-limiting mechanism can be deployed to detect dishonest relays and assign them a lower weightage in the path selection procedure. An independent verification authority, such as one based on Eigenspeed, could be used to detect these discrepancies.
+In addition, because the attacker needs to control all four components of a route to mint a TorCoin fraudulently, even if the adversaries control up to half the network, there is a probability of only 1/16 that an adversary client gets a path of three colluding relays. In practice, gaining control of half of the entire Tor client and relay network is practically impossible. 
+
+A separate rate-limiting mechanism can be deployed to detect dishonest relays and remove them from the the path selection procedure. An independent verification authority, such as one based on Eigenspeed, could be used to detect these discrepancies.

@@ -1,5 +1,9 @@
 \section{Related Work} \label{rel}
 
-PAR~\cite{raykova-pet2008}, XPay~\cite{wpes09-xpay}, Gold Star~\cite{incentives-fc10}, BRAIDS~\cite{ccs10-braids}, Tortoise~\cite{acsac11-tortoise}, LIRA~\cite{jansen2013lira}, onions for sale~\cite{johnson2013onions}.
+PAR~\cite{raykova-pet2008}, XPay~\cite{wpes09-xpay}, Gold Star~\cite{incentives-fc10}, BRAIDS~\cite{ccs10-braids}, Tortoise~\cite{acsac11-tortoise}, onions for sale~\cite{johnson2013onions}.
 
 On the economics of anonymity~\cite{Acquisti03onthe}, one-to-n scrip systems~\cite{humbert2011-scrip}.
+
+LIRA~\cite{jansen2013lira}is a lightweight system providing “performance incentives for users to contribute bandwidth to the Tor network.” It uses coins, similar to “in game currency,” to distribute payment. LIRA uses coins which have a tunable probability of being right, and clients can guess lottery tickets with probability, p of being right. 
+
+Eigenspeed~\cite{snader2009eigenspeed} is a peer-to-peer consensus building algorithm for monitoring bandwidth over a network, specifically implemented for Tor. Unfortunately it requires a central authority for computing Principal Component Analysis operations. While we believe these operations could be decentralized, we are not interested in extending Eigenspeed. Instead, we exploit properties of the Bitcoin protocol to allow for bandwidth monitoring that is sufficient to generate payment tickets. However, as mentioned before, Eigenspeed could act as a secondary system to monitor relays and clients that seem to be producing more TorCoins than would be warranted by their speed.  

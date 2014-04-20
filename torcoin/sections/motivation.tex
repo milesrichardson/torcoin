@@ -1,9 +1,21 @@
 \section{Motivation} \label{motivation}
 
-Todo - DRAFT NOTES:
+TorPath is an anonymous cooperative routing scheme that randomly assigns routes to Tor clients using decentralized, cryptographically verifiable methods like the Neff's shuffle.
 
-This section will detail the economic model and present any lingering questions. There will be another diagram featuring multiple clients, a PSP, and multiple hosts. The diagram below will go into the software architecture section, under a section called ``system design'', followed by a sentence describing each component. Then we will go into detail on the ephemeral paths and TorCoin design, which are part of the TorCoin Minter. The TorCoin trader, wallet, and exchange are all necessary, but not novel in terms of design, so we will spend little time on those.
+The scheme consists of Assigning Servers that group the clients that connect to them into 'consensus groups'. These Assigning Servers are deployed in a model similar to Tor's Directory Servers - there is a small federation of trusted servers run by independent respected authorities, and all client interactions occur with a majority of the Assigning servers to ensure correctness even if a minority are compromised. 
 
-TODO: Add component to Client, ``TorCoin Minter'' (?)
+Each client in the group is then randomly assigned a path through the Tor network consisting of an entry, middle and exit relay. Since the assigning scheme is decentralized, no one server knows a client's entire path through the network.
 
-\includegraphics[scale=0.5]{figures/overview.pdf}
+The initial motivation for this was to provide a robust way for a possible AltCoin-based incentive scheme (TorCoin) to monitor bandwidth. However, such a scheme would also be useful for other applications:
+
+\subsection{Shortening the path between Tor clients and Tor hidden services} 
+Currently, if a Tor client wishes to connect to a Tor hidden service, they must independently choose three route relays in order to maintain their respective anonymity. Each extra relay slows down the overall speed of the connection. A cooperative routing scheme would not compromise either components' anonymity, while ensuring that only three relays are needed to connect. Since the middle relays in TorPath are collectively chosen, any TorPath middle relay that's not compromised will simultaneously protect the client from the hidden service and vice versa. This would also somewhat reduce the congestion of the network, as only half the resources are used for these connections. https://www.torproject.org/docs/hidden-services.html.en
+
+
+\subsection{Multi-level privacy-preserving protocols in which "clients" actually represent multiple levels of stakeholders}
+Say an NGO operating in Ratistan wants to deploy an anonymizing network ensuring "blanket anonymity" for all their local operatives.  They might do this by making all their access points transparent Tor proxies (e.g., http://www.adafruit.com/products/1410), so that no matter how any of their employees (or even guests on their WLAN) use their network, they will be Torified, because that Tor is the only way "out" of the NGO's network.  This way if the NGO has good sysadmins, they can help even employees or guests who fail to install or use Tor clients properly.  However, at least some of the NGO's employees and/or guests might not want to trust the NGO's sysadmins completely, and if they just blindly rely on the NGO's Tor-proxified access points to do their job and protect their privacy, any compromise at the NGO level might compromise any individual. So the individuals would also like to run "real" Tor clients on their own machines, and be assured that they're protected if either their own Tor client or the NGO's Tor-proxy system is uncompromised.  With Tor as it stands, the NGO's Tor proxies would interpose a 3-relay Tor path (chosen by the Tor proxy) on every client's connection, on top of which each user will interpose an additional 3-relay path (chosen by the user's Tor client), for a 6-relay latency to get to anywhere (or a 9-relay latency to get to any Tor hidden service, ouch!).  With TorPath, the client, NGO, and even a hidden service at the end, could cooperatively choose a set of "middle relays" that none of them know or trust but which protect all of them from each other simultaneously.
+
+\subsection{TorCoin}
+While there have been many attempts at incentivising Tor relays and clients, they have all used internal bandwidth monitoring schemes like EigenSpeed (LIRA) or Optimistic bandwidth monitroing (Jansen's other paper) in order to assign rewards. This differs from TorCoin's proof-of-bandwidth' scheme since this scheme actually measures the complete 'end-to-end' throughput of every Tor circuit, with very little overhead. This ensures a more accurate measurement of effective bandwidth on the network. 
+
+In the next section, we outline the TorPath architecture in detail, along with some notes on the proposed TorCoin system.

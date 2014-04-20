@@ -1,0 +1,6 @@
+PWD /Users/miles/code/school/torcoin/torcoin
+INPUT /usr/local/texlive/2013/texmf.cnf
+INPUT /usr/local/texlive/2013/texmf-dist/web2c/texmf.cnf
+INPUT /usr/local/texlive/2013/texmf-var/web2c/pdftex/pdflatex.fmt
+INPUT /Users/miles/code/school/torcoin/torcoin/makefile.sh
+OUTPUT /Users/miles/code/school/torcoin/torcoin/makefile.log

@@ -30,11 +30,11 @@ A group consists of the first n = 1000 or so clients that have connected to the 
 \subsubsection{Route Assignment using Neff shuffles}
 Once all the clients have filled up the group, the Assigning Servers in the group initiate the process of route assignment.
 \begin{enumerate}
-\item Three groups of two Assigning Servers are chosen from those in the group.
-\item Each group of Assigning servers uses a unique Neff shuffle to create shuffled lists of entry, middle and exit relays. The ith client in the group is thus matched up with the ith entry, middle and exit relay to form a 'route'.
-\item The servers then create a route-signature for each route based on some property of each participant (client and three relays).
-\item Each route-signature is then input into a cryptographic accumulator so that anyone can verify if a route belonged to a group. This accumulator is published in a publicly available log along with the timestamp of the group creation.
-\end{itemize}
+  \item Three groups of two Assigning Servers are chosen from those in the group.
+  \item Each group of Assigning servers uses a unique Neff shuffle to create shuffled lists of entry, middle and exit relays. The ith client in the group is thus matched up with the ith entry, middle and exit relay to form a 'route'.
+  \item The servers then create a route-signature for each route based on some property of each participant (client and three relays).
+  \item Each route-signature is then input into a cryptographic accumulator so that anyone can verify if a route belonged to a group. This accumulator is published in a publicly available log along with the timestamp of the group creation.
+\end{enumerate}
 
 Each server then sends each client in the group one piece of data. Eg: The servers that assigned the entry relays send each client its ownentry relay. Similarly, the middle and exit relays and the route signatures are also communicated in the same way. 
 For each relay, the servers send an Access Control List. This is a list of all the relays and clients that the relay should accept connections from, as well as the route signatures for each.
@@ -43,7 +43,7 @@ In this way, no single server is aware of any client's entire path through the n
 
 \subsubsection{Proof of Bandwidth - Onion Hashing}
 Once the routes are setup, we can prove bandwidth transfer through the following protocol:
-Every n Tor packets, the client sends an extra packet (“the Torcoin packet”) containing an hash attempt likely to generate a TorCoin. Relay A gets it, generates a temporary private key Ka (generated using the route shared key) and hashes the received packet and this key. It then forwards it to B, which does the same thing, with its own private temporary key Kb. Similarly on to C. C can now add its own Kc, and if it generates a hash with a given number of zeros, it can claim to have found a TorCoin.
+Every m Tor packets, the client sends an extra packet (“the Torcoin packet”) containing an hash attempt likely to generate a TorCoin. Relay A gets it, generates a temporary private key Ka (generated using the route shared key) and hashes the received packet and this key. It then forwards it to B, which does the same thing, with its own private temporary key Kb. Similarly on to C. C can now add its own Kc, and if it generates a hash with a given number of zeros, it can claim to have found a TorCoin.
 \begin{verbatim}
 Client sends to A: T0 (its hash attempt)
 A sends to B     : Hash(T0 + K1) = Ta # K1 is A's temporary private key.

@@ -25,7 +25,8 @@ The TorPath protocol adheres to the following constraints:
 
 A consensus group is formed when a majority of the Assignment Servers come
 together to assign circuits to clients. Thus, if there are 10 Assignment Servers
-in the world, atleast 6 of them must collectively form a group.
+in the network, atleast 6 of them must collectively form a group. In practice, 
+this group formation would occur every 10 seconds.
 
 The steps in group formation are: 
 \begin{enumerate} 
@@ -48,12 +49,12 @@ servers and sent to the servers.
 
 The servers then perform a series of verifiable shuffles (eg. using the Neff
 Shuffle) on each kind of key: Client Keys, Entry relay keys, exit relay keys and 
-middle relay keys.
-
-The input and output of the Shuffle is described in FIGURE. We may represent the
-results of the shuffle as a $n \times 4$ matrix $M$, with each row representing 
-a client and its three relays. This output matrix is also publicly published in 
-a log and signed by all the servers participating in the group.
+middle relay keys. The output of each shuffle is a verifiable, shuffled list of 
+n keys, as described in FIGURE. 
+We may represent the results of the shuffle as a $n \times 4$ matrix $M$, with 
+each row representing a client and its three relays. This output matrix is also 
+publicly published in a log and signed by all the servers participating in the 
+group.
 
 \paragraph{Path Lookup}
 Once the shuffle is completed and published, all clients and relays can look up

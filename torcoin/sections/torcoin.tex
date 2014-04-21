@@ -30,7 +30,7 @@ A sends to client: (Tc, K3, Tb, K2, Ta, K1) to verify.
 \end{verbatim}
 
 \subsubsection{TorCoin}
-We combine onion hashing with the BitCoin protocol to achieve TorCoin. Once the protocol mints a TorCoin, the TorCoin Wallet writes it to the blockchain, along with the following information.
+We combine onion hashing with the BitCoin protocol to achieve TorCoin. Once the protocol mints a TorCoin, the TorCoin Wallet writes it to the blockchain, along with the following information:
 
 \begin{itemize}
 \item Timestamp of consensus group.
@@ -41,13 +41,13 @@ We combine onion hashing with the BitCoin protocol to achieve TorCoin. Once the 
 
 All the information necessary for verifying proof-of-bandwidth is in the blockchain. 
 
-\subsection{Securty Considerations}
+\subsection{Security Considerations}
 
 \subsubsection{Random Group Selection}
 The TorPath protocol increases robustness of TorCoin to attackers. Its random group selection system inhibits attackers from deterministically placing themselves in a group. We could make the system even more secure by randomizing group assignment, instead of just taking temporal locality to be the only criterion.
 
 \subsubsection{Colluding to Form Circuits}
-In addition, because the attacker needs to control all four components of a route to mint a TorCoin fraudulently, even if the adversaries control up to half the network, there is a probability of only 1/16 that an adversary client gets a path of three colluding relays. In practice, gaining control of half of the entire Tor client and relay network is practically impossible. 
+In addition, because the attacker needs to control all four components of a route to mint a TorCoin fraudulently, even if the adversaries control up to half the network, there is a probability of only $(\frac{1}{2})^4 = \frac{1}{16}$ that an adversary client gets a path of three colluding relays. In practice, gaining control of half of the entire Tor client and relay network is practically impossible. 
 
 \subsection{Drawbacks}
 The TorPath network is not backwards compatible with the existing Tor network, due to the fundamental differences of route assignment and access control, which are missing in Tor, but are necessary for the TorPath and TorCoin schemes to work.

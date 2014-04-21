@@ -8,7 +8,7 @@ The problem of incentivizing Tor relays has two main components: bandwidth accou
 
 \subsubsection{Bandwidth Accounting}
 
-TorCoin provides a reliable measure of bandwidth transferred, because one TorCoin represents a static number of megabits transferred. Relays mine TorCoins themselves, and do not depend on any external monitoring service, like EigenSpeed \cite{jansen2013lira} or Optimistic Bandwidth Monitoring. \cite{snader2008tune} Thus, TorCoin reduces centralization and bandwidth overhead. In the results section, we demonstrate the efficient throughput of TorCoin.
+TorCoin provides a reliable measure of bandwidth transferred, because one TorCoin represents a static number of megabits transferred. Relays mine TorCoins themselves, and do not depend on any external monitoring service, like EigenSpeed \cite{jansen2013lira} or Opportunistic Bandwidth Monitoring. \cite{snader2008tune} Thus, TorCoin reduces centralization and bandwidth overhead. In the results section, we demonstrate the efficient throughput of TorCoin.
 
 \subsubsection{Payment Distribution}
 TorCoin solves the problem of payment distribution without charging clients or relying on a central bank, like previous research required. \cite{jansen2013lira} Relays can trade TorCoins for cash on any existing altcoin exchange, because TorCoins have inherent value as an alternative cryptocurrency. Thus, the network is funded by altcoin investors instead of clients, who can continue accessing Tor for free.
@@ -20,7 +20,7 @@ TorPath is an anonymous cooperative routing scheme that randomly assigns circuit
 TorPath provides a way for circuits to anonymously ``sign'' newly minted TorCoins, so that anyone can verify a TorCoin actually represents bandwidth transferred. Every circuit has a unique signature, generated via contributed randomness, and assigned via consensus. Thus, a TorCoin signature does not identify a circuit, but does prove that its existence and bandwidth transfer.
 
 \subsubsection{Decrease Latency of Tor Hidden Services}
-TorPath enables a single 3-relay ciruit between Tor clients and hidden services (.onion). Currently, a Tor Hidden Service (.onion) connection requires two separate 3-relay circuits, from both the client and server, so that they cannot identify each other. With TorPath, this connection only requires a single 3-relay circuit, because the middle relays of the circuit are collectively chosen. So, any TorPath middle relay will protect the client from the hidden service, and vice versa. This significantly increases throughput of the .onion network, by halving the number of relays required for its operation.
+TorPath enables a single 3-relay ciruit between Tor clients and hidden services (.onion). Currently, a Tor Hidden Service (.onion) connection requires two separate 3-relay circuits, from both the client and server \cite{torhidden}, so that they cannot identify each other. With TorPath, this connection only requires a single 3-relay circuit, because the middle relays of the circuit are collectively chosen. So, any TorPath middle relay will protect the client from the hidden service, and vice versa. This significantly increases throughput of the .onion network, by halving the number of relays required for its operation.
 
 
 

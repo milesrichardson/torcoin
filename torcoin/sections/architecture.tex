@@ -1,28 +1,53 @@
 \section{Proposed Architecture} \label{arch}
 
-\subsubsection{Overview}
+\subsection{Overview}
 
-TorCoin runs as a standalone service, and requires no modification of the core Tor codebase. The system can be broken into four components, which share code across clients and relays, but behave differently depending on role. Figure 3.1 shows a basic overview of their architecture.
+TorCoin runs as a standalone service, and requires no modification of the core
+Tor codebase. The system can be broken into four components, which share code
+across clients and relays, but behave differently depending on role. Figure 3.1
+shows a basic overview of their architecture.
 
 \begin{figure}
   \centering
     \includegraphics[scale=0.3]{architecture.pdf}
-  \caption{High level TorCoin system architecture.}
+  \caption{High level TorCoin system architecture. Note that a ``trusted node''
+           replaces a directory server, and actually improves on its
+           anonymity properties.}
 \end{figure}
 
-We will briefly describe the role of each component in the system. Then, the next two sections will describe the detailed implementations of the TorPath protocol and TorCoin algorithm.
+We will briefly describe the role of each component in the system. Then, the
+next two sections will describe the detailed implementations of the TorPath
+protocol and TorCoin algorithm.
 
-\subsubsection{Assignment Server}
-A small set of trusted nodes installs the Assignment Server, in order to override the current Tor directory servers. Groups of assignment servers use the distributed TorPath protocol, described in the next section, to assign circuits to clients and distribute access control lists (ACLs) to relays.
+\subsection{TorPath Components} TorPath is an anonymous cooperative routing
+scheme that randomly assigns circuits to Tor clients using decentralized,
+cryptographically verifiable methods. It requires groups of assignment servers,
+which are ``trusted'' in the same way as Tor directory servers, and a TorPath
+client to communicate with them. In the TorPath section, we will show that
+TorPath does not reduce the anonymity  provided by Tor, but in fact increases it.
 
-\subsubsection{TorPath Client}
-Clients and relays install the TorPath Client to communicate with Assignment Servers, using the TorPath protocol to retrieve circuits (clients) or ACLs (relays).
+\subsubsection{Assignment Server} A small set of trusted nodes run the
+Assignment Server, which overrides the current Tor directory servers. Groups of
+assignment servers use the distributed TorPath protocol to assign circuits to
+clients and distribute access control lists (ACLs) to relays.
 
-\subsubsection{TorCoin Miner}
-To mine TorCoins, clients and relays that are part of a circuit communicate via the TorCoin miner, which implements the TorCoin algorithm described in the next section.
+\subsubsection{TorPath Client} Clients and relays install the TorPath Client to
+communicate with Assignment Servers, using the TorPath protocol to retrieve
+circuits (clients) or ACLs (relays). To avoid modifying Tor client code, TorPath
+can use a local DNS proxy to redirect requests to directory servers to the new
+assignment servers.
 
-\subsubsection{TorCoin Wallet}
-Since TorCoin is based on the BitCoin protocol, it uses a cryptographic wallet for storage of coins and transactions.
+\subsection{TorCoin Components} These components implement the TorCoin algorithm
+in order to reward nodes for transferring bandwidth. We describe the TorCoin algorithm in depth in its own section, so here we only briefly outline the 
+components required to implement it.
 
-\subsubsection{Tor Client (Unmodified)}
-There is no difference in the Tor Client. It connects to relays in the same way as it currently does, but depends on the TorPath client for circuit selection.
+\subsubsection{TorCoin Miner} To mine TorCoins, clients and relays that are part
+of a circuit communicate via the TorCoin miner, which implements the TorCoin
+algorithm. The TorCoin miner allows us to avoid modifying internal Tor code,
+because it measures Tor bandwidth by monitoring the the throughput of the local
+Tor TLS tunnel.
+
+\subsubsection{TorCoin Wallet} Since TorCoin is based on the BitCoin protocol,
+it uses a cryptographic wallet for storage of coins and transactions. When the
+miner discovers a new TorCoin, it adds it to the blockchain with all the
+information necessary fro anyone to verify it.

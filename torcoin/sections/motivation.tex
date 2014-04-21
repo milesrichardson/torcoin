@@ -1,30 +1,111 @@
-\section{Motivation} \label{motivation}
+\section{Motivation} \label{motivation} Solving the problem of compensating Tor
+relays is attractive because it would immediately improve the scalability of the
+Tor network. Prior research has not arrived at a satisfactory solution that
+operates within the basic requirements of an incentive scheme. We now outline
+those requirements.
 
-The goal of our system is to incentivize relay operators to contribute bandwidth to the Tor network. We use TorCoin for proof of bandwidth, and TorPath for verification of it. Both components depend on each other, but can have separate applications on their own. We now briefly motivate both TorCoin and TorPath.
+[THIS SECTION NEEDS CITATIONS. Namely, citations identifying papers that fail to
+conform to the constraints we name.]
 
-\subsection{Why a TorCoin?}
+\subsection{Requirements of an Incentive System} At a basic level, an incentive
+system must retain anonymity but have the ability to verifiably measure
+bandwidth and reliably distribute payment to the nodes that provide it. The
+system must be resilient to adversaries attempting to  identify clients, or fake
+bandwidth transfer.
 
-The problem of incentivizing Tor relays has two main components: bandwidth accounting, and payment distribution.
+\subsubsection{Anonymity-Preserving Architecture} TorCoin should preserve
+anonymity. Currently, no Tor client can recognize another, and no relay can
+identify the source or destination of any packet it transfers. An acceptable
+implementation of TorCoin will at least retain the anonymity of the current Tor
+protocol, but an excellent one will improve upon it.
 
-\subsubsection{Bandwidth Accounting}
+\subsubsection{Verifiable Bandwidth Accounting} TorCoin needs to measure
+bandwidth in such a way that anyone can verify its measurements. Optimally, it
+will not require self-reporting or centralized servers, alike EigenSpeed
+\cite{jansen2013lira} or Opportunistic Bandwidth Monitoring.
+ \cite{snader2008tune} It should not be possible for attackers or groups of
+attackers to misreport bandwidth measurements, and the entire network should
+agree on all measurements.
 
-TorCoin provides a reliable measure of bandwidth transferred, because one TorCoin represents a static number of megabits transferred. Relays mine TorCoins themselves, and do not depend on any external monitoring service, like EigenSpeed \cite{jansen2013lira} or Opportunistic Bandwidth Monitoring. \cite{snader2008tune} Thus, TorCoin reduces centralization and bandwidth overhead. In the results section, we demonstrate the efficient throughput of TorCoin.
+\subsubsection{Anonymity Preserving Payment Distribution} Once TorCoin measures
+the bandwidth of a given node, it must distribute payment to that node in a way
+that preserves anonymity. Specifically, it should not be possible for anyone to
+associate a bandwidth payment or measurement with a specific relay. Combined
+with the previous constraint, the problem becomes how to verify bandwidth
+without identifying its provider.
 
-\subsubsection{Payment Distribution}
-TorCoin solves the problem of payment distribution without charging clients or relying on a central bank, like previous research required. \cite{jansen2013lira} Relays can trade TorCoins for cash on any existing altcoin exchange, because TorCoins have inherent value as an alternative cryptocurrency. Thus, the network is funded by altcoin investors instead of clients, who can continue accessing Tor for free.
+\subsubsection{Highly-Available, Reliable Transaction Storage} TorCoin must store
+sufficient records of previous payments to avoid rewarding a relay twice for the
+same bandwidth transfer. Fortunately, the BitCoin protocol provides a
+distributed ledger for tracking transactions, which TorCoin will rely upon.
 
-\subsection{TorPath Motivations}
-TorPath is an anonymous cooperative routing scheme that randomly assigns circuits to Tor clients using decentralized, cryptographically verifiable methods. It has many potential applications. We primarily apply it to the problem of verifying TorCoins, but also briefly discuss how it can reduce the latency of the Tor .onion network.
-
-\subsubsection{Verify TorCoins}
-TorPath provides a way for circuits to anonymously ``sign'' newly minted TorCoins, so that anyone can verify a TorCoin actually represents bandwidth transferred. Every circuit has a unique signature, generated via contributed randomness, and assigned via consensus. Thus, a TorCoin signature does not identify a circuit, but does prove that its existence and bandwidth transfer.
-
-\subsubsection{Decrease Latency of Tor Hidden Services}
-TorPath enables a single 3-relay ciruit between Tor clients and hidden services (.onion). Currently, a Tor Hidden Service (.onion) connection requires two separate 3-relay circuits, from both the client and server \cite{torhidden}, so that they cannot identify each other. With TorPath, this connection only requires a single 3-relay circuit, because the middle relays of the circuit are collectively chosen. So, any TorPath middle relay will protect the client from the hidden service, and vice versa. This significantly increases throughput of the .onion network, by halving the number of relays required for its operation.
+\subsubsection{Deployable with Minimal Code Changes} To simplify deployability,
+TorCoin should operate mostly as a standalone system from Tor. It should
+require minimal changes to the Tor core codebase, and should not significantly
+increase latency of requests.
 
 
+% \subsection{TorCoin}
 
-% \subsection{Multi-level privacy-preserving protocols in which "clients" actually represent multiple levels of stakeholders}
-% Say an NGO operating in Ratistan wants to deploy an anonymizing network ensuring "blanket anonymity" for all their local operatives.  They might do this by making all their access points transparent Tor proxies (e.g., http://www.adafruit.com/products/1410), so that no matter how any of their employees (or even guests on their WLAN) use their network, they will be Torified, because that Tor is the only way "out" of the NGO's network.  This way if the NGO has good sysadmins, they can help even employees or guests who fail to install or use Tor clients properly.  However, at least some of the NGO's employees and/or guests might not want to trust the NGO's sysadmins completely, and if they just blindly rely on the NGO's Tor-proxified access points to do their job and protect their privacy, any compromise at the NGO level might compromise any individual. So the individuals would also like to run "real" Tor clients on their own machines, and be assured that they're protected if either their own Tor client or the NGO's Tor-proxy system is uncompromised.  With Tor as it stands, the NGO's Tor proxies would interpose a 3-relay Tor path (chosen by the Tor proxy) on every client's connection, on top of which each user will interpose an additional 3-relay path (chosen by the user's Tor client), for a 6-relay latency to get to anywhere (or a 9-relay latency to get to any Tor hidden service, ouch!).  With TorPath, the client, NGO, and even a hidden service at the end, could cooperatively choose a set of "middle relays" that none of them know or trust but which protect all of them from each other simultaneously.
+% The problem of incentivizing Tor relays has two main components: bandwidth
+% accounting, and payment distribution. 
 
-% In the next section, we outline the TorPath architecture in detail, along with some notes on the proposed TorCoin system.
+% \subsubsection{Payment Distribution} TorCoin solves the problem of payment
+% distribution without charging clients or relying on a central bank, like
+% previous research required. \cite{jansen2013lira} Relays can trade TorCoins for
+% cash on any existing altcoin exchange, because TorCoins have inherent value as
+% an alternative cryptocurrency. Thus, the network is funded by altcoin investors
+% instead of clients, who can continue accessing Tor for free.
+
+% \subsection{TorPath Motivations} TorPath is an anonymous cooperative routing
+% scheme that randomly assigns circuits to Tor clients using decentralized,
+% cryptographically verifiable methods. It has many potential applications. We
+% primarily apply it to the problem of verifying TorCoins, but also briefly
+% discuss how it can reduce the latency of the Tor .onion network.
+
+% \subsubsection{Verify TorCoins} TorPath provides a way for circuits to
+% anonymously ``sign'' newly minted TorCoins, so that anyone can verify a TorCoin
+% actually represents bandwidth transferred. Every circuit has a unique signature,
+% generated via contributed randomness, and assigned via consensus. Thus, a
+% TorCoin signature does not identify a circuit, but does prove that its existence
+% and bandwidth transfer.
+
+
+% % 
+% \subsubsection{Decrease Latency of Tor Hidden Services} TorPath enables a single
+% 3-relay ciruit between Tor clients and hidden services (.onion). Currently, a
+% Tor Hidden Service (.onion) connection requires two separate 3-relay circuits,
+% from both the client and server \cite{torhidden}, so that they cannot identify
+% each other. With TorPath, this connection only requires a single 3-relay
+% circuit, because the middle relays of the circuit are collectively chosen. So,
+% any TorPath middle relay will protect the client from the hidden service, and
+% vice versa. This significantly increases throughput of the .onion network, by
+% halving the number of relays required for its operation.
+
+
+% \subsection{Multi-level privacy-preserving protocols in which "clients"
+% actually represent multiple levels of stakeholders} % Say an NGO operating in
+% Ratistan wants to deploy an anonymizing network ensuring "blanket anonymity" for
+% all their local operatives.  They might do this by making all their access
+% points transparent Tor proxies (e.g., http://www.adafruit.com/products/1410), so
+% that no matter how any of their employees (or even guests on their WLAN) use
+% their network, they will be Torified, because that Tor is the only way "out" of
+% the NGO's network.  This way if the NGO has good sysadmins, they can help even
+% employees or guests who fail to install or use Tor clients properly.  However,
+% at least some of the NGO's employees and/or guests might not want to trust the
+% NGO's sysadmins completely, and if they just blindly rely on the NGO's
+% Tor-proxified access points to do their job and protect their privacy, any
+% compromise at the NGO level might compromise any individual. So the individuals
+% would also like to run "real" Tor clients on their own machines, and be assured
+% that they're protected if either their own Tor client or the NGO's Tor-proxy
+% system is uncompromised.  With Tor as it stands, the NGO's Tor proxies would
+% interpose a 3-relay Tor path (chosen by the Tor proxy) on every client's
+% connection, on top of which each user will interpose an additional 3-relay path
+% (chosen by the user's Tor client), for a 6-relay latency to get to anywhere (or
+% a 9-relay latency to get to any Tor hidden service, ouch!).  With TorPath, the
+% client, NGO, and even a hidden service at the end, could cooperatively choose a
+% set of "middle relays" that none of them know or trust but which protect all of
+% them from each other simultaneously.
+
+% % In the next section, we outline the TorPath architecture in detail, along with
+% some notes on the proposed TorCoin system.

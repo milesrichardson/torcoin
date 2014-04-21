@@ -15,9 +15,9 @@ The TorPath protocol adheres to the following constraints:
 
 \begin{itemize}   
 \item No client can generate its own circuit.   
-\item Every
-circuit has a unique, publicly-verifiable signature.   
-\item No client can know the circuit of another client. \end{itemize}
+\item Every circuit has a unique, publicly-verifiable signature.   
+\item No client can know the circuit of another client. 
+\end{itemize}
 
 \subsubsection{Protocol Description}
 
@@ -25,7 +25,7 @@ circuit has a unique, publicly-verifiable signature.
 
 A consensus group is formed when a majority of the Assignment Servers come
 together to assign circuits to clients. Thus, if there are 10 Assignment Servers
-in the world, atleast 6 of them must colelctively form a group.
+in the world, atleast 6 of them must collectively form a group.
 
 The steps in group formation are: 
 \begin{enumerate} 
@@ -55,15 +55,36 @@ results of the shuffle as a $n \times 4$ matrix $M$, with each row representing
 a client and its three relays. This output matrix is also publicly published in 
 a log and signed by all the servers participating in the group.
 
-\paragraph{Path Hookup}
-Once the shuffle is published, all clients and relays can lookup their own keys 
-in their respective columns. Using this information, they send their lookup key:
-Each client i sends to the server the tuple:
-(Kci, {IPc1 hashed with the public key Kei})
-Each relay i sends to the server the tuple:
-(Ke1, {IPe1 hashed with the public key Kc1}, {IPe1 hashed with the public key Km2})
+\paragraph{Path Lookup}
+Once the shuffle is completed and published, all clients and relays can look up
+their own keys in their respective columns. Using this information, they send 
+their IP Address information encrypted in the following format:
 
-These tuples are hashed using the same shuffle. Each client and relay can then 
+For each row $i$ in the matrix $M$:
+
+The client sends to the server:
+
+($K_{ci}$, {$IP_{ci}$ hashed with the public key of its entry relay})
+
+The entry relay sends:
+
+($K_{ei}$, {$IP_{e1}$ hashed with the public key of its corresponding client}, 
+{$IP_{e1}$ hashed with the public key of its corresponding middle relay})
+
+Similarly, the middle and exit relays send:
+
+($K_{mi}$, {$IP_{mi}$ hashed with the public key of corresponding entry relay}, 
+{$IP_{m1}$ hashed with the public key of corresponding exit relay})
+
+($K_{xi}$, {$IP_{xi}$ hashed with the public key of corresponding middle relay})
+
+\begin{figure}
+  \centering
+    \includegraphics[scale=0.5]{address_lookup.pdf}
+  \caption{An Example Path Lookup}
+\end{figure}
+
+These tuples are shuffled by the servers again. Each client and relay can then 
 decrypt the IP address of their neighbours using their own public key.
 
 The clients now have a circuit which they can use to communicate using the Tor 
@@ -72,7 +93,7 @@ protocol.
 \paragraph{Route Signature}
 The Route Signature of the ith circuit in a shuffle is the product of the keys
 in row i of the matrix:
-$RS_i = M_i0 X M_i1 * X M_i2 X M_i3$
+$RS_i = M_{i0} \times M_{i1} \times M_{i2} \times M_{i3}$
 This key, using El Gamal encryption, can be used to verify the  proof-of-work.
 
 \subsubsection{Circuit Anonymity} 
@@ -114,8 +135,6 @@ circuit of any client.
 % signatures into a cryptographic accumulator, and publish that list of
 % accumulators. Anyone can verify that a circuit existed at least once, simply by
 % searching for a signature.
-
-
 
 % % \subsubsection{Decoupled Protocol} % The TorPath protocol only replaces
 % directory servers. Therefore, implementing it does not require modifying any Tor

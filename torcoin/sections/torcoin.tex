@@ -10,7 +10,7 @@ Mining TorCoin requires transferring bandwidth. We introduce a novel method of \
 
 \subsubsection{Onion Hashing Algorithm}
 \begin{enumerate}
-\item Every $m$ Tor packets, client sends a ``TorCoin packet'' containing a hash attempt $h_0$ likely to genrate a TorCoin.
+\item Every $m$ Tor packets, client sends a ``TorCoin packet'' containing a hash attempt $h_0$ likely to generate a TorCoin.
 \item Relays pass $h_0$ ``around the circuit''
 \subitem During $r_0 --> r_1 --> r_2$, the $h_0$ hash grows as each relay adds its own private key.
 \subitem During $r_2 --> r_1 --> r_0$, the $h_0$ hash shrinks as each relay verifies the hash remained intact.

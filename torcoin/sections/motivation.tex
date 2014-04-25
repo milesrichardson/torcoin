@@ -4,9 +4,6 @@ Tor network. Prior research has not arrived at a satisfactory solution that
 operates within the basic requirements of an incentive scheme. We now outline
 those requirements.
 
-[THIS SECTION NEEDS CITATIONS. Namely, citations identifying papers that fail to
-conform to the constraints we name.]
-
 \subsection{Requirements of an Incentive System} At a basic level, an incentive
 system must retain anonymity but have the ability to verifiably measure
 bandwidth and reliably distribute payment to the nodes that provide it. The
@@ -15,17 +12,25 @@ bandwidth transfer.
 
 \subsubsection{Anonymity-Preserving Architecture} TorCoin should preserve
 anonymity. Currently, no Tor client can recognize another, and no relay can
-identify the source or destination of any packet it transfers. An acceptable
-implementation of TorCoin will at least retain the anonymity of the current Tor
-protocol, but an excellent one will improve upon it.
+identify the source or destination of any packet it transfers. Proposed incentive
+schemes like Tortoise\cite{acsac11-tortoise} and Gold Star\cite{incentives-fc10}
+have compromised clients' anonymity by allowing their traffic to be identified.
+An acceptable implementation of TorCoin will at least retain the anonymity of 
+the current Tor protocol, but an excellent one will improve upon it. In a 
+proportionally differentiated service \cite{blake1998architecture} 
+\cite{dovrolis1999case} like LIRA \cite{jansen2013lira} a speed-monitoring 
+adversary can potentially partition the anonymity set into clients that are 
+paying for higher speeds, thus reducing anonymity. 
 
 \subsubsection{Verifiable Bandwidth Accounting} TorCoin needs to measure
 bandwidth in such a way that anyone can verify its measurements. Optimally, it
-will not require self-reporting or centralized servers, alike EigenSpeed
-\cite{jansen2013lira} or Opportunistic Bandwidth Monitoring.
- \cite{snader2008tune} It should not be possible for attackers or groups of
-attackers to misreport bandwidth measurements, and the entire network should
-agree on all measurements.
+will not require self-reporting or centralized servers, unlike EigenSpeed
+\cite{snader2009eigenspeed} or Opportunistic Bandwidth Monitoring
+ \cite{snader2008tune}. The system should be robust to attackers or groups of
+attackers colluding to misreport bandwidth measurements, and the entire network 
+should agree on all measurements. TorCoin uses an onion-hashing scheme to push 
+``TorCoin Packets'' to measure the end-to-end throughput of the circuit rather 
+than reported network speeds.
 
 \subsubsection{Anonymity Preserving Payment Distribution} Once TorCoin measures
 the bandwidth of a given node, it must distribute payment to that node in a way
@@ -36,13 +41,17 @@ without identifying its provider.
 
 \subsubsection{Highly-Available, Reliable Transaction Storage} TorCoin must store
 sufficient records of previous payments to avoid rewarding a relay twice for the
-same bandwidth transfer. Fortunately, the BitCoin protocol provides a
-distributed ledger for tracking transactions, which TorCoin will rely upon.
+same bandwidth transfer. We use the BitCoin protocol's distributed ledger 
+for tracking transactions and avoiding double spending.
 
-\subsubsection{Deployable with Minimal Code Changes} To simplify deployability,
-TorCoin should operate mostly as a standalone system from Tor. It should
-require minimal changes to the Tor core codebase, and should not significantly
-increase latency of requests.
+\subsubsection{Scalable and Deployable with Minimal Code Changes} To simplify deployability,
+TorCoin should operate mostly as a wrapper around the exiting Tor clients. It should
+require minimal changes to the core Tor codebase, and should not significantly
+increase latency of requests. A good incentive scheme should also be scalable to
+accomodate a large number of users and relays operating concurrently. Unlike schemes
+like BRAIDS \cite{ccs10-braids}, TorCoin is scalable because of its decentralized 
+structure, small transaction overheads and use of proven protocols like Bitcoin 
+to implement some features. 
 
 
 % \subsection{TorCoin}

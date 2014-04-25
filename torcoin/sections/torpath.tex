@@ -40,6 +40,8 @@ keys of all assignment servers in the group.
 is then onion-wrapped with all the servers' public keys and sent to the server.
 \end{enumerate}
 
+INSERT FIGURE TO DESCRIBE GROUP FORMATION HERE
+
 \paragraph{Verifiable Shuffle} 
 In most cases, the number of available relays will be less than that of clients 
 in a group. The server will then ask each relay to generate some number of 
@@ -58,7 +60,8 @@ group.
 
 \paragraph{Path Lookup}
 Once the shuffle is completed and published, all clients and relays can look up
-their own keys in their respective columns. Using this information, they send 
+their own keys in their respective columns. They can also find the public keys 
+of all the other participants in their path. Using this information, they send 
 their IP Address information encrypted in the following format:
 
 For each row $i$ in the matrix $M$:
@@ -81,7 +84,7 @@ Similarly, the middle and exit relays send:
 
 \begin{figure}
   \centering
-    \includegraphics[scale=0.5]{address_lookup.pdf}
+    \includegraphics[scale=0.5]{address_lookup.eps}
   \caption{An Example Path Lookup}
 \end{figure}
 

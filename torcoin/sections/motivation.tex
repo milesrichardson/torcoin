@@ -17,10 +17,10 @@ schemes like Tortoise\cite{acsac11-tortoise} and Gold Star\cite{incentives-fc10}
 have compromised clients' anonymity by allowing their traffic to be identified.
 An acceptable implementation of TorCoin will at least retain the anonymity of 
 the current Tor protocol, but an excellent one will improve upon it. In a 
-proportionally differentiated service \cite{blake1998architecture} 
-\cite{dovrolis1999case} like LIRA \cite{jansen2013lira} a speed-monitoring 
-adversary can potentially partition the anonymity set into clients that are 
-paying for higher speeds, thus reducing anonymity. 
+proportionally differentiated service \cite{blake1998architecture, dovrolis1999case} 
+like LIRA \cite{jansen2013lira} a speed-monitoring adversary can potentially 
+partition the anonymity set into clients that are paying for higher speeds, 
+thus reducing anonymity. 
 
 \subsubsection{Verifiable Bandwidth Accounting} TorCoin needs to measure
 bandwidth in such a way that anyone can verify its measurements. Optimally, it
@@ -42,16 +42,16 @@ without identifying its provider.
 \subsubsection{Highly-Available, Reliable Transaction Storage} TorCoin must store
 sufficient records of previous payments to avoid rewarding a relay twice for the
 same bandwidth transfer. We use the BitCoin protocol's distributed ledger 
-for tracking transactions and avoiding double spending.
+to track transactions and avoid double spending.
 
 \subsubsection{Scalable and Deployable with Minimal Code Changes} To simplify deployability,
 TorCoin should operate mostly as a wrapper around the exiting Tor clients. It should
 require minimal changes to the core Tor codebase, and should not significantly
 increase latency of requests. A good incentive scheme should also be scalable to
 accomodate a large number of users and relays operating concurrently. Unlike schemes
-like BRAIDS \cite{ccs10-braids}, TorCoin is scalable because of its decentralized 
-structure, small transaction overheads and use of proven protocols like Bitcoin 
-to implement some features. 
+like BRAIDS \cite{ccs10-braids}, TorCoin is designed to be scalable because of its
+decentralized structure, small transaction overheads and use of proven protocols 
+like Bitcoin to implement some features. 
 
 
 % \subsection{TorCoin}

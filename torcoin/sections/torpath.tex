@@ -73,7 +73,7 @@ exchange public keys.
   for each client.}
 \end{figure}
 
-After group initialization, each assignment server constructs a $4 X n$ matrix for $n$ clients, where each row corresponds to a client and its three relays (see Figure 3a). 
+After group initialization, each assignment server constructs a $4 \times n$ matrix for $n$ clients, where each row corresponds to a client and its three relays (see Figure 3a). 
 
 \paragraph{(2/3) Verifiable Shuffle}
 Now that the assignment servers have a matrix of circuits for each client, they
@@ -105,48 +105,49 @@ and relay can only receive the IP address of its circuit neighbors.
 
 Each client, and each relay for each client, finds its public key in the matrix.
 It uses onion-encryption to hash its IP with the public key of its neighbors,
-so that they can find the hash by their public key and decrypt it to find the IP address. The table below outlines the tuple that each client and relay sends to
-its assignment server:
+so that they can find the hash by their public key and decrypt it to find the IP address. 
 
-The servers then perform a separate verifiable shuffle (eg. using the Neff
-Shuffle\cite{neff2001verifiable}) on each kind of key: client keys, entry relay
-keys, exit relay keys and middle relay keys. The output of each shuffle is a
-verifiable, shuffled list of $n$ keys, as described in FIGURE. 
+Consider the $i$th row of the shuffled matrix. Each client and relay finds its 
+public key in the $i$th row. It onion-encrypts its IP address with the public
+key of its neighbors, and sends it to the assignment server along with its own
+public key. Then, the assignment servers perform another shuffle and publish it. At this point, each client and relay can find its neighbors in the matrix by
+locating the cells with its public key. Finally, it decrypt those cells using its
+private key, revealing the IP address of its circuit neighbor(s).
 
-We may represent the results of the shuffle as a $n \times 4$ matrix $M$, with
-each row representing a client and its three relays in the order: entry, middle
-and exit. This output matrix is also published in a publicly acessible log and
-signed by all the servers participating in the group.
+Now clients have a circuit they can use for Tor.
 
-\paragraph{Path Lookup}
-Once the shuffle is completed and published, all clients and relays can look up
-their own keys in their respective columns. They can also find the public keys 
-of all the other participants in their path. Using this information, they send 
-their IP Address information onion-encrypted in the message format outlined in
-table \ref{table:message_format}.
+% {\renewcommand{\arraystretch}{2}
+% \begin{tabular}{ c || p{9cm} }
+% 		Sender & Message Tuple \\ \hline
+% 		Client
+% 		&
+% 		\begin{flushleft}
+% 			$(K_i^c, IP_i^c)$ \\
+% 			$IP_i^c$ encrypted with entry relay public key.
+% 		\end{flushleft} \\ \hline
+		
+% 		Entry Relay
+% 		&
+% 		\begin{flushleft}
+% 			$(K_i^e, IP_i^e)$ \\
+% 			$IP_i^e$ encrypted with public key of client.	
 
-\begin{table}
-\begin{center}
-  \begin{tabular}{ |c || p{9cm}| }
-  \hline
-  Sender & Message Tuple \\ \hline
-  Client & ($K_{i}^{C}$, {$IP_{i}^{C}$ encrypted with the public key of its 
-  entry relay}) \\ \hline
-  Entry relay & ($K_{i}^{E}$, {$IP_{i}^{E}$ encrypted with the public key of 
-  its corresponding client}, {$IP_{i}^{E}$ encrypted with the public key of 
-  its corresponding middle relay}) \\ \hline
-  Middle relay & ($K_{i}^{M}$, {$IP_{i}^{M}$ encrypted with the public key of 
-  corresponding entry relay}, {$IP_{i}^{M}$ encrypted with the public key of 
-  corresponding exit relay}) \\ \hline
-  Exit relay & ($K_{i}^{X}$, {$IP_{i}^{X}$ encrypted with the public key of 
-  corresponding middle relay}) \\ \hline
-  \end{tabular}
-\end{center}
-\caption{Each participant in a circuit sends its message 
-tuple onion-encrypted to the server. The superscripts refer to the position 
-of the relay in the circuit and the subscript is the $i^{th}$ row of $M$.}
-\label{table:message_format}
-\end{table}
+% 			$K_i^e, 
+% 		\end{flushleft} \\ \hline
+
+% 		Middle Relay
+% 		&
+% 		\begin{flushleft}
+% 			....
+% 		\end{flushleft} \\ \hline
+
+% 		Exit Relay
+% 		&
+% 		\begin{flushleft}
+% 			....
+% 		\end{flushleft} \\ \hline
+% \end{tabular}\\
+
 
 % {\renewcommand{\arraystretch}{2}
 % \begin{table}[h]

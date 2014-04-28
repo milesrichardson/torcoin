@@ -18,8 +18,11 @@ attempt $h$ likely to generate a TorCoin.
 \item Relays sign the TorCoin packet using their own public key for that circuit, 
 and send it to the next relay in the circuit.
 \item The exit relay signs the packet and sends it back to the middle relay.
-\item Each relay verifies the received packet by verifying the signatures. It then sends the packet back along the circuit.
-\item The client verifies the correctness of all the signed TorCoin attempts, thus proving
+\item Each relay verifies the received packet by verifying the signatures. It 
+then sends the packet back along the circuit. Each relay also sends its own 
+TorCoin packet with its own signature for verifaction purposes.
+\item The client verifies the correctness of all the signed TorCoin attempts, 
+thus proving
 bandwidth transfer.
 \end{enumerate}
 

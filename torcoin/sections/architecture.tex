@@ -2,6 +2,13 @@
 
 \subsection{Overview}
 
+\begin{figure}
+  \centering
+    \includegraphics[scale=0.3]{architecture.pdf}
+  \caption{High level TorCoin system architecture for clients and relays. A \textit{TorPath Client} assigns Tor circuits to clients via the TorPath protocol, described in the next section. A \textit{TorCoin Miner} mines TorCoins and stores them in a \textit{TorCoin Wallet}. Each \textit{Tor Client} and \textit{Tor Relay} operates as usual, but on circuits assigned via the TorPath protocol.}
+  \label{figure:archi}
+\end{figure}
+
 The TorCoin architecture implements the novel TorCoin and TorPath protocols. We
 describe both in later sections, but in brief, the TorCoin protocol mines
 coins, and the TorPath protocol assigns a circuit (entry, middle, and exit
@@ -14,14 +21,6 @@ servers. Separately, a \textit{TorCoin Miner} on each machine mines TorCoins
 by monitoring the throughput of the local Tor TLS tunnel, and communicating with its circuit neighbors via the TorCoin algorithm.
 
 Figure \ref{figure:archi} shows a basic overview of this architecture.
-
-\begin{figure}
-  \centering
-    \includegraphics[scale=0.3]{architecture.pdf}
-  \caption{High level TorCoin system architecture for clients and relays. A \textit{TorPath Client} assigns Tor circuits to clients via the TorPath protocol, described in the next section. A \textit{TorCoin Miner} mines TorCoins and stores them in a \textit{TorCoin Wallet}. Each \textit{Tor Client} and \textit{Tor Relay} operates as usual, but on circuits assigned via the TorPath protocol.}
-  \label{figure:archi}
-\end{figure}
-
 
 % TorPath is an anonymous cooperative routing protocol that randomly assigns
 % circuits to Tor clients using decentralized, cryptographically verifiable
@@ -45,7 +44,8 @@ wishes to obtain TorCoins without trnsferring bandwidth. We assume the
 adversary is able to control a number of clients and routers. We assume that
 malicious clients and routers know about each other's existence and are able
 to collude. We also assume that the adversary is able to control a minority of
-Assignment Servers on the network.
+assignment servers on the network and that the other servers are honest-but-
+curious.
 
 % Original text:
 % \subsection{TorPath Components} TorPath is an anonymous cooperative routing
@@ -55,7 +55,7 @@ Assignment Servers on the network.
 % client to communicate with them. 
 
 % \subsubsection{Assignment Server} A small set of trusted nodes run the
-% Assignment Servers, which perform similar roles to the current Tor directory 
+% assignment servers, which perform similar roles to the current Tor directory 
 % servers. Groups of assignment servers use the distributed TorPath protocol to 
 % keep track of available relays and assign circuits to clients.
 

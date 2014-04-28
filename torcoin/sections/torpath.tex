@@ -2,7 +2,13 @@
 
 \subsubsection{Overview}
 
-The TorPath protocol assigns Tor circuits to clients, overriding Tor directory servers with \textit{assignment servers}, which form decentralized \textit{consensus groups}. The protocol guarantees that no participant on a circuit can identify all other participants, and that each circuit includes a publicly verifiable signature. We use TorPath to ``sign'' each TorCoin, so that anyone can blindly verify a TorCoin by comparing its signature to a global circuit history.
+The TorPath protocol assigns Tor circuits to clients, overriding Tor directory
+servers with \textit{assignment servers}, which form decentralized
+\textit{consensus groups}. The protocol guarantees that no participant on a
+circuit can identify all other participants, and that each circuit includes a
+publicly verifiable signature. We use TorPath to ``sign'' each TorCoin, so
+that anyone can blindly verify a TorCoin by comparing its signature to a
+global circuit history.
 
 \subsubsection{Requirements}
 
@@ -41,39 +47,51 @@ can only identify its neighbors.
 
 \paragraph{(1/3) Group Initialization}
 
-When a majority of the assignment servers have a sufficient number $n$ of clients
-and relays connected to them, they form a consensus group. Clients and relays can specify a minimum $n$ required to join a consensus group. A larger $n$ results in a larger anonymity set, but slower connection speeds while assignment servers
-wait for more clients and relays to come online.
+When a majority of the assignment servers have a sufficient number $n$ of
+clients and relays connected to them, they form a consensus group. Clients and
+relays can specify a minimum $n$ required to join a consensus group. A larger
+$n$ results in a larger anonymity set, but slower connection speeds while
+assignment servers wait for more clients and relays to come online.
 
 A consensus group forms in three separate steps:
 
 \begin{enumerate} 
-\item \textbf{Each assignment server} shares its public key with its group members, and
-broadcasts the public keys it receives to all clients and relays connected to it. 
 
-\item \textbf{Each client} generates a temporary private and public key pair. It
-uses ``onion encryption'' to combine its public key with the public keys of all assignment servers in the group, resulting in a hash that each server can only
-partially decrypt. It sends this hash to its own server.
+\item \textbf{Each assignment server} shares its public key with its group
+members, and broadcasts the public keys it receives to all clients and relays
+connected to it.
 
-\item \textbf{Each relay} can act as an entry, middle, and/or exit relay, and it chooses which position to assume. In most cases, the number of available relays
-will be less than that of clients in a group. To ensure parity between clients
-and relays, each assignment server instructs its relays to generate a sufficient
-number $n$ keys per position for each client. The relay server uses onion-encryption to generate $n$ hashes from $n$ temporary public keys. It packages them by position and sends them to its assignment server.
+\item \textbf{Each client} generates a temporary private and public key pair.
+It uses ``onion encryption'' to combine its public key with the public keys of
+all assignment servers in the group, resulting in a hash that each server can
+only partially decrypt. It sends this hash to its own server.
+
+\item \textbf{Each relay} can act as an entry, middle, and/or exit relay, and
+it chooses which position to assume. In most cases, the number of available
+relays will be less than that of clients in a group. To ensure parity between
+clients and relays, each assignment server instructs its relays to generate a
+sufficient number $n$ keys per position for each client. The relay server uses
+onion-encryption to generate $n$ cipher-texts from $n$ temporary public keys.
+It packages them by position and sends them to its assignment server.
 \end{enumerate}
 
-The figure below illustrates Steps 2 and 3, after the assignment servers
-exchange public keys.
+Figure \ref{figure:transfer} illustrates Steps 2 and 3, after the assignment
+servers exchange public keys.
 
 \begin{figure}[htbp]
   \centering
   \subfloat[]{\includegraphics[width=.49\textwidth]{group_formation_2.pdf}}
   \subfloat[]{\includegraphics[width=.49\textwidth]{group_formation_3.pdf}}
+  
   \caption{Both relays and clients use onion-encryption to combine their own
   temporary public keys with the public keys of all assignment servers in the group. (a) Client generates one hash. (b) Each relay generates an onion hash for $n$ clients, as instructed by assignment servers, and decides on a position
   for each client.}
+  \label{figure:transfer}
 \end{figure}
 
-We can represent the list of keys as a $4 \times n$ matrix $M$ for $n$ clients, where each row corresponds to a client and its three relays (see Figure 3a). 
+We can represent the list of keys as a $4 \times n$ matrix $M$ for $n$
+clients, where each row corresponds to a client and its three relays (see
+Figure \ref{figure:shuffle}).
 
 \paragraph{(2/3) Verifiable Shuffle} The assignment servers now ``shuffle''
 each column so that each client row contains a random triple of relay public
@@ -87,8 +105,14 @@ shuffling algorithm, like the Neff Shuffle \cite{neff2001verifiable}.
 \hspace{\fill}%
 \subfloat[htb][Post-Shuffle]{\includegraphics[scale=0.40]{shuffle_2.pdf}}
 \hspace*{\fill}%
-\caption[bla]{Example matrix shuffle with 4 clients ($K^c_1, K^c_2, K^c_3, K^c_4$) and 4 relays (green, red, purple, and blue). Each row $i$ contains the public keys of a client $K^c_i$ and three relay positions $(K^e_i, K^m_i, K^x_i)$. The
-group of assignment servers collectively shuffles the matrix so that each row represents a circuit.}
+\caption[bla]{
+Example matrix shuffle with 5 clients ($C_1$, $C_2$, $C_3$, $C_4$ and $C_5$) and 4
+relays (Purple, Blue,Green, Red). There are two entry relays (Green and Red),
+two middle relays (Purple and Blue) and two exit relays (Purple and Red). Each
+row $i$ contains the public keys of a client $K_{Ci}$ and three relay positions
+$(K_{Ei}, K_{Mi}, K_{Xi})$. The group of assignment servers collectively shuffles
+the matrix so that each row represents a circuit.}
+\label{figure:shuffle}
 \end{figure}
 
 The assignment servers collectively sign and publish the resulting matrix to a
@@ -101,9 +125,10 @@ neighbor(s) on the circuit. The path lookup algorithm ensures that each client
 and relay can only receive the IP address of its circuit neighbors.
 
 Each client encrypts its own IP using the public key of its neighbor. It then
-creates a tuple of the form (public key, encrypted IP). This tuple is then
-onion-encrypted and sent to the server.  Each relay also follows the same
-procedure, but for every key in the matrix that belongs to it.
+creates a tuple of the form (public key, encrypted IP) as described in table
+\ref{table:message_format}. This tuple is then onion-encrypted and sent to the
+server.  Each relay also follows the same procedure, but for every key in the
+matrix that belongs to it.
 
 The assignment servers shuffle this new list of tuples. At this point, each
 client and relay can find its neighbors in the matrix by locating the tuples
@@ -112,82 +137,36 @@ its private key, revealing the IP address of its circuit neighbor(s).
 
 Now clients have a circuit they can use for Tor.
 
-% {\renewcommand{\arraystretch}{2}
-% \begin{tabular}{ |c || p{9cm}| }
-%   \hline
-% 	Sender & Message Tuple \\ \hline
-% 	Client
-% 	&
-% 	\begin{flushleft}
-% 		$(K_i^c, IP_i^c)$ \\
-% 		$IP_i^c$ encrypted with entry relay public key.
-% 	\end{flushleft} \\ \hline
-	
-% 	Entry Relays
-% 	&
-% 	\begin{flushleft}
-% 		$(K_i^e, IP_i^e)$ \\
-% 		$IP_i^e$ encrypted with public key of client.	
-% 		$K_i^e$ 
-% 	\end{flushleft} \\ \hline
-
-% 	Middle Relay
-% 	&
-% 	\begin{flushleft}
-% 		....
-% 	\end{flushleft} \\ \hline
-
-% 	Exit Relay
-% 	&
-% 	\begin{flushleft}
-% 		....
-% 	\end{flushleft} \\ \hline
-% \end{tabular}\\
-
-
 {\renewcommand{\arraystretch}{2}
 \begin{table}[h]
 \centering
-  \begin{tabular}{ |c || p{9cm}| }
+  \begin{tabular}{ |c || c| }
   \hline
   \textbf{Sender} & \textbf{Message Tuple} \\ \hline
-  Client & ($K_{i}^{C}$, $IP_{i}^{C}$)
-  Where $IP_{i}^{C}$ is encrypted with the public key of its 
-  entry relay) \\ \hline
-  Entry relay & ($K_{i}^{E}$, {$IP_{i}^{E}$ encrypted with the public key of 
-  its corresponding client}, {$IP_{i}^{E}$ encrypted with the public key of 
-  its corresponding middle relay}) \\ \hline
-  Middle relay & ($K_{i}^{M}$, {$IP_{i}^{M}$ encrypted with the public key of 
-  corresponding entry relay}, {$IP_{i}^{M}$ encrypted with the public key of 
-  corresponding exit relay}) \\ \hline
-  Exit relay & ($K_{i}^{X}$, {$IP_{i}^{X}$ encrypted with the public key of 
-  corresponding middle relay}) \\ \hline
+  Client & ($K_{i}^{C}$, $\{IP_{i}^{C}\}_{K_{i}^{E}}$) \\ \hline
+  Entry relay & ($K_{i}^{E}$, $\{IP_{i}^{E}\}_{K_{i}^{C}}$, $\{IP_{i}^{E}\}_{K_{i}^{M}}$) \\ \hline
+  Middle relay & ($K_{i}^{M}$, $\{IP_{i}^{M}\}_{K_{i}^{E}}$, $\{IP_{i}^{M}\}_{K_{i}^{X}}$) \\ \hline
+  Exit relay & ($K_{i}^{X}$, $\{IP_{i}^{X}\}_{K_{i}^{M}}$) \\ \hline
   \end{tabular}
   \caption{Each participant in a circuit sends its message 
-  tuple onion-encrypted to the server. The superscripts refer to the position 
-  of the relay in the circuit and the subscript is the $i^{th}$ row of $M$.}
+  tuple onion-encrypted to the server. $\{X\}_{Y}$ denotes X being encrypted with Y.}
   \label{table:message_format}
 \end{table}
 
-% \begin{figure}
-% \centering
-% \includegraphics[scale=0.5]{address_lookup.eps}
-% \caption{An Example Path Lookup}
-% \end{figure}
-
 \paragraph{Circuit Signature} The Circuit Signature of the $i^{th}$ circuit in
-a shuffle is the concatenation of the keys in row $i$ of the matrix: $CS_i =
-M_{i0}M_{i1}M_{i2}M_{i3}$. This signature will be used in the TorCoin algorithm
-to prove that TorCoins are minted only by circuits that have been assigned by
-consensus groups.
+a shuffle is an ordered pair consisting of the hash of the matrix M and the
+row number of the circuit in the matrix M: $CS_i = (Hash(M), i)$. This
+signature will be used in the TorCoin algorithm to prove that TorCoins are
+minted only by circuits that have been assigned by consensus groups.
 
 \subsection{Security Considerations} 
 
 \subsubsection{Anonymity} The TorPath protocol guarantees that no single
-server can be aware of the entire circuit of any client. The anonymity set
-comprises of all the clients that participate in a particular consensus group.
-Groups have various sizes, allowing clients to choose the anonymity threshold
-they require.
+server can be aware of the entire circuit of any client. If there are malicious
+colluding clients or relays, they will be able to shrink the anonymity set to
+the set of honest relays and clients in the consensus group.  Groups have
+various sizes, allowing clients to choose the anonymity threshold they
+require.
 
 \subsubsection{Random Group Selection} The TorPath protocol increases
 robustness of TorCoin to attackers. Its random group selection system prevents
@@ -197,6 +176,11 @@ the group as a whole is able to retain privacy and anonymity. We could make
 the system even more secure by randomizing group assignment, instead of just
 taking temporal locality to be the only criterion.
 
+\subsubsection{Same relay in multiple positions}  It is possible that through
+a Neff shuffle, the same relay gets assigned to a circuit in multiple
+positions (Eg. The same physical relay could be both the entry and middle
+relays.) This does not pose a challenge as it is analogous to a Tor client
+choosing multiple relays owned by the same operator.
 
 
 % % Next we will descibe the consensus groups and Neff shuffle in more detail.

@@ -15,16 +15,19 @@ circuit.
 \begin{enumerate}
 \item Every $m$ Tor packets, client sends a ``TorCoin packet'' containing a hash
 attempt $h$ likely to generate a TorCoin.
-\item Relays sign the TorCoin packet using their own public key for that circuit, 
-and send it to the next relay in the circuit.
+\item Each relay signs the TorCoin packet using their own public key for that circuit, 
+and sends it to the next relay in the circuit.
 \item The exit relay signs the packet and sends it back to the middle relay.
 \item Each relay verifies the received packet by verifying the signatures. It 
-then sends the packet back along the circuit. Each relay also sends its own 
-TorCoin packet with its own signature for verifaction purposes.
+then sends the packet back along the circuit, alongwith another packet with its own
+signature for verification purposes.
 \item The client verifies the correctness of all the signed TorCoin attempts, 
-thus proving
-bandwidth transfer.
+thus proving bandwidth transfer.
 \end{enumerate}
+
+To verify the correctness of the packets, the clients simply have to ensure
+that the received package, when decrypted using the appropriate public key
+gives the correct answer.
 
 If a TorCoin is claimed, the third relay's signed packet should have the
 requisite number of zeros in its lower order bits. If the claim is verified,

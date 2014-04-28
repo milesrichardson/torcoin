@@ -67,10 +67,10 @@ all assignment servers in the group, resulting in a hash that each server can
 only partially decrypt. It sends this hash to its own server.
 
 \item \textbf{Each relay} can act as an entry, middle, and/or exit relay, and
-it chooses which position to assume. In most cases, the number of available
+it chooses which position(s) to assume. In most cases, the number of available
 relays will be less than that of clients in a group. To ensure parity between
-clients and relays, each assignment server instructs its relays to generate a
-sufficient number $n$ keys per position for each client. The relay server uses
+clients and relays for each position, each assignment server instructs its relays to generate a
+sufficient number of keys for each position. The relay server uses
 onion-encryption to generate $n$ cipher-texts from $n$ temporary public keys.
 It packages them by position and sends them to its assignment server.
 \end{enumerate}

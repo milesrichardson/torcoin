@@ -7,17 +7,16 @@ circuit.
 \begin{figure}[H]
   \centering
     \includegraphics[scale=0.3]{torcoin_cycle.pdf}
-  \caption{TorCoin Onion Hashing. Each circuit member has a generator and a 
-  verifier of hash wrappers. Here we represent private keys as distinct shapes.}
+  \caption{TorCoin Proof of Bandwidth algorithm. In the upper part of the cycle, the relays add their hashes to the tuple. In the lower part, they add their temporary keys and sign the tuples.}
 \end{figure}
 
 \subsubsection{Proof of Bandwidth}
 \begin{enumerate}
-\item Each client and relay creates a temporary key R and its hash $R' = Hash(R)$. 
-\item Every $m$ Tor packets, the client sends a tuple (coin-number, $R'_C$).
+\item Each client and relay creates a temporary key R and its hash $R_*' = Hash(R_*)$. 
+\item Every $m$ Tor packets, the client sends a tuple (coin\#, $R'_C$), where coin\# is the number of Tor packets sent in this circuit.
 \item Each relay adds its own temporary hash to the tuple and sends it to the next relay in the circuit.
 \item The exit relay adds its own hash to the tuple to create the coin blob 
-$B = (coin-number, R'_{C}, R'_{E}, R'_{M}, R'_{X})$ 
+$B = (coin\#, R'_{C}, R'_{E}, R'_{M}, R'_{X})$ 
 \item The exit relay then signs the blob B to create $S^B_X$ and sends the tuple $(B, S^B_X, R_X)$ to the middle relay.
 \item Each of the relays signs the blob B and adds their signature and their temporary key to the tuple, and forwards it to the previous component in the circuit. 
 \item The client receives the tuple $candidate = (B, S^B_X, S^B_M, S^B_E, R_X, R_M, R_E, R_C)$ and verifies its correctness, thus proving bandwidth transfer.
@@ -31,8 +30,6 @@ authentic and refers to the correct group by referring to the public log. They
 can also verify that the blob B was signed by the correct relays by verifying
 the signatures, as well as verify that the temporary keys R actually hash to
 the claimed values R'.
-
-Formally:
 
 \subsection{Security Considerations}
 
@@ -53,7 +50,8 @@ gets a path of three colluding relays. In practice, gaining control of half of
 all Tor clients and relays would be hard for an adversary.  To limit the
 impact of these malicious circuits, the network imposes a limit on the number
 of coins that can be mined by a particular circuit. This coin number is
-included in the blockchain, so it is easily verified. The impact of these
+included in the blockchain, so it is easily verified. 
+The impact of these
 compromised circuits can be further reduced by ensuring that consensus groups
 expire at frequent intervals, requiring clients to change their circuits.
 

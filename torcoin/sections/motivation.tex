@@ -15,7 +15,7 @@ anonymity. Currently, no Tor client can recognize another, and no relay can
 identify the source or destination of any packet it transfers. Proposed
 incentive schemes like Tortoise\cite{acsac11-tortoise} and Gold Star\cite
 {incentives-fc10} have compromised clients' anonymity by allowing their
-traffic to be identified. An acceptable implementation of TorCoin will at
+traffic to be identified\cite{jansen2013lira}. An acceptable implementation of TorCoin will at
 least retain the anonymity of  the current Tor protocol, but an excellent one
 will improve upon it. In a  proportionally differentiated service
 \cite{blake1998architecture, dovrolis1999case}  like LIRA
@@ -55,16 +55,20 @@ TorCoin is designed to be scalable because of its decentralized structure,
 small transaction overheads and use of proven protocols  like Bitcoin to
 implement some features.
 
-\subsection{Challenges} A naive bandwdth-measurement scheme that uses blinded
-cryptographic tokens to signify bandwidth transfer is vulnerable to colluding
-groups of clients and relays who can simply sign each other's transfer tokens
-without actually transferring any bandwidth. 
+\subsection{Challenges} It is possible to postulate a naive bandwidth-
+measurement scheme that uses blinded cryptographic tokens to signify bandwidth
+transfer. Suppose in this scheme, a client is able to give each relay a token
+for the amount of bandwidth it provides. Relays are then able to convert these
+client-signed tokens into some form of an incentive. This scheme is vulnerable
+to colluding groups of clients and relays who can simply sign each other's
+transfer tokens without actually transferring any bandwidth.
 
-This is countered by the TorPath scheme which restricts clients' ability to
-choose their own path. Assignment Servers bundle large groups of clients and
-relays into groups to collectively choose paths. Even if colluding clients and
-relays are assigned to a path (low probability), a rate-limiting system is
-able to limit the number of coins such a path can mint.
+We attempt to counter this through the TorPath scheme that restricts clients'
+ability to choose their own path. Assignment Servers bundle large groups of
+clients and relays into groups to collectively choose paths. Even if a path
+consists entirely of colluding clients and relays (low probability), a built-
+in rate-limiting system is able to limit the number of coins such a path can
+mint.
 
 % \subsection{TorCoin}
 

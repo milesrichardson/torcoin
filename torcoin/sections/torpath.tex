@@ -14,6 +14,16 @@ The TorPath protocol adheres to the following constraints:
 \item No client can know the circuit of another client.
 \end{itemize}
 
+A consensus group is formed when a majority of the Assignment Servers come
+together to assign circuits to clients. Thus, if there are 10 Assignment
+Servers in the network, atleast 6 of them must collectively form a group.  The
+size of each anonymity group can be modulated to be a number n, i.e., the
+group waits until there are n clients to proceed to the next stage. Different
+groups can have different values of n to allow each client to choose its own
+anonymity level different levels of anonymity. Groups with larger values of n
+would provide a larger anonymity set, at the expense of longer circuit setup
+times.
+
 \subsubsection{Protocol Description}
 
 The protocol consists of three sequential steps:
@@ -63,7 +73,7 @@ exchange public keys.
   for each client.}
 \end{figure}
 
-After group initialization, each assignment server constructs a $4 X n$ matrix for $n$ clients, where each row corresponds to a client and its three relays (see Figure 3a). 
+After group initialization, each assignment server constructs a $4 \times n$ matrix for $n$ clients, where each row corresponds to a client and its three relays (see Figure 3a). 
 
 \paragraph{(2/3) Verifiable Shuffle}
 Now that the assignment servers have a matrix of circuits for each client, they
@@ -138,6 +148,7 @@ Now clients have a circuit they can use for Tor.
 % 		\end{flushleft} \\ \hline
 % \end{tabular}\\
 
+
 % {\renewcommand{\arraystretch}{2}
 % \begin{table}[h]
 % \centering
@@ -168,15 +179,34 @@ Now clients have a circuit they can use for Tor.
 % \caption{An Example Path Lookup}
 % \end{figure}
 
-\paragraph{Circuit Signature}
-The Circuit Signature of the ith circuit in a shuffle is the product of the keys
-in row i of the matrix:
-$RS_i = M_{i0} \times M_{i1} \times M_{i2} \times M_{i3}$
-This key, using El Gamal encryption, can be used to verify the proof-of-work.
+These tuples are shuffled by the servers again. Each client and relay can then 
+decrypt the IP address of their neighbours using their own public key.
 
-\subsubsection{Circuit Anonymity} 
-The TorPath protocol guarantees that no single server can be aware of the entire
-circuit of any client. 
+The clients then have a circuit which they can use to communicate using the Tor 
+protocol.
+
+\paragraph{Circuit Signature} The Circuit Signature of the $i^{th}$ circuit in
+a shuffle is the concatenation of the keys in row $i$ of the matrix: $RS_i =
+M_{i0}M_{i1}M_{i2}M_{i3}$ This signature will be used in the TorCoin algorithm
+to prove that TorCoins are minted only by circuits that have been assigned by
+consensus groups.
+
+\subsection{Security Considerations} 
+
+\subsubsection{Anonymity} The TorPath protocol guarantees that no single
+server can be aware of the entire circuit of any client. The anonymity set
+comprises of all the clients that participate in a particular consensus group.
+Groups have various sizes, allowing clients to choose the anonymity threshold
+they require.
+
+\subsubsection{Random Group Selection} The TorPath protocol increases
+robustness of TorCoin to attackers. Its random group selection system prevents
+attackers from deterministically placing themselves in a group. We assume that
+atleast one of the assignment servers in the group is honest. In this case,
+the group as a whole is able to retain privacy and anonymity. We could make
+the system even more secure by randomizing group assignment, instead of just
+taking temporal locality to be the only criterion.
+
 
 
 % % Next we will descibe the consensus groups and Neff shuffle in more detail.

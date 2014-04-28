@@ -4,13 +4,11 @@ Mining TorCoin requires transferring bandwidth. We introduce a novel method of
 \textit{onion hashing} to prove end-to-end bandwidth transfer across a Tor
 circuit.
 
-% \begin{figure}[H]
-%   \centering
-%     \includegraphics[scale=0.3]{torcoin_cycle.pdf}
-%   \caption{TorCoin Onion Hashing. Each circuit member has a generator and a 
-%   verifier of hash wrappers. Here we represent private keys as distinct shapes.}
-% \end{figure}
-INSERT FIGURE HERE
+\begin{figure}[H]
+  \centering
+    \includegraphics[scale=0.3]{torcoin_cycle.pdf}
+  \caption{TorCoin Proof of Bandwidth algorithm. In the upper part of the cycle, the relays add their hashes to the tuple. In the lower part, they add their temporary keys and sign the tuples.}
+\end{figure}
 
 \subsubsection{Proof of Bandwidth}
 \begin{enumerate}
@@ -52,7 +50,8 @@ gets a path of three colluding relays. In practice, gaining control of half of
 all Tor clients and relays would be hard for an adversary.  To limit the
 impact of these malicious circuits, the network imposes a limit on the number
 of coins that can be mined by a particular circuit. This coin number is
-included in the blockchain, so it is easily verified. The impact of these
+included in the blockchain, so it is easily verified. 
+The impact of these
 compromised circuits can be further reduced by ensuring that consensus groups
 expire at frequent intervals, requiring clients to change their circuits.
 

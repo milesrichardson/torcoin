@@ -95,21 +95,48 @@ and relay can only receive the IP address of its circuit neighbors.
 
 Each client, and each relay for each client, finds its public key in the matrix.
 It uses onion-encryption to hash its IP with the public key of its neighbors,
-so that they can find the hash by their public key and decrypt it to find the IP address. The table below outlines the tuple that each client and relay sends to
-its assignment server:
+so that they can find the hash by their public key and decrypt it to find the IP address. 
 
-{\renewcommand{\arraystretch}{2}
-\begin{table}[h]
-\centering
-	\begin{tabularx}{\textwidth}{lX}
-	    Section:   &  This is my     \newline
-	                  long paragraph \\
-	\end{tabularx}
+Consider the $i$th row of the shuffled matrix. Each client and relay finds its 
+public key in the $i$th row. It onion-encrypts its IP address with the public
+key of its neighbors, and sends it to the assignment server along with its own
+public key. Then, the assignment servers perform another shuffle and publish it. At this point, each client and relay can find its neighbors in the matrix by
+locating the cells with its public key. Finally, it decrypt those cells using its
+private key, revealing the IP address of its circuit neighbor(s).
 
-  \caption{Each participant in a circuit sends its message 
-  tuple onion-encrypted to the server. The superscripts refer to the position 
-  of the relay in the circuit and the subscript is the $i^{th}$ row of $M$.}
-\end{table}
+Now clients have a circuit they can use for Tor.
+
+% {\renewcommand{\arraystretch}{2}
+% \begin{tabular}{ c || p{9cm} }
+% 		Sender & Message Tuple \\ \hline
+% 		Client
+% 		&
+% 		\begin{flushleft}
+% 			$(K_i^c, IP_i^c)$ \\
+% 			$IP_i^c$ encrypted with entry relay public key.
+% 		\end{flushleft} \\ \hline
+		
+% 		Entry Relay
+% 		&
+% 		\begin{flushleft}
+% 			$(K_i^e, IP_i^e)$ \\
+% 			$IP_i^e$ encrypted with public key of client.	
+
+% 			$K_i^e, 
+% 		\end{flushleft} \\ \hline
+
+% 		Middle Relay
+% 		&
+% 		\begin{flushleft}
+% 			....
+% 		\end{flushleft} \\ \hline
+
+% 		Exit Relay
+% 		&
+% 		\begin{flushleft}
+% 			....
+% 		\end{flushleft} \\ \hline
+% \end{tabular}\\
 
 % {\renewcommand{\arraystretch}{2}
 % \begin{table}[h]
@@ -140,12 +167,6 @@ its assignment server:
 % \includegraphics[scale=0.5]{address_lookup.eps}
 % \caption{An Example Path Lookup}
 % \end{figure}
-
-These tuples are shuffled by the servers again. Each client and relay can then 
-decrypt the IP address of their neighbours using their own public key.
-
-The clients then have a circuit which they can use to communicate using the Tor 
-protocol.
 
 \paragraph{Circuit Signature}
 The Circuit Signature of the ith circuit in a shuffle is the product of the keys

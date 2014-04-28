@@ -13,12 +13,13 @@ circuit assignments from \textit{assignment servers} instead of directory
 servers. Separately, a \textit{TorCoin Miner} on each machine mines TorCoins
 by monitoring the throughput of the local Tor TLS tunnel, and communicating with its circuit neighbors via the TorCoin algorithm.
 
-Figure 3.1 shows a basic overview of this architecture.
+Figure \ref{figure:archi} shows a basic overview of this architecture.
 
 \begin{figure}
   \centering
     \includegraphics[scale=0.3]{architecture.pdf}
   \caption{High level TorCoin system architecture for clients and relays. A \textit{TorPath Client} assigns Tor circuits to clients via the TorPath protocol, described in the next section. A \textit{TorCoin Miner} mines TorCoins and stores them in a \textit{TorCoin Wallet}. Each \textit{Tor Client} and \textit{Tor Relay} operates as usual, but on circuits assigned via the TorPath protocol.}
+  \label{figure:archi}
 \end{figure}
 
 

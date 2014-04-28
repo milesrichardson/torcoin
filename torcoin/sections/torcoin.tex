@@ -13,53 +13,30 @@ circuit.
 
 \subsubsection{Proof of Bandwidth}
 \begin{enumerate}
-\item Every $m$ Tor packets, client sends a ``TorCoin packet'' containing a hash
-attempt $h$ likely to generate a TorCoin.
-\item Each relay signs the TorCoin packet using their own public key for that circuit, 
-and sends it to the next relay in the circuit.
-\item The exit relay signs the packet and sends it back to the middle relay.
-\item Each relay verifies the received packet by verifying the signatures. It 
-then sends the packet back along the circuit, alongwith another packet with its own
-signature for verification purposes.
-\item The client verifies the correctness of all the signed TorCoin attempts, 
-thus proving bandwidth transfer.
+\item Each client and relay creates a temporary key R and its hash $R' = Hash(R)$. 
+\item Every $m$ Tor packets, the client sends a tuple (coin-number, $R'_C$).
+\item Each relay adds its own temporary hash to the tuple and sends it to the next relay in the circuit.
+\item The exit relay adds its own hash to the tuple to create the coin blob 
+$B = (coin-number, R'_{C}, R'_{E}, R'_{M}, R'_{X})$ 
+\item The exit relay then signs the blob B to create $S^B_X$ and sends the tuple $(B, S^B_X, R_X)$ to the middle relay.
+\item Each of the relays signs the blob B and adds their signature and their temporary key to the tuple, and forwards it to the previous component in the circuit. 
+\item The client receives the tuple $candidate = (B, S^B_X, S^B_M, S^B_E, R_X, R_M, R_E, R_C)$ and verifies its correctness, thus proving bandwidth transfer.
+\item To check if a TorCoin has been minted, the client checks if the lower-order bits of $Hash(CS_i, candidate) == 0$. If so, the client adds the tuple $(CS_i, candidate)$ to the blockchain to mint a ``TorCoin''.
+\item The client then pays each relay in the circuit $\frac{1}{3}$ of the TorCoin. 
 \end{enumerate}
-
-To verify the correctness of the packets, the clients simply have to ensure
-that the received package, when decrypted using the appropriate public key
-gives the correct answer.
-
-If a TorCoin is claimed, the third relay's signed packet should have the
-requisite number of zeros in its lower order bits. If the claim is verified,
-the client's TorCoin Wallet writes it to the blockchain, along with the
-following information:
-
-\begin{itemize}
-\item Timestamp of consensus group.
-\item The Hash Attempt $h$.
-\item The TorCoin packets succesively signed by each relay
-\item Circuit signature.
-\end{itemize}
 
 All the information necessary for verifying proof-of-bandwidth is in the
 blockchain. Any interested party can then verify that the route signature is
-authentic and refers to the correct group by referring to the public log.
+authentic and refers to the correct group by referring to the public log. They
+can also verify that the blob B was signed by the correct relays by verifying
+the signatures, as well as verify that the temporary keys R actually hash to
+the claimed values R'.
 
 Formally:
 
-\begin{verbatim}
-Client sends to A: h (its hash attempt)
-A sends to B     : Sign(h0) = Ta
-B sends to C     : Sign(Ta) = Tb
-C computes       : Sign(Tb) = Tc
-C sends to B     : (Tc) to verify.
-B sends to A     : (Tc, Tb) to verify.
-A sends to client: (Tc, Tb, Ta) to verify.
-\end{verbatim}
-
 \subsection{Security Considerations}
 
-\subsubsection{Collusion within circuits} All honest relays and clients
+\subsubsection{Enforcing packet rate} All honest relays and clients
 enforce the TorCoin packet rate $m$. Any relays or clients that deviate from this
 are reported to the assignment servers and the circuit is terminated.
 
@@ -73,10 +50,12 @@ attackers needs to control all four components of a route to mint a TorCoin
 fraudulently. Even if an adversary controls up to half the network, there is a
 probability of only $(\frac{1}{2})^4 = \frac{1}{16}$ that an adversary client
 gets a path of three colluding relays. In practice, gaining control of half of
-all Tor clients and relays would be hard for an adversary. The impact of these
+all Tor clients and relays would be hard for an adversary.  To limit the
+impact of these malicious circuits, the network imposes a limit on the number
+of coins that can be mined by a particular circuit. This coin number is
+included in the blockchain, so it is easily verified. The impact of these
 compromised circuits can be further reduced by ensuring that consensus groups
-expire at frequent intervals, requiring clients to change their circuits. This
-limits the number of TorCoins a compromised circuit can mint.
+expire at frequent intervals, requiring clients to change their circuits.
 
 \subsection{Drawbacks} The TorPath network is not backwards compatible with
 the existing Tor network, due to the fundamental differences of route

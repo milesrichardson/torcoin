@@ -58,7 +58,9 @@ Any interested party can then verify that the route signature is authentic
 \subsection{Security Considerations}
 
 \subsubsection{Random Group Selection}
-The TorPath protocol increases robustness of TorCoin to attackers. Its random group selection system inhibits attackers from deterministically placing themselves in a group. We could make the system even more secure by randomizing group assignment, instead of just taking temporal locality to be the only criterion.
+The TorPath protocol increases robustness of TorCoin to attackers. Its random group selection system inhibits attackers from deterministically placing themselves in a group.
+We assume that atleast one of the assignment servers in the group is honest. In this case, the group as a whole is able to retain privacy and anonymity
+We could make the system even more secure by randomizing group assignment, instead of just taking temporal locality to be the only criterion.
 
 \subsubsection{Colluding to Form Circuits}
 All honest relays and clients enforce the packet limit of $m$. If TorCoin packets 

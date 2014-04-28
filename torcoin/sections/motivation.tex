@@ -55,20 +55,28 @@ TorCoin is designed to be scalable because of its decentralized structure,
 small transaction overheads and use of proven protocols  like Bitcoin to
 implement some features.
 
-\subsection{Challenges} It is possible to postulate a naive bandwidth-
-measurement scheme that uses blinded cryptographic tokens to signify bandwidth
+\subsection{Key Technical Challenges}
+
+We might envision a naive bandwidth-measurement
+scheme using blinded cryptographic tokens to signify bandwidth
 transfer. Suppose in this scheme, a client is able to give each relay a token
 for the amount of bandwidth it provides. Relays are then able to convert these
-client-signed tokens into some form of an incentive. This scheme is vulnerable
-to colluding groups of clients and relays who can simply sign each other's
+client-signed tokens into some form of an incentive. 
+Such a scheme would be vulnerable
+to colluding groups of clients and relays, however,
+who can simply sign each other's
 transfer tokens without actually transferring any bandwidth.
 
-We attempt to counter this through the TorPath scheme that restricts clients'
-ability to choose their own path. Assignment servers bundle large groups of
-clients and relays into groups to collectively choose paths. Even if a path
-consists entirely of colluding clients and relays (low probability), a built-
-in rate-limiting system is able to limit the number of coins such a path can
-mint.
+We attempt to counter this through the TorPath scheme,
+which restricts clients' ability to choose their own path,
+ensuring that {\em most} paths include at least one non-colluding participant
+(the client or at least one of the three relays).
+Assignment servers bundle large groups of
+clients and relays into {\em groups} that collectively choose paths.
+Even in the relatively rare event that a path constructed this way
+consists entirely of colluding clients and relays,
+an upper bound on the number of coins each path can mint
+rate-limits potential loss to such entirely-colluding paths.
 
 % \subsection{TorCoin}
 

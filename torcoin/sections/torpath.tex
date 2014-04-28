@@ -88,11 +88,8 @@ a verifiable shuffling algorithm, like the Neff Shuffle \cite{neff2001verifiable
 \hspace{\fill}%
 \subfloat[htb][Post-Shuffle]{\includegraphics[scale=0.40]{shuffle_2.pdf}}
 \hspace*{\fill}%
-\caption[bla]{Example matrix shuffle with 4 clients and 4 relays. Each relay
-has its own color, and can fulfill any or all of the three circuit positions.
-After group initialization, each assignment server builds a matrix like (a), 
-so that  every client $K^c_i$ has a triple $(K^e_i, K^m_i, K^x_i)$, containing the public keys of the entry, middle and exit relays of its circuit. Then, the
-group of assignment servers collectively shuffles the matrix so that each client has a random triple of relay servers assigned to it.}
+\caption[bla]{Example matrix shuffle with 4 clients ($K^c_1, K^c_2, K^c_3, K^c_4$) and 4 relays (green, red, purple, and blue). Each row $i$ contains the public keys of a client $K^c_i$ and three relay positions $(K^e_i, K^m_i, K^x_i)$. The
+group of assignment servers collectively shuffles the matrix so that each row becomes a circuit.}
 \end{figure}
 
 The assignment servers collectively sign and publish the resulting matrix to a public log, accessible by all clients and relays. 

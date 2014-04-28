@@ -5,16 +5,17 @@ In our experimental setup, we set up a series of servers using the Python
 Twisted framework to simulate the passing of TorCoin generation and
 verification messages through a set of relays.
 
-The total overhead from one round of successful TorCoin mining (i.e., one entire round trip from client through all the relays and back again) results in a total TorCoin packet overhead of 540 bytes. This can be broken down into: 
+The total overhead from one round of successful TorCoin mining (i.e., one entire round trip from client through all the relays and back again) results in a total TorCoin packet overhead of 608 bytes. This can be broken down into: 
 
 \begin{itemize}
-\item The initial three attempts by each relay: 42 bytes
-\item Verification message from Relay 3 to Relay 2: 74 bytes
-\item Verification message from Relay 3 to Relay 2: 138 bytes
-\item Verification message from Relay 3 to Relay 2: 202 bytes
+\item The first packet from client to entry relay: 32 bytes.
+\item Packets being forwarded from entry to middle to exit relay: 64 bytes each.
+\item Verification message from Relay 3 to Relay 2: 64 bytes
+\item Verification message from Relay 2 to Relay 1: 128 bytes
+\item Verification message from Relay 3 to Relay 2: 192 bytes
 \end{itemize}
 
-Each round of TorCoin generation and verification happens only after m Tor
+Each round of TorCoin generation and verification happens only after $m$ Tor
 packets have been sent. Each standard Tor cell is 514 bytes long, so each
 round trip on the network requires transmission of 514 * 6 = 3084 bytes. Thus,
 if $m \geq 10$, the TorCoin protocol overhead is less than 2\%. The value of m
@@ -28,8 +29,8 @@ servers to the network.
 
 \begin{figure}
   \centering
-    \includegraphics[scale=0.5]{absolute.eps}
-    \includegraphics[scale=0.5]{stacked.eps}
+    \includegraphics[scale=0.6]{graph.eps}
+    % \includegraphics[scale=0.5]{graph.pdf}
   \caption{TorCoin packet overhead (CHOOSE ONE OF THE GRAPHS)}
 \end{figure}
 

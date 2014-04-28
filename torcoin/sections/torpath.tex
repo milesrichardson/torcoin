@@ -42,9 +42,8 @@ is then onion-encrypted with all the servers' public keys and sent to the server
 
 \begin{figure}[htbp]
   \centering
-  \subfloat[]{\includegraphics[width=.32\textwidth]{group_formation_1.pdf}}
-  \subfloat[]{\includegraphics[width=.32\textwidth]{group_formation_2.pdf}}
-  \subfloat[]{\includegraphics[width=.32\textwidth]{group_formation_3.pdf}}
+  \subfloat[]{\includegraphics[width=.49\textwidth]{group_formation_2.pdf}}
+  \subfloat[]{\includegraphics[width=.49\textwidth]{group_formation_3.pdf}}
   \caption{Group Formation (a) Servers form a consensus group. 
     (b) Clients onion-encrypt their public keys. 
     (c) Relays onion-encrypt multiple public keys.}
@@ -65,6 +64,16 @@ The servers then perform a series of verifiable shuffles (eg. using the Neff
 Shuffle\cite{neff2001verifiable}) on each kind of key: Client Keys, Entry relay 
 keys, exit relay keys and middle relay keys. The output of each shuffle is a 
 verifiable, shuffled list of n keys, as described in FIGURE. 
+
+\begin{figure}[htb]
+\centering
+\hspace{\fill}%
+\subfloat[htb][left]{\includegraphics[scale=0.4]{shuffle_1.pdf}}
+\hspace{\fill}%
+\subfloat[htb][right]{\includegraphics[scale=0.4]{shuffle_2.pdf}}
+\hspace*{\fill}%
+\caption[bla]{foobar}
+\end{figure}
 
 We may represent the results of the shuffle as a $n \times 4$ matrix $M$, with 
 each row representing a client and its three relays. This output matrix is also 

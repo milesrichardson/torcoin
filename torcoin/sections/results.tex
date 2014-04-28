@@ -2,7 +2,7 @@
 
 The TorCoin protocol does add a small amount of overhead to the Tor traffic.
 In our experimental setup, we set up a series of servers using the Python
-Twisted framework to simulate the passing of TorCoin generation and
+Twisted framework\cite{twisted} to simulate the passing of TorCoin generation and
 verification messages through a set of relays.
 
 The total overhead from one round of successful TorCoin mining (i.e., one
@@ -20,10 +20,16 @@ into:
 \item Total: 1752 bytes
 \end{itemize}
 
+\begin{figure}
+  \centering
+    \includegraphics[scale=0.6]{graph.eps}
+    % \includegraphics[scale=0.5]{graph.pdf}
+  \caption{TorCoin packet overhead}
+\end{figure}
 Each round of TorCoin generation and verification happens only after $m$ Tor
 packets have been sent. Each standard Tor cell is 514 bytes long, so each
 round trip on the network requires transmission of 514 * 6 = 3084 bytes. Thus,
-if $m \geq 10$, the TorCoin protocol overhead is around 5\%. The value of m
+if $m \geq 10$, the TorCoin protocol overhead is around 5\%. The value of $m$
 can be calibrated in further experimentation and as needed in order to achieve
 the sweet-spot of transmission efficiency and incentive maximization for relay
 providers.
@@ -32,12 +38,6 @@ It is possible for the system to tune the value of m to decrease during times
 of high usage to incentivise relay providers to temporarily provide more
 servers to the network.
 
-\begin{figure}
-  \centering
-    \includegraphics[scale=0.8]{graph.eps}
-    % \includegraphics[scale=0.5]{graph.pdf}
-  \caption{TorCoin packet overhead}
-\end{figure}
 
 While the Neff shuffle is complicated and requires a large number of
 communications between all of the servers, in practice, since the number of

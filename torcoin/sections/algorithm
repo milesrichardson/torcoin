@@ -22,7 +22,7 @@ The TorPaths system adheres to the following constraints:
 \subsubsection{Setup}
 The Tor Assigning Servers will create the consensus groups using the temporal locality of the clients connecting to them, but also ensure that there is geographical and other diversity in a group. This is to ensure that adversaries cannot deterministically place themselves in a single consensus group by connecting at the same time.
 
-A consensus group consists of the first n = 1000 clients that have connected to the Assigning Servers. In practice, we expect the number n to be modulated so that groups are being created every 10 seconds or so. Consensus group diversity is implemented by ensuring that a group consists of a majority of the Assigning Servers. Thus, if there are 10 Assigning Servers in the entire network, a group must consist of atleast 6 of them. The clients are indexed by the order of their joining the group.
+A consensus group consists of the first n = 1000 clients that have connected to the Assigning Servers. In practice, we expect the number n to be modulated so that groups are being created every 10 seconds or so. Consensus group diversity is implemented by ensuring that a group consists of a majority of the Assigning Servers. Thus, if there are 10 Assigning Servers in the entire network, a group must consist of at least 6 of them. The clients are indexed by the order of their joining the group.
 
 \begin{figure}
   \centering
@@ -55,7 +55,7 @@ For each relay, the servers send an Access Control List. This is a list of all t
   \caption{Each server communicates its information to each relay.}
 \end{figure}
 
-In this way, no single server is aware of any client's entire path through the network, preserving their anonymity. Since each point in the path is confirmed by atleast two servers, it is also robust to rogue servers.
+In this way, no single server is aware of any client's entire path through the network, preserving their anonymity. Since each point in the path is confirmed by at least two servers, it is also robust to rogue servers.
 
 Once these paths are formed, the client can communicate using the existing Tor protocol. 
 

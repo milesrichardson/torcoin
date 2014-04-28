@@ -1,8 +1,7 @@
 \subsection{TorCoin Mining}
 
-Mining TorCoin requires transferring bandwidth. We introduce a novel method of
-\textit{onion hashing} to prove end-to-end bandwidth transfer across a Tor
-circuit.
+Mining TorCoin requires transferring bandwidth. We introduce a novel method to
+prove end-to-end bandwidth transfer across a Tor circuit.
 
 \begin{figure}[H]
   \centering
@@ -18,7 +17,7 @@ circuit.
 \item The exit relay adds its own hash to the tuple to create the coin blob 
 $B = (coin\#, R'_{C}, R'_{E}, R'_{M}, R'_{X})$ 
 \item The exit relay then signs the blob B to create $S^B_X$ and sends the tuple $(B, S^B_X, R_X)$ to the middle relay.
-\item Each of the relays signs the blob B and adds their signature and their temporary key to the tuple, and forwards it to the previous component in the circuit. 
+\item Each of the relays, $i$, signs the blob B to create $S^B_i$ and adds their signature and their temporary key to the tuple, and forwards it to the previous component in the circuit. 
 \item The client receives the tuple $candidate = (B, S^B_X, S^B_M, S^B_E, R_X, R_M, R_E, R_C)$ and verifies its correctness, thus proving bandwidth transfer.
 \item To check if a TorCoin has been minted, the client checks if the lower-order bits of $Hash(CS_i, candidate) == 0$. If so, the client adds the tuple $(CS_i, candidate)$ to the blockchain to mint a ``TorCoin''.
 \item The client then pays each relay in the circuit $\frac{1}{3}$ of the TorCoin. 
@@ -31,18 +30,18 @@ can also verify that the blob B was signed by the correct relays by verifying
 the signatures, as well as verify that the temporary keys R actually hash to
 the claimed values R'.
 
-\subsection{Security Considerations}
+\subsubsection{Security Considerations}
 
-\subsubsection{Enforcing packet rate} All honest relays and clients
+\paragraph{Enforcing packet rate} All honest relays and clients
 enforce the TorCoin packet rate $m$. Any relays or clients that deviate from this
 are reported to the assignment servers and the circuit is terminated.
 
-\subsubsection{Enforcement of TorPath circuits} Relays know their neighbours'
+\paragraph{Enforcement of TorPath circuits} Relays know their neighbours'
 IP addresses and will refuse connections from any other IP address. Even if
 malicious relays connect to each other, they will not be able to sign each
 other's TorCoins since they do not have the circuit signature.
 
-\subsubsection{Compromised circuits} Any system of colluding clients and
+\paragraph{Compromised circuits} Any system of colluding clients and
 attackers needs to control all four components of a route to mint a TorCoin
 fraudulently. Even if an adversary controls up to half the network, there is a
 probability of only $(\frac{1}{2})^4 = \frac{1}{16}$ that an adversary client
@@ -55,7 +54,7 @@ The impact of these
 compromised circuits can be further reduced by ensuring that consensus groups
 expire at frequent intervals, requiring clients to change their circuits.
 
-\subsection{Drawbacks} The TorPath network is not backwards compatible with
+\subsubsection{Drawbacks} The TorPath network is not backwards compatible with
 the existing Tor network, due to the fundamental differences of route
 assignment and access control, which are missing in Tor, but are necessary for
 the TorPath and TorCoin schemes to work.

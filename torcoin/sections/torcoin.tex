@@ -1,7 +1,12 @@
 \subsection{TorCoin Mining}
 
-Mining TorCoin requires transferring bandwidth. We introduce a novel method to
-prove end-to-end bandwidth transfer across a Tor circuit.
+In contrast with Bitcoin's reliance on proof of computational effort,
+mining TorCoin requires proof of Tor bandwidth transfer.
+We introduce a novel method to
+prove end-to-end bandwidth transfer across a Tor circuit,
+in which all four participants of a circuit assigned by TorPath
+may collectively mine a limited number of TorCoins, incrementally,
+based on the amount of end-to-end goodput they observe on the circuit.
 
 \begin{figure}[H]
   \centering
@@ -59,15 +64,6 @@ the existing Tor network, due to the fundamental differences of route
 assignment and access control, which are missing in Tor, but are necessary for
 the TorPath and TorCoin schemes to work.
 
-However, our scheme does not preclude a given physical relay or server from
-running both services at the same time. They will, of course, only get paid
-for the TorCoin traffic. In time, we expect that a majority of the current Tor
-relay operators will switch over to the TorPath network, since TorPath has the
-same security guarantees as Tor provides, while also recompensing the relay
-operators for their costs.
-
-Backwards-compatible Tor incentivization schemes like LIRA have significant
-drawbacks like the usage of Eigenspeed for bandwidth measurement or the
-establishment of a central bank to keep track of their tokens. These all
-introduce significant infrastructure into the Tor network and may reduce
-anonymity.
+However, any given physical relay or server can run both services at the same
+time. TorCoins will, of course, be generated only for measured TorCoin
+traffic.

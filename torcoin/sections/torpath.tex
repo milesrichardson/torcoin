@@ -104,8 +104,9 @@ the matrix so that each row represents a circuit.}
 
 \paragraph{(2/3) Verifiable Shuffle} The consensus group then ``shuffles''
 each column (using a verifiable shuffling algorithm, like the Neff Shuffle
-\cite{neff2001verifiable}) so that each client row contains a random triple of
-relay public keys.
+\cite{neff2001verifiable}) so that each the row for each path
+contains a random 4-tuple of relay public keys
+(the client and the three relays serving that client).
 
 The assignment servers collectively sign and publish the resulting matrix to a
 public log, accessible by all clients and relays.
@@ -154,7 +155,7 @@ minted only by circuits that have been assigned by consensus groups.
 \subsubsection{Security Considerations} 
 
 \paragraph{Anonymity} The TorPath protocol guarantees that no single
-server can be aware of the entire circuit of any client. If there are malicious
+server knows the entire circuit of any client. If there are malicious
 colluding clients or relays, they will be able to shrink the anonymity set to
 the set of honest relays and clients in the consensus group.  Groups have
 various sizes, allowing clients to choose the anonymity threshold they
@@ -170,10 +171,14 @@ taking temporal locality to be the only criterion.
 
 \paragraph{Same relay in multiple positions}  It is possible that through
 a Neff shuffle, the same relay gets assigned to a circuit in multiple
-positions (Eg. The same physical relay could be both the entry and middle
-relays.) This does not pose a significant security challenge as it is
-analogous to a Tor client choosing multiple relays owned by the same operator,
-which is currently possible in Tor.
+positions (e.g., the same physical relay could be both the entry and middle
+relays.) With a reasonable number of participating relays, however,
+it should be extremely unlikely that one relay gets assigned
+to {\em all three} positions on the same circuit.
+In any case, the risk of accidental relay duplication on one path
+should not be substantially greater than the risk
+Tor users already face of randomly choosing multiple relays
+owned by the same operator.
 
 
 % % Next we will descibe the consensus groups and Neff shuffle in more detail.

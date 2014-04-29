@@ -64,19 +64,6 @@ the existing Tor network, due to the fundamental differences of route
 assignment and access control, which are missing in Tor, but are necessary for
 the TorPath and TorCoin schemes to work.
 
-However, our scheme does not preclude a given physical relay or server from
-running both services at the same time. They will, of course, only get paid
-for the TorCoin traffic.
-
-% This is a VERY speculative and unsubstantiable claim that's going to get big knee-jerk negative reactions!
-In time, we expect that a majority of the current Tor
-relay operators will switch over to the TorPath network, since TorPath has the
-same security guarantees as Tor provides, while also recompensing the relay
-operators for their costs.
-
-% BAD related work paragraph!
-Backwards-compatible Tor incentivization schemes like LIRA have significant
-drawbacks like the usage of Eigenspeed for bandwidth measurement or the
-establishment of a central bank to keep track of their tokens. These all
-introduce significant infrastructure into the Tor network and may reduce
-anonymity.
+However, any given physical relay or server can run both services at the same
+time. TorCoins will, of course, be generated only for measured TorCoin
+traffic.

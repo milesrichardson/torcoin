@@ -1,17 +1,15 @@
 \subsection{The TorPath Protocol}
 
 \subsubsection{Overview}
-
-The TorPath protocol assigns Tor circuits to clients, overriding Tor directory
-servers with \textit{assignment servers}, which form decentralized
-\textit{consensus groups}. The protocol guarantees that no participant on a
-circuit can identify all other participants, and that each circuit includes a
-publicly verifiable signature. We use TorPath to ``sign'' each TorCoin, so
-that anyone can verify a TorCoin by comparing its signature to a
-global circuit history.
+The TorPath protocol assigns Tor circuits to clients, overriding Tor
+directory servers with \textit{assignment servers}, which form decentralized
+\textit{consensus groups}. The protocol guarantees that no participant on a 
+circuit can identify all other participants, and that each circuit includes a 
+publicly verifiable signature. We use TorPath to ``sign'' each TorCoin, so that 
+anyone can verify a TorCoin by comparing its signature to a global circuit
+history.
 
 \subsubsection{Requirements}
-
 The TorPath protocol adheres to the following constraints:
 
 \begin{itemize}   
@@ -25,15 +23,17 @@ The TorPath protocol adheres to the following constraints:
 The protocol consists of three sequential steps:
 
 \begin{enumerate}
-\item \textbf{Group Initialization.} Assignment servers form a \textit{consensus group} and allow clients and relays to connect to the group. 
+\item \textbf{Group Initialization.} Assignment servers form a \textit{consensus 
+group}. Clients and relays provide public keys to join the group.
+
 \item \textbf{Verifiable Shuffle.} The consensus group performs a decentralized, 
 verifiable shuffle of all the public keys, resulting in a circuit assignment for
 each client.
-\item \textbf{Path Lookup.} The assignment servers publish the result of the 
-shuffle, such that each client can only identify its entry relay, and each relay
-can only identify its neighbors. 
-\end{enumerate}
 
+\item \textbf{Path Lookup.} The assignment servers publish the result of the 
+shuffle, such that each client can only identify its entry relay, and each 
+relay can only identify its immediate neighbor(s). 
+\end{enumerate}
 
 \paragraph{(1/3) Group Initialization}
 

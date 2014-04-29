@@ -1,148 +1,79 @@
-\section{Motivation and Related Works} \label{motivation} Solving the problem of compensating
-Tor relays is attractive because it would immediately improve the scalability
-of the Tor network. Prior research has not arrived at a satisfactory solution
-that operates within the basic requirements of an incentive scheme. We now
-outline those requirements.
+\section{Motivation and Related Works} \label{motivation} Solving the problem of
+compensating Tor relays is attractive because it would immediately improve the
+scalability of the Tor network. Prior research has not arrived at a satisfactory
+solution that operates within the basic requirements of an incentive scheme. We
+now outline those requirements.
 
-\subsection{Requirements of an Incentive System} At a basic level, an
-incentive system must retain anonymity but have the ability to verifiably
-measure bandwidth and reliably distribute payment to the nodes that provide
-it. The system must be resilient to adversaries attempting to  identify
-clients, or fake bandwidth transfer.
+\subsection{Requirements of an Incentive System} At a basic level, an incentive
+system must retain anonymity but have the ability to verifiably measure
+bandwidth and reliably distribute payment to the nodes that provide it. The
+system must be resilient to adversaries attempting to  identify clients, or fake
+bandwidth transfer.
 
 \subsubsection{Anonymity-Preserving Architecture} TorCoin should preserve
 anonymity. Currently, no Tor client can recognize another, and no relay can
 identify the source or destination of any packet it transfers. Proposed
 incentive schemes like Tortoise\cite{acsac11-tortoise} and Gold Star\cite
-{incentives-fc10} have compromised clients' anonymity by allowing their
-traffic to be identified\cite{jansen2013lira}. In a proportionally differentiated
+{incentives-fc10} have compromised clients' anonymity by allowing their traffic
+to be identified\cite{jansen2013lira}. In a proportionally differentiated
 service \cite{blake1998architecture, dovrolis1999case} like LIRA
-\cite{jansen2013lira} a speed-monitoring adversary can potentially partition
-the anonymity set into clients that are paying for higher speeds, thus
-reducing anonymity. An acceptable implementation of
-TorCoin will at least retain the anonymity of the current Tor protocol, but
-an excellent one will improve upon it. 
+\cite{jansen2013lira} a speed-monitoring adversary can potentially partition the
+anonymity set into clients that are paying for higher speeds, thus reducing
+anonymity. An acceptable implementation of TorCoin will at least retain the
+anonymity of the current Tor protocol, but an excellent one will improve upon
+it.
 
 \subsubsection{Verifiable Bandwidth Accounting} TorCoin needs to measure
 bandwidth in such a way that anyone can verify its measurements. Optimally, it
 will not require self-reporting or centralized servers, unlike EigenSpeed
 \cite{snader2009eigenspeed} or Opportunistic Bandwidth Monitoring
 \cite{snader2008tune}. The system should be robust to attackers or groups of
-attackers colluding to misreport bandwidth measurements, and the entire
-network  should agree on all measurements. Rather than relying on reported
-network speeds, TorCoin uses an onion-hashing scheme to push
-``TorCoin Packets'' through the circuit to measure its end-to-end throughput.
+attackers colluding to misreport bandwidth measurements, and the entire network 
+should agree on all measurements. Rather than relying on reported network
+speeds, TorCoin uses an onion-hashing scheme to push ``TorCoin Packets'' through
+the circuit to measure its end-to-end throughput.
 
-\subsubsection{Anonymity Preserving Payment Distribution} Once TorCoin
-measures the bandwidth of a given node, it must distribute payment to that
-node in a way that preserves anonymity. Specifically, it should not be
-possible for anyone to associate a bandwidth payment or measurement with a
-specific relay. Since TorCoin also requires verifiable accounting, the problem
-becomes how to verify bandwidth without identifying its provider.
+\subsubsection{Anonymity Preserving Payment Distribution} Once TorCoin measures
+the bandwidth of a given node, it must distribute payment to that node in a way
+that preserves anonymity. Specifically, it should not be possible for anyone to
+associate a bandwidth payment or measurement with a specific relay. Since
+TorCoin also requires verifiable accounting, the problem becomes how to verify
+bandwidth without identifying its provider.
 
 \subsubsection{Highly-Available, Reliable Transaction Storage} TorCoin must
 store sufficient records of previous payments to avoid rewarding a relay twice
-for the same bandwidth transfer. Other proposed Tor incentive schemes
-like LIRA\cite{jansen2013lira} use a trusted central bank to assign coins and
-track spending. This makes the entire incentive scheme dependent on the
-central authority. Instead, TorCoin uses the BitCoin protocol's distributed
-ledger to track transactions and avoid double spending\cite{karame2012two}.
-There is no central authority in-charge of the incentive system.
+for the same bandwidth transfer. Other proposed Tor incentive schemes like
+LIRA\cite{jansen2013lira} use a trusted central bank to assign coins and track
+spending. This makes the entire incentive scheme dependent on the central
+authority. Instead, TorCoin uses the BitCoin protocol's distributed ledger to
+track transactions and avoid double spending\cite{karame2012two}. There is no
+central authority in-charge of the incentive system.
 
 \subsubsection{Scalable and Deployable with Minimal Code Changes} To simplify
 deployability, TorCoin should operate mostly as a wrapper around the existing
 Tor clients. It should require minimal changes to the core Tor codebase, and
 should not significantly increase latency of requests. A good incentive scheme
 should also be scalable to accommodate a large number of users and relays
-operating concurrently. Unlike schemes like BRAIDS \cite{ccs10-braids},
-TorCoin is designed to be scalable because of its decentralized structure,
-small transaction overheads and use of protocols like Bitcoin to
-implement some features.
+operating concurrently. Unlike schemes like BRAIDS \cite{ccs10-braids}, TorCoin
+is designed to be scalable because of its decentralized structure, small
+transaction overheads and use of protocols like Bitcoin to implement some
+features.
 
 \subsection{Key Technical Challenges}
 
-We might envision a naive bandwidth-measurement
-scheme using blinded cryptographic tokens to signify bandwidth
-transfer. Suppose in this scheme, a client is able to give each relay a token
-for the amount of bandwidth it provides. Relays are then able to convert these
-client-signed tokens into some form of an incentive. 
-Such a scheme would be vulnerable
-to colluding groups of clients and relays, however,
-who can simply sign each other's
-transfer tokens without actually transferring any bandwidth.
+We might envision a naive bandwidth-measurement scheme using blinded
+cryptographic tokens to signify bandwidth transfer. Suppose in this scheme, a
+client is able to give each relay a token for the amount of bandwidth it
+provides. Relays are then able to convert these client-signed tokens into some
+form of an incentive.  Such a scheme would be vulnerable to colluding groups of
+clients and relays, however, who can simply sign each other's transfer tokens
+without actually transferring any bandwidth.
 
-We attempt to counter this through the TorPath scheme,
-which restricts clients' ability to choose their own path,
-ensuring that {\em most} paths include at least one non-colluding participant
-(the client or at least one of the three relays).
-Assignment servers bundle large groups of
-clients and relays into {\em groups} that collectively choose paths.
-Even in the relatively rare event that a path constructed this way
-consists entirely of colluding clients and relays,
-an upper bound on the number of coins each path can mint
-rate-limits potential loss to such entirely-colluding paths.
-
-% \subsection{TorCoin}
-
-% The problem of incentivizing Tor relays has two main components: bandwidth
-% accounting, and payment distribution. 
-
-% \subsubsection{Payment Distribution} TorCoin solves the problem of payment
-% distribution without charging clients or relying on a central bank, like
-% previous research required. \cite{jansen2013lira} Relays can trade TorCoins for
-% cash on any existing altcoin exchange, because TorCoins have inherent value as
-% an alternative cryptocurrency. Thus, the network is funded by altcoin investors
-% instead of clients, who can continue accessing Tor for free.
-
-% \subsection{TorPath Motivations} TorPath is an anonymous cooperative routing
-% scheme that randomly assigns circuits to Tor clients using decentralized,
-% cryptographically verifiable methods. It has many potential applications. We
-% primarily apply it to the problem of verifying TorCoins, but also briefly
-% discuss how it can reduce the latency of the Tor .onion network.
-
-% \subsubsection{Verify TorCoins} TorPath provides a way for circuits to
-% anonymously ``sign'' newly minted TorCoins, so that anyone can verify a TorCoin
-% actually represents bandwidth transferred. Every circuit has a unique signature,
-% generated via contributed randomness, and assigned via consensus. Thus, a
-% TorCoin signature does not identify a circuit, but does prove that its existence
-% and bandwidth transfer.
-
-
-% % 
-% \subsubsection{Decrease Latency of Tor Hidden Services} TorPath enables a single
-% 3-relay ciruit between Tor clients and hidden services (.onion). Currently, a
-% Tor Hidden Service (.onion) connection requires two separate 3-relay circuits,
-% from both the client and server \cite{torhidden}, so that they cannot identify
-% each other. With TorPath, this connection only requires a single 3-relay
-% circuit, because the middle relays of the circuit are collectively chosen. So,
-% any TorPath middle relay will protect the client from the hidden service, and
-% vice versa. This significantly increases throughput of the .onion network, by
-% halving the number of relays required for its operation.
-
-
-% \subsection{Multi-level privacy-preserving protocols in which "clients"
-% actually represent multiple levels of stakeholders} % Say an NGO operating in
-% Ratistan wants to deploy an anonymizing network ensuring "blanket anonymity" for
-% all their local operatives.  They might do this by making all their access
-% points transparent Tor proxies (e.g., http://www.adafruit.com/products/1410), so
-% that no matter how any of their employees (or even guests on their WLAN) use
-% their network, they will be Torified, because that Tor is the only way "out" of
-% the NGO's network.  This way if the NGO has good sysadmins, they can help even
-% employees or guests who fail to install or use Tor clients properly.  However,
-% at least some of the NGO's employees and/or guests might not want to trust the
-% NGO's sysadmins completely, and if they just blindly rely on the NGO's
-% Tor-proxified access points to do their job and protect their privacy, any
-% compromise at the NGO level might compromise any individual. So the individuals
-% would also like to run "real" Tor clients on their own machines, and be assured
-% that they're protected if either their own Tor client or the NGO's Tor-proxy
-% system is uncompromised.  With Tor as it stands, the NGO's Tor proxies would
-% interpose a 3-relay Tor path (chosen by the Tor proxy) on every client's
-% connection, on top of which each user will interpose an additional 3-relay path
-% (chosen by the user's Tor client), for a 6-relay latency to get to anywhere (or
-% a 9-relay latency to get to any Tor hidden service, ouch!).  With TorPath, the
-% client, NGO, and even a hidden service at the end, could cooperatively choose a
-% set of "middle relays" that none of them know or trust but which protect all of
-% them from each other simultaneously.
-
-% % In the next section, we outline the TorPath architecture in detail, along with
-% some notes on the proposed TorCoin system.
+We attempt to counter this through the TorPath scheme, which restricts clients'
+ability to choose their own path, ensuring that {\em most} paths include at
+least one non-colluding participant (the client or at least one of the three
+relays). Assignment servers bundle large groups of clients and relays into {\em
+groups} that collectively choose paths. Even in the relatively rare event that a
+path constructed this way consists entirely of colluding clients and relays, an
+upper bound on the number of coins each path can mint rate-limits potential loss
+to such entirely-colluding paths.

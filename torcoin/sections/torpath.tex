@@ -48,15 +48,7 @@ anonymity set, at the expense of longer circuit setup times. When the group
 waits to reach its threshold number $n$ of connected clients before it moves
 on to the next step.
 
-\begin{figure}[htbp]
-  \centering
-  \subfloat[]{\includegraphics[width=.49\textwidth]{group_formation_2.pdf}}
-  \subfloat[]{\includegraphics[width=.49\textwidth]{group_formation_3.pdf}}
-  
-  \caption{Both relays and clients use onion-encryption to encrypt their own
-  temporary public keys with the public keys of all the assignment servers in the group. (a) Client generates one keypair. The public key is sent onion-encrypted to the server. (b) Each relay generates multiple keypairs (for different clients and positions) as instructed by the assignment servers.}
-  \label{figure:transfer}
-\end{figure}
+\input{figures/tex/torpath_group_formation.tex}
 
 A consensus group forms in three separate steps:
 
@@ -88,18 +80,7 @@ We can represent the list of keys as a $4 \times n$ matrix $M$ for $n$
 clients, where each row corresponds to a client and its three relays (see
 Figure \ref{figure:shuffle}).
 
-\begin{figure}
-  \centering
-    \includegraphics[scale=.6]{shuffle_total.pdf}
-  \caption{
-    Example matrix shuffle with 5 clients ($C_1$, $C_2$, $C_3$, $C_4$ and $C_5$) 
-    and 4 relays (purple, blue, green, red). Each relay $R_i$ generates a number 
-    of public keys $K_p^i$ for each circuit position $p \in {E, M, X}$, as 
-    instructed by its assignment server. Here, each client $C_j$ is assigned the 
-    circuit represented by the $j^{th}$ row of the shuffled matrix. 
-  }
-  \label{figure:shuffle}
-\end{figure}
+\input{figures/tex/torpath_matrix.tex}
 
 
 \paragraph{(2/3) Verifiable Shuffle} The consensus group then ``shuffles''
@@ -130,25 +111,7 @@ its private key, revealing the IP address of its circuit neighbor(s).
 
 Now clients have a circuit they can use for Tor.
 
-{\renewcommand{\arraystretch}{2}
-\begin{table}[h]
-\centering
-  \begin{tabular}{ |c | c| }
-  \hline
-  \textbf{Sender} & \textbf{Message Tuple} \\ \hline
-  Client & ($K^{i}_{C}$, $\{IP^{i}_{C}\}_{K^{i}_{E}}$) \\ \hline
-  Entry relay & ($K^{i}_{E}$, $\{IP^{i}_{E}\}_{K^{i}_{C}}$, $\{IP^{i}_{E}\}_{K^{i}_{M}}$) \\ \hline
-  Middle relay & ($K^{i}_{M}$, $\{IP^{i}_{M}\}_{K^{i}_{E}}$, $\{IP^{i}_{M}\}_{K^{i}_{X}}$) \\ \hline
-  Exit relay & ($K^{i}_{X}$, $\{IP^{i}_{X}\}_{K^{i}_{M}}$) \\ \hline
-  \end{tabular}
-  \vspace{.5cm}
-
-  \caption{Each participant in a circuit sends its message 
-  tuple onion-encrypted to the server. $\{X\}_{Y}$ denotes X encrypted with Y.}
-  \label{table:message_format}
-\end{table}
-
-\vspace{-1cm}
+\input{figures/tex/torpath_path_lookup.tex}
 
 \paragraph{Circuit Signature} The Circuit Signature of the $i^{th}$ circuit in
 a shuffle is an ordered pair consisting of the hash of the matrix M and the
@@ -183,44 +146,3 @@ In any case, the risk of accidental relay duplication on one path
 should not be substantially greater than the risk
 Tor users already face of randomly choosing multiple relays
 owned by the same operator.
-
-
-% % Next we will descibe the consensus groups and Neff shuffle in more detail.
-
-% % \begin{figure}[H] %   \centering %
-% \includegraphics[scale=0.3]{torpath_grouping.pdf} %   \caption{TorPath Consensus
-% Group Formation.} % \end{figure}
-
-% % \subsubsection{Group Formation} % An assignment server joins a group when it
-% reaches a sufficient number of clients. In practice, we expect the number to be
-% modulated so that groups are being created every 10 seconds or so. To ensure
-% diversity, groups must include a majority of the assignment servers on the
-% network. For example, if there are ten of assignment servers on the entire
-% network, a consensus group requires at least six.
-
-% % Once a consensus group exists, it splits into three decentralized shuffle
-% % sets, each responsible for assigning a different relay to clients. An
-% % $n$-client shuffle set has $n$ rows, each pointing to a possible relay. For
-% % example, shuffle sets $s_0$, $s_1$, and $s_2$ could be responsible for
-% % assigning entry, middle, and exit relays to clients.
-
-% % \subsubsection{Neff Shuffles for Circuit Assignment} % Each shuffle set runs a
-% Neff shuffle ~\cite{neff2001verifiable} to shuffle its list of $n$ relays, so
-% that it can assign each relay $i$ to client $i$. Each client receives a tuple
-% $(r_0, r_1, r_2, s)$ specifying the address of entry, middle, and exit relays,
-% along with a circuit signature.
-
-% % \begin{figure} %   \centering %
-% \includegraphics[scale=0.3]{torpath_shufflesets.pdf} %   \caption{Each Shuffle
-% Set carries out its own Neff shuffle to determine one part of the path.} %
-% \end{figure}
-
-% % \subsubsection{TorCoin Verification} % Assignment servers input circuit
-% signatures into a cryptographic accumulator, and publish that list of
-% accumulators. Anyone can verify that a circuit existed at least once, simply by
-% searching for a signature.
-
-% % \subsubsection{Decoupled Protocol} % The TorPath protocol only replaces
-% directory servers. Therefore, implementing it does not require modifying any Tor
-% code. So clients can use the TorPath protocol for circuit assignment then
-% communicate using the existing Tor protocol.

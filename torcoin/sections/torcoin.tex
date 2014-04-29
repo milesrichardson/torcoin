@@ -8,24 +8,45 @@ in which all four participants of a circuit assigned by TorPath
 may collectively mine a limited number of TorCoins, incrementally,
 based on the amount of end-to-end goodput they observe on the circuit.
 
-\begin{figure}[H]
-  \centering
-    \includegraphics[scale=0.3]{torcoin_cycle.pdf}
-  \caption{TorCoin Proof of Bandwidth algorithm. In the upper part of the cycle, the relays add their hashes to the tuple. In the lower part, they add their temporary keys and sign the tuples.}
-\end{figure}
+\input{figures/tex/torcoin.tex}
 
 \subsubsection{Proof of Bandwidth}
 \begin{enumerate}
-\item Each client and relay creates a temporary key R and its hash $R_*' = Hash(R_*)$. 
-\item Every $m$ Tor packets, the client sends a tuple (coin\#, $R'_C$), where coin\# is the number of Tor packets sent in this circuit.
-\item Each relay adds its own temporary hash to the tuple and sends it to the next relay in the circuit.
-\item The exit relay adds its own hash to the tuple to create the coin blob 
+\item
+Each client and relay creates a temporary key R and its hash $R_*' = Hash(R_*)$. 
+
+\item
+Every $m$ Tor packets, the client sends a tuple (coin\#, $R'_C$), where 
+coin\# is the number of Tor packets sent in this circuit.
+
+\item
+Each relay adds its own temporary hash to the tuple and sends it to the next
+relay in the circuit.
+
+\item
+The exit relay adds its own hash to the tuple to create the coin blob 
 $B = (coin\#, R'_{C}, R'_{E}, R'_{M}, R'_{X})$ 
-\item The exit relay then signs the blob B to create $S^B_X$ and sends the tuple $(B, S^B_X, R_X)$ to the middle relay.
-\item Each of the relays, $i$, signs the blob B to create $S^B_i$ and adds their signature and their temporary key to the tuple, and forwards it to the previous component in the circuit. 
-\item The client receives the tuple $candidate = (B, S^B_X, S^B_M, S^B_E, R_X, R_M, R_E, R_C)$ and verifies its correctness, thus proving bandwidth transfer.
-\item To check if a TorCoin has been minted, the client checks if the lower-order bits of $Hash(CS_i, candidate) == 0$. If so, the client adds the tuple $(CS_i, candidate)$ to the blockchain to mint a ``TorCoin''.
-\item The client then pays each relay in the circuit $\frac{1}{3}$ of the TorCoin. 
+
+\item
+The exit relay then signs the blob B to create $S^B_X$ and sends the 
+tuple $(B, S^B_X, R_X)$ to the middle relay.
+
+\item
+Each of the relays, $i$, signs the blob B to create $S^B_i$ and adds their 
+signature and their temporary key to the tuple, and forwards it to the previous 
+component in the circuit. 
+
+\item
+The client receives the tuple $candidate = (B, S^B_X, S^B_M, S^B_E, R_X, R_M,
+R_E, R_C)$ and verifies its correctness, thus proving bandwidth transfer.
+
+\item
+To check if a TorCoin has been minted, the client checks if the lower-order
+bits of $Hash(CS_i, candidate) == 0$. If so, the client adds the tuple
+$(CS_i, candidate)$ to the blockchain to mint a ``TorCoin''.
+
+\item
+The client then pays each relay in the circuit $\frac{1}{3}$ of the TorCoin. 
 \end{enumerate}
 
 All the information necessary for verifying proof-of-bandwidth is in the
@@ -37,9 +58,9 @@ the claimed values R'.
 
 \subsubsection{Security Considerations}
 
-\paragraph{Enforcing packet rate} All honest relays and clients
-enforce the TorCoin packet rate $m$. Any relays or clients that deviate from this
-are reported to the assignment servers and the circuit is terminated.
+\paragraph{Enforcing packet rate} All honest relays and clients enforce the
+TorCoin packet rate $m$. Any relays or clients that deviate from this are
+reported to the assignment servers and the circuit is terminated.
 
 \paragraph{Enforcement of TorPath circuits} Relays know their neighbours'
 IP addresses and will refuse connections from any other IP address. Even if

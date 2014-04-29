@@ -1,0 +1,19 @@
+{\renewcommand{\arraystretch}{2}
+\begin{table}[h]
+\centering
+  \begin{tabular}{ |c | c| }
+  \hline
+  \textbf{Sender} & \textbf{Message Tuple} \\ \hline
+  Client & ($K^{i}_{C}$, $\{IP^{i}_{C}\}_{K^{i}_{E}}$) \\ \hline
+  Entry relay & ($K^{i}_{E}$, $\{IP^{i}_{E}\}_{K^{i}_{C}}$, $\{IP^{i}_{E}\}_{K^{i}_{M}}$) \\ \hline
+  Middle relay & ($K^{i}_{M}$, $\{IP^{i}_{M}\}_{K^{i}_{E}}$, $\{IP^{i}_{M}\}_{K^{i}_{X}}$) \\ \hline
+  Exit relay & ($K^{i}_{X}$, $\{IP^{i}_{X}\}_{K^{i}_{M}}$) \\ \hline
+  \end{tabular}
+  \vspace{.5cm}
+
+  \caption{Each participant in a circuit sends its message 
+  tuple onion-encrypted to the server. $\{X\}_{Y}$ denotes X encrypted with Y.}
+  \label{table:message_format}
+\end{table}
+
+\vspace{-1cm}

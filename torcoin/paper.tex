@@ -1,59 +1,43 @@
+% Required class for HotPETS submission
 \documentclass{styles/llncs} 
-%\usepackage{times}
-%\usepackage[margin=1in, paperwidth=8.5in, paperheight=11in]{geometry}
 
-% \usepackage{geometry}
-
-% bib stuff
+% Bibliography packages
 \usepackage{cite}
 \usepackage{balance}
 
-%\pagestyle{empty}
-
-% math fonts
+% Math fonts
 \usepackage{amstext}
 \usepackage{amsfonts} 
 \usepackage[cmex10]{amsmath}
-% fix the math symbols that the usenix style (mathptmx) changed
+
+% Fix the math symbols that the usenix style (mathptmx) changed
 \DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
 \interdisplaylinepenalty=2500
 
-% paths and extensions for graphic files
+% Graphics paths/extensions setup
 \usepackage{graphicx}
 \usepackage[outdir=figures/]{epstopdf}
 \graphicspath{{figures/}}
-% \DeclareGraphicsExtensions{.pdf}
 
+
+% Figures setup
 \usepackage{floatflt}
 \usepackage[caption=false,font=footnotesize]{subfig}
-%\captionsetup[subfloat]{listofformat=parens}
 
-% tables
+% Tables setup
 \usepackage{tabularx}
 \usepackage{multirow}
-%\usepackage{multicol} 
 
 \usepackage{url}
 \usepackage{xspace}
 \usepackage[usenames,dvipsnames]{color}
 
-% label the appendices
-%\usepackage{appendix}
+%%%%%%%% Final Loading
 
-% reduce space between bib items
-% \usepackage{natbib}
-% \setlength{\bibsep}{1pt}
-
-% add line numbers for feedback purposes
-% \usepackage{lineno}
-% \setpagewiselinenumbers
-% \modulolinenumbers[1]
-% \linenumbers
-
-
-% should be loaded last (but before algorithm*) -colored links and refs
+% Must load before algorithm*
 \usepackage[colorlinks=true, citecolor=OliveGreen, linkcolor=BrickRed, urlcolor=MidnightBlue, final, pdftex]{hyperref}
 
+% Author Setup
 \hypersetup{
     pdfauthor={Bryan Ford, Mainak Ghosh, Miles Richardson},
     pdfsubject={TorCoin},
@@ -61,18 +45,17 @@
     pdfkeywords={Incentive, Monetize, Anonymity, Tor}
 }
 
+% Needs to load last (I think -- this may be archaic from Jansen)
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{subfig}
 
-% space between sections
+% Space between sections
 \renewcommand{\subparagraph}{} % needed to get titlesec to compile
 \usepackage[small,compact]{titlesec}
 \titlespacing{\section}{0pt}{3mm plus 1mm minus 1mm}{2mm plus 1mm minus 1mm}
-% \titlespacing{\subsection}{0pt}{2mm plus 1mm minus 1mm}{1mm plus 1mm minus 1mm}
-% \titlespacing{\subsubsection}{0pt}{2mm plus 1mm minus 1mm}{1mm plus 1mm minus 1mm}
 
-% custom commands
+% Custom commands
 \newcommand{\etal}{{\em et al.\ }}
 \newcommand{\naive}{na\"{\i}ve }
 \newcommand{\point}[1]{\noindent\textbf{#1}.}
@@ -82,10 +65,9 @@
 \renewcommand{\S}{Section\xspace}
 \newcommand{\anote}[1]{{\color{magenta}{#1}}}
 
-% \date{}
+% Title page
 \title{A TorPath to TorCoin:}
 \subtitle{Proof-of-Bandwidth Altcoins for Compensating Relays}
-
 \author{Bryan Ford \and Mainak Ghosh \and Miles Richardson}
 
 \institute{
@@ -93,24 +75,11 @@
 	\email{\{bryan.ford, mainak.ghosh, miles.richardson\}@yale.edu}
 }
 
-% Alter some LaTeX defaults for better treatment of figures:
-% \renewcommand{\textfraction}{0.07}  % allow minimal text w. figs
-% \renewcommand{\floatpagefraction}{0.7}  % require fuller float pages
-% \renewcommand{\dblfloatpagefraction}{0.7}   % require fuller float pages
-
 \begin{document}
 
-% \pagenumbering{arabic}
-
-% \clubpenalty=9999
-% \widowpenalty=9999 
-
-% space between paragraphs
-% \setlength{\parskip}{0.5mm plus 0.25mm minus 0.25mm}
-
 \maketitle
-%\thispagestyle{empty}
 
+% Outline
 \input{sections/abstract}
 \input{sections/intro}
 \input{sections/motivation}
@@ -118,16 +87,12 @@
 \input{sections/torpath}
 \input{sections/torcoin}
 \input{sections/results}
-%\input{sections/discussion}
-% \input{sections/related}
 \input{sections/conclusion}
 
-{ \footnotesize %\scriptsize %\footnotesize %\small
+{ \footnotesize
 \bibliographystyle{styles/splncs}
 \balance\bibliography{references}
 }
 
-%\clearpage
-% \input{sections/appendix}
 
 \end{document}

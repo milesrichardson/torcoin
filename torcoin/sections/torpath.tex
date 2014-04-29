@@ -89,15 +89,15 @@ clients, where each row corresponds to a client and its three relays (see
 Figure \ref{figure:shuffle}).
 
 \begin{figure}
-	\caption{Example matrix shuffle with 5 clients and 4 relays}
   \centering
     \includegraphics[scale=.6]{shuffle_total.pdf}
-  \caption{Example matrix shuffle with 5 clients ($C_1$, $C_2$, $C_3$, $C_4$ and $C_5$) and 4
-relays (Purple, Blue,Green, Red). There are two entry relays (Green and Red),
-two middle relays (Purple and Blue) and two exit relays (Purple and Red). Each
-row $i$ contains the public keys of a client $K_{Ci}$ and three relay positions
-$(K_{Ei}, K_{Mi}, K_{Xi})$. The group of assignment servers collectively shuffles
-the matrix so that each row represents a circuit.}
+  \caption{
+    Example matrix shuffle with 5 clients ($C_1$, $C_2$, $C_3$, $C_4$ and $C_5$) 
+    and 4 relays (purple, blue, green, red). Each relay $R_i$ generates a number 
+    of public keys $K_p^i$ for each circuit position $p \in {E, M, X}$, as 
+    instructed by its assignment server. Here, each client $C_j$ is assigned the 
+    circuit represented by the $j^{th}$ row of the shuffled matrix. 
+  }
   \label{figure:shuffle}
 \end{figure}
 
@@ -133,7 +133,7 @@ Now clients have a circuit they can use for Tor.
 {\renewcommand{\arraystretch}{2}
 \begin{table}[h]
 \centering
-  \begin{tabular}{ |c || c| }
+  \begin{tabular}{ |c | c| }
   \hline
   \textbf{Sender} & \textbf{Message Tuple} \\ \hline
   Client & ($K^{i}_{C}$, $\{IP^{i}_{C}\}_{K^{i}_{E}}$) \\ \hline
@@ -141,10 +141,14 @@ Now clients have a circuit they can use for Tor.
   Middle relay & ($K^{i}_{M}$, $\{IP^{i}_{M}\}_{K^{i}_{E}}$, $\{IP^{i}_{M}\}_{K^{i}_{X}}$) \\ \hline
   Exit relay & ($K^{i}_{X}$, $\{IP^{i}_{X}\}_{K^{i}_{M}}$) \\ \hline
   \end{tabular}
+  \vspace{.5cm}
+
   \caption{Each participant in a circuit sends its message 
   tuple onion-encrypted to the server. $\{X\}_{Y}$ denotes X encrypted with Y.}
   \label{table:message_format}
 \end{table}
+
+\vspace{-1cm}
 
 \paragraph{Circuit Signature} The Circuit Signature of the $i^{th}$ circuit in
 a shuffle is an ordered pair consisting of the hash of the matrix M and the

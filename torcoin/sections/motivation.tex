@@ -15,13 +15,13 @@ anonymity. Currently, no Tor client can recognize another, and no relay can
 identify the source or destination of any packet it transfers. Proposed
 incentive schemes like Tortoise\cite{acsac11-tortoise} and Gold Star\cite
 {incentives-fc10} have compromised clients' anonymity by allowing their
-traffic to be identified\cite{jansen2013lira}. An acceptable implementation of
-TorCoin will at least retain the anonymity of the current Tor protocol, but
-an excellent one will improve upon it. In a proportionally differentiated
+traffic to be identified\cite{jansen2013lira}. In a proportionally differentiated
 service \cite{blake1998architecture, dovrolis1999case} like LIRA
 \cite{jansen2013lira} a speed-monitoring adversary can potentially partition
 the anonymity set into clients that are paying for higher speeds, thus
-reducing anonymity.
+reducing anonymity. An acceptable implementation of
+TorCoin will at least retain the anonymity of the current Tor protocol, but
+an excellent one will improve upon it. 
 
 \subsubsection{Verifiable Bandwidth Accounting} TorCoin needs to measure
 bandwidth in such a way that anyone can verify its measurements. Optimally, it
@@ -29,20 +29,20 @@ will not require self-reporting or centralized servers, unlike EigenSpeed
 \cite{snader2009eigenspeed} or Opportunistic Bandwidth Monitoring
 \cite{snader2008tune}. The system should be robust to attackers or groups of
 attackers colluding to misreport bandwidth measurements, and the entire
-network  should agree on all measurements. TorCoin uses an onion-hashing
-scheme to push  ``TorCoin Packets'' to measure the end-to-end throughput of
-the circuit rather  than reported network speeds.
+network  should agree on all measurements. Rather than relying on reported
+network speeds, TorCoin uses an onion-hashing scheme to push
+``TorCoin Packets'' through the circuit to measure its end-to-end throughput.
 
 \subsubsection{Anonymity Preserving Payment Distribution} Once TorCoin
 measures the bandwidth of a given node, it must distribute payment to that
 node in a way that preserves anonymity. Specifically, it should not be
 possible for anyone to associate a bandwidth payment or measurement with a
-specific relay. Combined with the previous constraint, the problem becomes how
-to verify bandwidth without identifying its provider.
+specific relay. Since TorCoin also requires verifiable accounting, the problem
+becomes how to verify bandwidth without identifying its provider.
 
 \subsubsection{Highly-Available, Reliable Transaction Storage} TorCoin must
 store sufficient records of previous payments to avoid rewarding a relay twice
-for the same bandwidth transfer. Other proposed Tor incentivization schemes
+for the same bandwidth transfer. Other proposed Tor incentive schemes
 like LIRA\cite{jansen2013lira} use a trusted central bank to assign coins and
 track spending. This makes the entire incentive scheme dependent on the
 central authority. Instead, TorCoin uses the BitCoin protocol's distributed
@@ -53,7 +53,7 @@ There is no central authority in-charge of the incentive system.
 deployability, TorCoin should operate mostly as a wrapper around the existing
 Tor clients. It should require minimal changes to the core Tor codebase, and
 should not significantly increase latency of requests. A good incentive scheme
-should also be scalable to accomodate a large number of users and relays
+should also be scalable to accommodate a large number of users and relays
 operating concurrently. Unlike schemes like BRAIDS \cite{ccs10-braids},
 TorCoin is designed to be scalable because of its decentralized structure,
 small transaction overheads and use of protocols like Bitcoin to

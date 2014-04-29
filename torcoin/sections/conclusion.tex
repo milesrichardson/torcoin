@@ -1,14 +1,8 @@
 \section{Future Work and Conclusions} \label{conc}
 
-We have introduced a novel way of to securely and anonymously assign paths to
-Tor clients. This scheme was motivated by a bandwidth measurement scheme that
-incentivises the bandwidth throughput over the network. The TorCoin protocol
-is robust to malicious relays and clients colluding to mint TorCoins without
-transferring bandwidth. The next step will be to implement the TorCoin system
-and measure its performance under various conditions and its robustness to
-various kinds of attack.
+We have introduced a novel way to securely and anonymously assign paths to
+Tor clients. This scheme was motivated by the need to verifiably sign TorCoins,
+a bandwidth measurement scheme that incentivises bandwidth throughput over the Tor network. The TorCoin protocol is robust to malicious relays and clients colluding to mint TorCoins without transferring bandwidth. 
 
-Further work will also investigate the use of cryptographic accumulators for
-circuit signatures and ElGamal shared secrets to sign the TorCoin packets.
-This would reduce the packet overhead during bandwidth-measurement and make
-the protocol more efficient.
+Further work could investigate the use of cryptographic accumulators for
+circuit signatures, which could reduce the packet overhead during bandwidth-measurement and make the protocol more efficient.

@@ -17,7 +17,7 @@ Each client and relay creates a temporary key R and its hash $R_*' = Hash(R_*)$.
 
 \item
 Every $m$ Tor packets, the client sends a tuple (coin\#, $R'_C$), where 
-coin\# is the number of Tor packets sent in this circuit.
+coin\# is the number of TFor packets sent in this circuit.
 
 \item
 Each relay adds its own temporary hash to the tuple and sends it to the next
@@ -37,24 +37,28 @@ signature and their temporary key to the tuple, and forwards it to the previous
 component in the circuit. 
 
 \item
-The client receives the tuple $candidate = (B, S^B_X, S^B_M, S^B_E, R_X, R_M,
-R_E, R_C)$ and verifies its correctness, thus proving bandwidth transfer.
+The client receives the tuple $(B, S^B_X, S^B_M, S^B_E, R_X, R_M,
+R_E)$ and verifies its correctness, thus proving bandwidth transfer. It then
+creates the tuple $candidate = (B, S^B_X, S^B_M, S^B_E, S^B_C)$
 
 \item
 To check if a TorCoin has been minted, the client checks if the lower-order
 bits of $Hash(CS_i, candidate) == 0$. If so, the client adds the tuple
-$(CS_i, candidate)$ to the blockchain to mint a ``TorCoin''.
+$(CS_i, candidate, R_X, R_M, R_E, R_C)$ to the blockchain to mint a ``TorCoin''.
 
 \item
 The client then pays each relay in the circuit $\frac{1}{3}$ of the TorCoin. 
 \end{enumerate}
 
 All the information necessary for verifying proof-of-bandwidth is in the
-blockchain. Any interested party can then verify that the route signature is
+blockchain. Any interested party can verify that the route signature is
 authentic and refers to the correct group by referring to the public log. They
 can also verify that the blob B was signed by the correct relays by verifying
-the signatures, as well as verify that the temporary keys R actually hash to
-the claimed values R'.
+the signatures, as well as verify that the temporary keys $R_*$ actually hash to
+the claimed values $R'_*$. 
+% Because of the signatures $S^B_*$, the temporary
+% keys $R_*$ function as 'commits'. No one relay can unilaterally recompute its
+% temporary key without disrupting the blob $B$.
 
 \subsubsection{Security Considerations}
 

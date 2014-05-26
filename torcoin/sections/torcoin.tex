@@ -39,12 +39,12 @@ component in the circuit.
 \item
 The client receives the tuple $(B, S^B_X, S^B_M, S^B_E, R_X, R_M,
 R_E)$ and verifies its correctness, thus proving bandwidth transfer. It then
-creates the tuple $candidate = (B, S^B_X, S^B_M, S^B_E, S^B_C)$
+creates the tuple $candidate = (B, R_X, R_M, R_E, R_C)$
 
 \item
 To check if a TorCoin has been minted, the client checks if the lower-order
 bits of $Hash(CS_i, candidate) == 0$. If so, the client adds the tuple
-$(CS_i, candidate, R_X, R_M, R_E, R_C)$ to the blockchain to mint a ``TorCoin''.
+$(CS_i, candidate, S^B_X, S^B_M, S^B_E, S^B_C)$ to the blockchain to mint a ``TorCoin''.
 
 \item
 The client then pays each relay in the circuit $\frac{1}{3}$ of the TorCoin. 

@@ -81,7 +81,7 @@ and sends them to its upstream assignment server.
 
 Figure \ref{figure:transfer} illustrates Steps 2 and 3.
 
-We can represent the temporary keys as a $4 \times n$ matrix $M$ for $n$
+We can represent the temporary keys as an $n \times 4$ matrix $M$ for $n$
 clients, where each row corresponds to a client and its three relays (see
 Figure \ref{figure:shuffle}).
 
@@ -130,36 +130,51 @@ Now all clients in the consensus group have a usable Tor circuit.
 
 \input{figures/tex/torpath_path_lookup.tex}
 
-\paragraph{Circuit Signature} The Circuit Signature of the $i^{th}$ circuit in
-a shuffle is an ordered pair consisting of the hash of the matrix M and the
-row number of the circuit in the matrix M: $CS_i = (Hash(M), i)$. This
-signature will be used in the TorCoin algorithm to prove that TorCoins are
-minted only by circuits that have been assigned by consensus groups.
+Each circuit formed by a consensus group obtains a unique Circuit Identifier,
+which is an ordered pair consisting of the hash of the matrix $M$ and the
+row number $i$ of the circuit within $M$: $CS_i = (\mathrm{Hash}(M), i)$. This
+identifier will be used in the TorCoin algorithm,
+together with signatures using the four anonymous temporary public keys
+comprising that row of $M$,
+to prove that TorCoins were
+minted by circuits assigned in consensus groups.
 
-\subsubsection{Security Considerations} 
+\subsection{TorPath Security Considerations} 
 
-\paragraph{Anonymity} The TorPath protocol guarantees that no single
-server knows the entire circuit of any client. If there are malicious
-colluding clients or relays, they will be able to shrink the anonymity set to
-the set of honest relays and clients in the consensus group.  Groups have
-various sizes, allowing clients to choose the anonymity threshold they
-require.
+\paragraph{Anonymity:} The TorPath protocol guarantees that no single
+relay knows any client's entire circuit. If malicious
+clients or relays collude, they may be able to shrink the anonymity set to
+the set of honest relays and clients in the consensus group. 
+Groups can have varying sizes, however,
+allowing clients to choose a desired balance
+between anonymity threshold and circuit assignment delay.
 
-\paragraph{Random Group Selection} The TorPath protocol increases
-robustness of TorCoin to attackers. Its random group selection system prevents
-attackers from deterministically placing themselves in a group. We assume that
-at least one of the assignment servers in the group is honest. In this case,
-the group as a whole is able to retain privacy and anonymity. We could make
-the system even more secure by randomizing group assignment, instead of just
-taking temporal locality to be the only criterion.
+\paragraph{Group Formation:}
+The TorPath protocol's random circuit selection mechanism prevents
+colluding clients and relays from deterministically placing themselves
+in the same circuit,
+provided not too many participants in each group collude.
+Even if half of the temporary keys in matrix $M$
+are held by colluding participants, for example,
+only $1/2^4 = 1/16$ of the assigned circuits
+will be compromised and able to mint (a limited number of)
+TorCoins without performing useful work.
+We could add further protection
+against ``flash mobs'' of colluding participants
+by randomizing group assignment across longer time periods,
+instead of using temporal locality as the only grouping criterion.
 
-\paragraph{Same relay in multiple positions}  It is possible that through
-a Neff shuffle, the same relay gets assigned to a circuit in multiple
-positions (e.g., the same physical relay could be both the entry and middle
-relays.) With a reasonable number of participating relays, however,
+\paragraph{Circuit Diversity:}  
+TorCoin's Neff shuffle could assign the same relay to one circuit in multiple
+positions: e.g., choose the same physical relay as both entry and middle
+relays. With a reasonable number of participating relays, however,
 it should be extremely unlikely that one relay gets assigned
 to {\em all three} positions on the same circuit.
 In any case, the risk of accidental relay duplication on one path
 should not be substantially greater than the risk
-Tor users already face of randomly choosing multiple relays
-owned by the same operator.
+Tor users already face of randomly placing multiple relays
+owned by the {\em same operator} on a circuit.
+We anticipate that privacy-preserving {\em independence testing} techniques
+could be adapted to detect and reject circuits in which the same relay
+(or operator) appears multiple times~\cite{zhai13untold},
+but we leave this challenge to future work.

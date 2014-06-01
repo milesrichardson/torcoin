@@ -5,7 +5,8 @@ volunteers. This is a well studied problem, but despite many attempts, there is
 not yet a widely-adopted mechanism for compensating relay operators while
 retaining anonymity of clients~\cite{raykova- pet2008, wpes09-xpay,
 incentives-fc10, ccs10-braids, acsac11-tortoise, jansen2013lira,
-johnson2013onions}. We present a possible solution, embodying two complementary
+johnson2013onions}.
+This paper outlines one possible solution, embodying two complementary
 novel ideas:
 
 \begin{enumerate}
@@ -13,15 +14,16 @@ novel ideas:
 \item
 \textbf{TorCoin} is an alternative cryptocurrency, or
 altcoin, based on the BitCoin protocol\cite{nakamoto2008bitcoin}. Unlike
-BitCoin, its proof-of-work  scheme is bandwidth-intensive, rather than
-computationally-intensive. To ``mine''  a TorCoin, a relay transfers bandwidth
+BitCoin, its proof-of-work scheme is based on bandwidth rather than
+computation. To ``mine''  a TorCoin, a relay transfers bandwidth
 over the Tor network. Since relays can sell  TorCoin on any existing altcoin
 exchange, TorCoin effectively compensates them for  contributing bandwidth to
 the network, and does not require clients to pay for  access to it.
 \\
 \item
-\textbf{TorPath} is a method for decentralized groups of ``Assignment Servers,''
-which extend traditional ``Directory Servers,'' to assign each client a Tor
+\textbf{TorPath} is a secure bandwidth measurement mechanism
+that utilizes decentralized groups of ``Assignment Servers,''
+extending Tor's existing ``Directory Servers,'' to assign each client a Tor
 circuit that is publicly verifiable, but privately addressable. This mechanism 
 allows TorPath to ``sign'' newly-minted TorCoins, so that anyone can verify a
 TorCoin by checking the blockchain. \end{enumerate}

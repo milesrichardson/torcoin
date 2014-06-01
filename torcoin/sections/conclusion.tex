@@ -1,16 +1,20 @@
-\section{Future Work and Conclusions} \label{conc}
+\section{Conclusions} \label{conc}
 
-We have introduced a novel way to securely and anonymously assign paths to Tor
-clients. This scheme was motivated by the need to verifiably sign TorCoins, a
-bandwidth measurement scheme that incentivises bandwidth throughput over the Tor
-network. The TorCoin protocol is robust to malicious relays and clients
+We have introduced TorPath, a novel scheme to assign paths to Tor
+clients securely and anonymously.
+TorPath motivated by the need to verifiably mine TorCoins, a
+a BitCoin variant based on measured bandwidth over the Tor network.
+The TorCoin protocol is robust to malicious relays and clients
 colluding to mint TorCoins without transferring bandwidth.
 
+\com{	This is a very minor optimization,
+	not worth mentioning if it's the only "Future Work" listed. -baf
 Further work could investigate the use of cryptographic accumulators for circuit
 signatures, which could reduce the packet overhead during bandwidth-measurement
 and make the protocol more efficient.
+}
 
-\paragraph{Acknowledgments}
+\subsection*{Acknowledgments}
 
 This material is based upon work supported by the Defense Advanced Research
 Agency (DARPA) and SPAWAR Systems Center Pacific, Contract No. N66001-11-C-4018.

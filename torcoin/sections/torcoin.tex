@@ -1,94 +1,110 @@
 \subsection{TorCoin Mining}
 
-In contrast with Bitcoin's reliance on proof of computational effort,
+In contrast with Bitcoin's reliance on proof of computation,
 mining TorCoin requires proof of Tor bandwidth transfer.
-We introduce a novel method to
-prove end-to-end bandwidth transfer across a Tor circuit,
-in which all four participants of a circuit assigned by TorPath
+In TorCoin, all participants on a circuit assigned by TorPath
 may collectively mine a limited number of TorCoins, incrementally,
-based on the amount of end-to-end goodput they observe on the circuit.
+based on the end-to-end goodput they observe on the circuit.
 
 \input{figures/tex/torcoin.tex}
 
 \subsubsection{Proof of Bandwidth}
 \begin{enumerate}
 \item
-Each client and relay creates a temporary key R and its hash $R_*' = Hash(R_*)$. 
+Each client and relay creates a temporary key $R$
+and its hash $R_*' = \textrm{Hash}(R_*)$. 
 
 \item
-Every $m$ Tor packets, the client sends a tuple (coin\#, $R'_C$), where 
-coin\# is the number of TFor packets sent in this circuit.
+Every $m$ Tor packets, the client sends a tuple $(\textrm{coin\#}, R'_C)$,
+where coin\# is the number of TorCoin packets previously sent in this circuit.
 
 \item
-Each relay adds its own temporary hash to the tuple and sends it to the next
-relay in the circuit.
+Each relay similarly adds its own temporary hash to the tuple --
+$R'_E$, $R'_M$, and $R'_X$ --
+and forwards the tuple to the next relay in the circuit.
 
 \item
-The exit relay adds its own hash to the tuple to create the coin blob 
-$B = (coin\#, R'_{C}, R'_{E}, R'_{M}, R'_{X})$ 
+The exit relay forms the coin commitment blob
+$B = (\textrm{coin\#}, R'_{C}, R'_{E}, R'_{M}, R'_{X})$.
 
 \item
-The exit relay then signs the blob B to create $S^B_X$ and sends the 
-tuple $(B, S^B_X, R_X)$ to the middle relay.
+The exit relay then signs the blob $B$ with its temporary public key
+for this circuit to create signature $S^B_X$,
+then opens its commitment to reveal $R_X$,
+and sends the tuple $(B, S^B_X, R_X)$ to the middle relay.
 
 \item
-Each of the relays, $i$, signs the blob B to create $S^B_i$ and adds their 
-signature and their temporary key to the tuple, and forwards it to the previous 
-component in the circuit. 
+Each prior participant in the circuit $i$, in turn,
+similarly signs the blob B to create $S^B_i$,
+adds its signature and opened commitment to the tuple,
+then forwards the tuple to the previous participant in the circuit. 
 
 \item
-The client receives the tuple $(B, S^B_X, S^B_M, S^B_E, R_X, R_M,
-R_E)$ and verifies its correctness, thus proving bandwidth transfer. It then
-creates the tuple $candidate = (B, R_X, R_M, R_E, R_C)$
+The client forms bandwidth proof
+$P = (B, S^B_X, S^B_M, S^B_E, S^B_C, R_X, R_M, R_E, R_C)$,
+which anyone may verify against the four temporary public keys
+in the appropriate row of matrix $M$ for this circuit.
 
 \item
-To check if a TorCoin has been minted, the client checks if the lower-order
-bits of $Hash(CS_i, candidate) == 0$. If so, the client adds the tuple
-$(CS_i, candidate, S^B_X, S^B_M, S^B_E, S^B_C)$ to the blockchain to mint a ``TorCoin''.
+To check if a TorCoin has been mined, the client checks if the lower-order
+bits of $\textrm{Hash}(CS_i, B, R_X, R_M, R_E, R_C) == 0$.
+If so, the client adds the full proof-of-bandwidth tuple $P$
+to the blockchain to validate the new TorCoin.
+To be valid,
+the coin\# within $P$ must be one greater than that
+of the last TorCoin in the blockchain mined from circuit $i$,
+and must be less than the well-known limit on the number of TorCoins
+per assigned circuit.
 
 \item
-The client then pays each relay in the circuit $\frac{1}{3}$ of the TorCoin. 
+Finally, the client uses the standard BitCoin transfer protocol
+to pay each relay in the circuit one third of the mined TorCoin. 
 \end{enumerate}
 
-All the information necessary for verifying proof-of-bandwidth is in the
-blockchain. Any interested party can verify that the route signature is
-authentic and refers to the correct group by referring to the public log. They
-can also verify that the blob B was signed by the correct relays by verifying
-the signatures, as well as verify that the temporary keys $R_*$ actually hash to
-the claimed values $R'_*$. 
-% Because of the signatures $S^B_*$, the temporary
-% keys $R_*$ function as 'commits'. No one relay can unilaterally recompute its
-% temporary key without disrupting the blob $B$.
+This protocol leaves all information necessary
+for verifying proof-of-bandwidth in the blockchain.
+Any interested party can verify that the circuit identifier in $B$
+refers to a valid consensus group by referring to the public log.
+They can also verify that the blob B was signed
+by the correct participants by verifying the signatures
+against the temporary public in the consensus matrix $M$,
+and verify that the openings $R_i$ correspond to
+the corresponding commitments $R'_i$. 
+Because the low-order-bit test in step 8 depends only on values
+secretly committed on the ``forward path'' in steps 2--4,
+then revealed only on the ``return path'' in steps 5--6,
+no proper subset of the circuit's participants can unilaterally recompute $B$
+in order to mine TorCoins out of proportion to measured circuit goodput.
 
 \subsubsection{Security Considerations}
 
-\paragraph{Enforcing packet rate} All honest relays and clients enforce the
+\paragraph{Enforcing packet rate:} All honest relays and clients enforce the standard
 TorCoin packet rate $m$. Any relays or clients that deviate from this are
 reported to the assignment servers and the circuit is terminated.
 
-\paragraph{Enforcement of TorPath circuits} Relays know their neighbours'
+\paragraph{Enforcing circuits:} Relays know their neighbours'
 IP addresses and will refuse connections from any other IP address. Even if
-malicious relays connect to each other, they will not be able to sign each
-other's TorCoins since they do not have the circuit signature.
+malicious relays connect to each other, they will not be able to sign
+TorCoins unless they own a complete circuit.
 
-\paragraph{Compromised circuits} Any system of colluding clients and
-attackers needs to control all four components of a route to mint a TorCoin
-fraudulently. Even if an adversary controls up to half the network, there is a
-probability of only $(\frac{1}{2})^4 = \frac{1}{16}$ that an adversary client
-gets a path of three colluding relays. In practice, gaining control of half of
-all Tor clients and relays would be hard for an adversary.  To limit the
-impact of these malicious circuits, the network imposes a limit on the number
-of coins that can be mined by a particular circuit. This coin number is
+\paragraph{Compromised circuits:} Colluding clients and
+attackers needs to control all four components of a circuit to mine TorCoins
+fraudulently. Even if an adversary controls up to half the network,
+only $1/2^4 = 1/16$ of assigned circuits will be fully colluding.
+In practice, we hope and expect that 
+gaining control of even half of all Tor clients and relays would be difficult.
+To limit the impact of occasional colluding circuits,
+TorCoin also limits the number
+of coins each circuit can mine. This coin number is
 included in the blockchain, so it is easily verified. 
-The impact of these
+The impact of
 compromised circuits can be further reduced by ensuring that consensus groups
-expire at frequent intervals, requiring clients to change their circuits.
+expire at regular intervals, requiring clients either to form new circuits
+or cease obtaining new TorCoins from old circuits.
 
-\subsubsection{Drawbacks} The TorPath network is not backwards compatible with
+\subsubsection{Deployment:} The TorPath network is not backward compatible with
 the existing Tor network, due to the fundamental differences of route
-assignment and access control, which are missing in Tor, but are necessary for
+assignment and access control, which are missing in Tor but necessary for
 the TorPath and TorCoin schemes to work.
-
-However, any given physical relay or server can run both services at the same
-time. TorCoins will, of course, be generated only for measured TorCoin
-traffic.
+However, any given physical server could run both services at the same
+time. TorCoins are, of course, generated only from TorCoin traffic.

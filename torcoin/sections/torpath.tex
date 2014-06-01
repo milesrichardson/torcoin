@@ -139,7 +139,7 @@ comprising that row of $M$,
 to prove that TorCoins were
 minted by circuits assigned in consensus groups.
 
-\subsection{TorPath Security Considerations} 
+\subsubsection{Security Considerations} 
 
 \paragraph{Anonymity:} The TorPath protocol guarantees that no single
 relay knows any client's entire circuit. If malicious
@@ -174,7 +174,22 @@ In any case, the risk of accidental relay duplication on one path
 should not be substantially greater than the risk
 Tor users already face of randomly placing multiple relays
 owned by the {\em same operator} on a circuit.
-We anticipate that privacy-preserving {\em independence testing} techniques
+We anticipate that privacy-preserving independence testing
+techniques~\cite{zhai13untold}
 could be adapted to detect and reject circuits in which the same relay
-(or operator) appears multiple times~\cite{zhai13untold},
+(or operator) appears multiple times,
 but we leave this challenge to future work.
+
+\paragraph{Persistent Guards:}
+The assignment process above picks three relays
+afresh for each circuit,
+contrary to Tor's practice of keeping entry relays
+persistent for longer periods.
+The circuit assignment mechanism could be adapted
+for persistent entry relays by combining the first two columns
+of matrix $M$ into one column representing each client
+together with its choice of entry relay,
+at the cost of slightly increasing the chance of forming
+all-compromised circuits.
+
+

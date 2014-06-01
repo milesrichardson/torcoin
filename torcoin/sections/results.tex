@@ -1,7 +1,8 @@
 \section{Preliminary Results}
 
-The TorCoin protocol does add a small amount of overhead to the Tor traffic. In
-our experimental setup, we set up a series of servers using the Python Twisted
+The TorCoin protocol adds a small amount of overhead to Tor traffic. 
+To evaluate this overhead,
+we set up a series of servers using the Python Twisted
 framework\cite{twisted} to simulate the passing of TorCoin generation and
 verification messages through a set of relays.
 
@@ -29,15 +30,19 @@ can be calibrated in further experimentation and as needed in order to achieve
 the sweet-spot of transmission efficiency and incentive maximization for relay
 providers.
 
-It is possible for the system to tune the value of m to decrease during times
-of high usage to incentivise relay providers to temporarily provide more
-servers to the network.
+The system might decrease the value of $m$ when load is high,
+incentivizing relay operators
+to provision more relay bandwidth at such times.
 
-While the Neff shuffle is complicated and requires a large number of
-communications between all of the servers, in practice, since the number of
-directory servers that will be involved in each shuffle will be relatively
-small (less than 10) and are relatively fast servers with high-bandwidth
-connections with each other, this will not be a major bottleneck. In addition,
-since this is a one-time cost of connecting to the network, the users will be
-willing to wait for the slight time that it takes to setup the protocol,
-especially if the speeds increase sufficiently.
+While the Neff shuffle is complex and requires several
+communications between the servers,
+we expect the assignment servers will be few (less than 10)
+and well-provisioned,
+and do not expect the shuffles to be a major bottleneck.
+Since this is a one-time cost of connecting to the network,
+we hope users will accept this setup time
+if it gives them access to higher-capacity relays.
+For impatient users,
+the TorCoin client could use conventional Tor circuits immediately on startup,
+then transition to TorCoin circuits as they become available.
+

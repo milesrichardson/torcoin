@@ -1,17 +1,18 @@
-\section{Proposed Architecture} \label{arch}
-
-\subsection{Overview}
+\section{TorCoin Architecture} \label{arch}
 
 \input{figures/tex/architecture.tex}
 
-The TorCoin architecture implements the novel TorCoin and TorPath protocols. We
-describe both in later sections, but in brief, the TorCoin protocol mines coins,
-and the TorPath protocol assigns a circuit (entry, middle, and exit servers) to
-each client.
+The TorCoin architecture consists of two protocols, TorCoin and TorPath.
+In brief, the TorCoin protocol is a BitCoin variant that mines coins,
+while TorPath protocol assigns a circuit (entry, middle, and exit servers) to
+each client, thereby ``authorizing'' the minting of TorCoins
+through verifiable proof-of-bandwidth.
 
-TorCoin runs as a standalone service, and requires little modification of the
-core Tor codebase. Tor clients and relays operate as usual, but receive circuit
-assignments from \textit{assignment servers} instead of directory  servers.
+TorCoin runs as a standalone service, requiring little modification to the
+Tor or BitCoin codebase. Tor clients and relays operate as usual,
+except clients receive circuit
+assignments from \textit{assignment servers},
+instead of choosing relays arbitrarily from the Tor directory.
 Separately, a \textit{TorCoin Miner} on each machine mines TorCoins by
 monitoring the throughput of the local Tor TLS tunnel, and communicating with
 its circuit neighbors via the TorCoin algorithm.
@@ -19,9 +20,11 @@ its circuit neighbors via the TorCoin algorithm.
 Figure \ref{figure:archi} shows a basic overview of this architecture.
 
 
-\subsection{Adversary Model} We consider the existence of an adversary who
-wishes to obtain TorCoins without trnsferring bandwidth. We assume the adversary
-is able to control a number of clients and routers. We assume that malicious
-clients and routers know about each other's existence and are able to collude.
+\subsection{Adversary Model}
+We are primarily concerned here with an adversary who
+wishes to obtain TorCoins without contributing useful bandwidth
+to the Tor network. We assume the adversary
+is able to control a number of clients and relays. We assume that malicious
+clients and relays know about each other and are able to collude.
 We also assume that the adversary is able to control a minority of assignment
-servers on the network and that the other servers are honest-but-curious.
+servers on the network, and that other servers are honest-but-curious.

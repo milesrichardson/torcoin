@@ -1,15 +1,14 @@
 \subsection{The TorPath Protocol}
 
-\subsubsection{Overview}
-The TorPath protocol assigns Tor circuits to clients, overriding Tor
+The TorPath protocol assigns Tor circuits to clients, replacing the usual Tor
 directory servers with \textit{assignment servers}, which form decentralized
 \textit{consensus groups}. The protocol guarantees that no participant on a 
 circuit can identify all other participants, and that each circuit includes a 
 publicly verifiable signature. We use TorPath to ``sign'' each TorCoin, so that 
-anyone can verify a TorCoin by comparing its signature to a global circuit
-history.
+anyone can verify a TorCoin's validity by comparing its signature to a global
+history of consensus groups.
 
-\subsubsection{Requirements}
+\subsubsection{Requirements:}
 The TorPath protocol adheres to the following constraints:
 
 \begin{itemize}   
@@ -18,98 +17,116 @@ The TorPath protocol adheres to the following constraints:
 \item No client can know the circuit of another client.
 \end{itemize}
 
-\subsubsection{Protocol Description}
+\subsubsection{Protocol Outline:}
 
-The protocol consists of three sequential steps:
+The TorPath protocol consists of three sequential steps:
 
 \begin{enumerate}
 \item \textbf{Group Initialization.} Assignment servers form a \textit{consensus 
-group}. Clients and relays provide public keys to join the group.
+group}. Clients and available relays provide public keys to join the group.
 
 \item \textbf{Verifiable Shuffle.} The consensus group performs a decentralized, 
 verifiable shuffle of all the public keys, resulting in a circuit assignment for
 each client.
 
 \item \textbf{Path Lookup.} The assignment servers publish the result of the 
-shuffle, such that each client can only identify its entry relay, and each 
-relay can only identify its immediate neighbor(s). 
+shuffle, such that each client can identify only its entry relay, and each 
+relay can identify only its immediate neighbor(s) in the circuit.
 \end{enumerate}
 
-\paragraph{(1/3) Group Initialization}
+\paragraph{Stage 1 -- Group Initialization:}
 
-A consensus group is formed when a majority of the Assignment servers come
-together to assign circuits to clients. Thus, if there are 10 Assignment
-Servers in the network, at least 6 of them must collectively form a group. The
-size of each consensus group can be modulated to be a number $n$, i.e., the
-group waits until there are $n$ clients to proceed to the next stage. Different
-groups can have different values of $n$ to allow each client to choose its own
-anonymity level. Groups with larger values of $n$ would provide a larger
-anonymity set, at the expense of longer circuit setup times. When the group
-waits to reach its threshold number $n$ of connected clients before it moves
-on to the next step.
+A consensus group is formed when a suitable quorum of assignment servers come
+together to assign circuits to recently registered clients.
+For example, if there are 10 assignment servers in the network,
+we might require at least 6 of them to participate
+in forming each consensus group.
+The assignment servers can modulate the size -- and hence anonymity --
+represented by each consensus group,
+by waiting until there are some configurable number $n$ of clients
+registered before proceeding to the next stage.
+Different categories of consensus groups might use different values of $n$,
+allowing clients to trade anonymity for wait time.
+Groups with larger values of $n$ would provide a larger
+anonymity set, at the expense of longer circuit setup times.
 
 \input{figures/tex/torpath_group_formation.tex}
 
-A consensus group forms in three separate steps:
+A consensus group forms in three steps:
 
 \begin{enumerate} 
 
 \item \textbf{Each assignment server} shares its public key with its group
-members, and broadcasts the public keys it receives to all clients and relays
+members, and broadcasts these public keys to all clients and relays
 connected to it.
 
 \item \textbf{Each client} connects to one assignment server in the group. The
-client then generates a temporary private and public key pair. It uses ``onion
-encryption'' to combine its public key with the public keys of all assignment
-servers in the group, resulting in a hash that each server can only partially
-decrypt. It sends this hash to its own server.
+client then generates a temporary private and public key pair.
+The client onion-encrypts its temporary public key
+with the public keys of all assignment
+servers in the group, resulting in a ciphertext that each server can only partially
+decrypt. The client submits this ciphertext to its assignment server.
 
 \item \textbf{Each relay} can act as an entry, middle, and/or exit relay, and
-it chooses which position(s) to assume. In most cases, the number of available
-relays will be less than that of clients in a group. To ensure parity between
+it chooses which position(s) to service. The number of available
+relays available for a given position (especially exit relays)
+may often be less than the number of clients in the group needing circuits.
+To ensure parity between
 clients and relays for each position, each assignment server instructs its relays to generate a
-sufficient number of keys for each position. The relay server uses
-onion-encryption to generate $n$ cipher-texts from $n$ temporary public keys.
-It packages them by position and sends them to its assignment server.
+sufficient number of temporary keys for each position. The relay server uses
+onion-encryption to generate $n$ ciphertexts from $n$ temporary public keys.
+The relay packages these ciphertexts by position
+and sends them to its upstream assignment server.
 \end{enumerate}
 
-Figure \ref{figure:transfer} illustrates Steps 2 and 3, after the assignment
-servers exchange public keys.
+Figure \ref{figure:transfer} illustrates Steps 2 and 3.
 
-We can represent the list of keys as a $4 \times n$ matrix $M$ for $n$
+We can represent the temporary keys as a $4 \times n$ matrix $M$ for $n$
 clients, where each row corresponds to a client and its three relays (see
 Figure \ref{figure:shuffle}).
 
 \input{figures/tex/torpath_matrix.tex}
 
 
-\paragraph{(2/3) Verifiable Shuffle} The consensus group then ``shuffles''
-each column (using a verifiable shuffling algorithm, like the Neff Shuffle
-\cite{neff2001verifiable}) so that each the row for each path
-contains a random 4-tuple of relay public keys
-(the client and the three relays serving that client).
-
+\paragraph{Stage 2 -- Verifiable Shuffle:}
+The consensus group now shuffles
+each column of the temporary key matrix independently,
+using a verifiable shuffling algorithm
+such as the Neff Shuffle~\cite{neff2001verifiable}),
+and jointly decrypts the shuffled keys.
+Each row in the public result matrix now contains
+a random 4-tuple of temporary public keys representing one circuit:
+namely the client and the three relays serving that client.
 The assignment servers collectively sign and publish the resulting matrix to a
 public log, accessible by all clients and relays.
+Although everyone learns which four temporary public keys
+represent the participants of each circuit,
+the verifiable shuffle prevents anyone except a given key's owner from learning
+{\em which} participating client or relay owns each of these temporary keys.
 
-\paragraph{(3/3) Path Lookup}
-Path lookup is the final step of the algorithm, where each client obtains the
+\paragraph{Stage 3 -- Path Lookup:}
+In the final step of the algorithm, each client obtains the
 IP address of its entry relay, and each relay obtains the IP address of its
 neighbor(s) on the circuit. The path lookup algorithm ensures that each client
-and relay can only receive the IP address of its circuit neighbors.
+and relay can obtain {\em only} the IP addresses
+of its neighbors in the circuit.
 
-Each client encrypts its own IP using the public key of its neighbor. It then
-creates a tuple of the form (public key, encrypted IP) as described in table
-\ref{table:message_format}. This tuple is then onion-encrypted and sent to the
-server.  Each relay also follows the same procedure, but for every key in the
-matrix that belongs to it.
+Each client encrypts its own IP using the public key of its neighbor.
+The client
+forms a tuple (public key, encrypted IP) as shown in table
+\ref{table:message_format}.
+The client onion-encrypts this tuple and sends it to the
+assignment servers.
+Each relay follows the same procedure, for every key in the
+matrix belonging to it.
 
-The assignment servers shuffle this new list of tuples. At this point, each
-client and relay can find its neighbors in the matrix by locating the tuples
-containing the public keys it needs. Finally, it decrypts those cells using
+The assignment servers shuffle this new list of tuples. Each
+client and relay now finds its neighbors in the matrix by locating the tuples
+containing the public keys it needs. Finally,
+each participant decrypts the relevant cells using
 its private key, revealing the IP address of its circuit neighbor(s).
 
-Now clients have a circuit they can use for Tor.
+Now all clients in the consensus group have a usable Tor circuit.
 
 \input{figures/tex/torpath_path_lookup.tex}
 

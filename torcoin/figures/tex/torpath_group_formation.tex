@@ -1,9 +1,14 @@
-\begin{figure}[htbp]
+\begin{figure}[t]
   \centering
   \subfloat[]{\includegraphics[width=.49\textwidth]{group_formation_2.pdf}}
   \subfloat[]{\includegraphics[width=.49\textwidth]{group_formation_3.pdf}}
   
-  \caption{Both relays and clients use onion-encryption to encrypt their own   temporary public keys with the public keys of all the assignment servers in the group. (a) Client generates one keypair. The public key is sent onion-encrypted to the server. (b) Each relay generates multiple keypairs (for different clients and positions) as instructed by the assignment servers.}
+  \caption{Both relays and clients use onion-encryption to encrypt their own
+temporary public keys with the public keys of all the assignment servers in the
+group. (a) Each client generates one keypair, and sends its public key onion-encrypted
+to the server. (b) Each relay generates multiple keypairs, to support
+multiple clients and/or circuit positions within a consensus group,
+as instructed by the assignment servers.}
   
   \label{figure:transfer}
 \end{figure}

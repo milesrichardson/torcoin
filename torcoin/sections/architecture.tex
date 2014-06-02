@@ -3,13 +3,13 @@
 \input{figures/tex/architecture.tex}
 
 The TorCoin architecture consists of two protocols, TorCoin and TorPath.
-In brief, the TorCoin protocol is a BitCoin variant that mines coins,
+In brief, the TorCoin protocol is a Bitcoin variant that mines coins,
 while TorPath protocol assigns a circuit (entry, middle, and exit servers) to
 each client, thereby ``authorizing'' the minting of TorCoins
 through verifiable proof-of-bandwidth.
 
 TorCoin runs as a standalone service, requiring little modification to the
-Tor or BitCoin codebase. Tor clients and relays operate as usual,
+Tor or Bitcoin codebase. Tor clients and relays operate as usual,
 except clients receive circuit
 assignments from \textit{assignment servers},
 instead of choosing relays arbitrarily from the Tor directory.

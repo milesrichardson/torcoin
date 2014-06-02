@@ -57,7 +57,7 @@ and must be less than the well-known limit on the number of TorCoins
 per assigned circuit.
 
 \item
-Finally, the client uses the standard BitCoin transfer protocol
+Finally, the client uses the standard Bitcoin transfer protocol
 to pay each relay in the circuit one third of the mined TorCoin. 
 \end{enumerate}
 
@@ -101,6 +101,20 @@ The impact of
 compromised circuits can be further reduced by ensuring that consensus groups
 expire at regular intervals, requiring clients either to form new circuits
 or cease obtaining new TorCoins from old circuits.
+
+\subsubsection{Bitcoin anonymity:}
+This paper focuses on adapting Bitcoin's mining scheme
+to measure Tor bandwidth instead of computation,
+and not on Bitcoin's transaction mechanism.
+Since TorCoin also needs to protect the anonymity of clients
+as they make transactions,
+we must also account for well-known concerns about the limited anonymity
+the basic Bitcoin transaction protocol offers~\cite{meiklejohn13fistful}.
+Any of the recently proposed approaches such as
+Zerocoin~\cite{miers13zerocoin},
+Mixcoin~\cite{bonneau14mixcoin}, or
+CoinShuffle~\cite{ruffing14coinshuffle}
+should offer a suitable solution to this orthogonal challenge.
 
 \subsubsection{Deployment:} The TorPath network is not backward compatible with
 the existing Tor network, due to the fundamental differences of route

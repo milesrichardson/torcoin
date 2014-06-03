@@ -1,0 +1,65 @@
+From: HotPETs 2014 <hotpets2014@easychair.org>
+Subject: HotPETs 2014 notification for paper 41
+Date: May 20, 2014 at 9:55:40 PM GMT+2
+To: Bryan Ford <bryan.ford@yale.edu>
+
+Dear Bryan, 
+
+We are happy to inform you that your paper entitled 'A TorPath to TorCoin: Proof-of-Bandwidth Altcoins for Compensating Relays' has been accepted for HotPETs 2014. This year, we received 40 submissions, from which we selected 13 papers to be presented at the workshop. Congratulations!
+
+Please send the final version of your paper as well as the names of authors and affiliations to hotpets14@petsymposium.org. 
+
+You can find further information (e.g., deadline for submission of the final version, registration, visa, travel info) at the website: petsymposium.org.
+
+We are looking forward to seeing you in Amsterdam! 
+
+Best, 
+HotPETs 2014 PC
+
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 41
+TITLE: A TorPath to TorCoin: Proof-of-Bandwidth Altcoins for Compensating Relays
+AUTHORS: Mainak Ghosh, Miles Richardson and Bryan Ford
+
+
+----------- REVIEW -----------
+This paper proposes to incentivize Tor relays by enabling them to mine Torcoins based on proof of bandwidth that they have contributed. This is a very exciting idea! 
+
+The key challenge in mining Torcoin is to defend against malicious clients and relays. For example, a malicious client could choose colluding relays that manufacture Torcoins without contributing bandwidth. The paper proposes the use of “assignment servers” that use decentralized verifiable shuffling protocols to assign circuits to clients, and then to have clients help Tor relays earn Torcoin based on the throughput they provide. 
+
+This is an ideal paper for HotPETs! The ideas seem quite novel, and can have implications on the design of anonymity systems even beyond the problem of incentives. 
+
+Comments: 
+How to do trust based routing when servers assign circuits?
+
+Assignment servers are an intriguing but complex idea. In the full version of this paper, it would be useful to carefully reason about the security implications.
+
+It wasn’t clear from the description if clients can verify the entire circuit, as opposed to just the next hop in the onion routing protocol. 
+
+Honest clients and relays have no incentive for enforcing packet rate :)
+
+You would probably need some Sybil defense solution for the clients as well, since they can keep trying until they hit an all malicious circuit. This could be a problematic requirement. In a sense this is the tradeoff being introduced with respect to not relying on eigenspeed like protocols. 
+
+Nits:
+“but receive circuit assignments from assignment servers instead of directory servers”: directory servers just give out all relay IPs, the paper is introducing a qualitatively new constraint! 
+
+“no relay can identify the source or destination of any packet it transfers” → source and destination
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 41
+TITLE: A TorPath to TorCoin: Proof-of-Bandwidth Altcoins for Compensating Relays
+AUTHORS: Mainak Ghosh, Miles Richardson and Bryan Ford
+
+
+----------- REVIEW -----------
+The authors propose to let Tor relays mine TorCoins based on their contributing bandwidth. The idea is to encourage more people to provide relays and it makes sense if the achievable reward is larger than operating cost of Tor relays. 
+
+The approach is technically sound and has a reasonable overhead. 
+
+# Hotness
+In a way, this is yet-another-incentive-scheme-for-Tor, but it seems to be a decent one at it. Bringing monetary incentives into Tor using the mining idea of BitCoin will lead to interesting discussions. 
+
+The related work can be improved to better introduce the state of the art.
+

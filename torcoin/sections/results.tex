@@ -9,16 +9,16 @@ verification messages through a set of relays.
 Assuming that the keys, hashes and signatures are all 32 bytes in length,
 the total overhead from one round of successful TorCoin mining (i.e., one entire
 round trip from client through all the relays and back again) results in a total
-TorCoin packet overhead of 814 bytes. This can be broken down into:
+TorCoin packet overhead of 1752 bytes. This can be broken down into:
 
 \begin{itemize}
 	\item The first packet from client to entry relay: 34 bytes.
-	\item Packet forwarded from entry to middle relay: 66 bytes.
-	\item Packet forwarded from middle to exit relay: 98 bytes.
-	\item Packet from from exit to middle relay: 164 bytes.
-	\item Packet from from middle to entry relay: 194 bytes.
-	\item Packet from from entry relay to client: 258 bytes.
-	\item Total: 814 bytes
+  \item Packet forwarded from entry to middle relay: 66 bytes.
+  \item Packet forwarded from middle to exit relay: 98 bytes.
+  \item Packet from from exit to middle relay: 324 bytes.
+  \item Packet from from middle to entry relay: 518 bytes.
+  \item Packet from from entry relay to client: 712 bytes
+  \item Total: 1752 bytes
 \end{itemize}
 
 \input{figures/tex/results.tex}
@@ -26,7 +26,7 @@ TorCoin packet overhead of 814 bytes. This can be broken down into:
 Each round of TorCoin generation and verification happens only after $m$ Tor
 packets have been sent. Each standard Tor cell is 514 bytes long, so each
 round trip on the network requires transmission of 514 * 6 = 3084 bytes. Thus,
-if $m \geq 10$, the TorCoin protocol overhead is around 2\%. The value of $m$
+if $m \geq 10$, the TorCoin protocol overhead is around 5\%. The value of $m$
 can be calibrated in further experimentation and as needed in order to achieve
 the sweet-spot of transmission efficiency and incentive maximization for relay
 providers.

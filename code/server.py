@@ -6,9 +6,14 @@ from twisted.internet.protocol import Factory
 from twisted.protocols import basic
 from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor
+from datetime import datetime
+from ecdsa import SigningKey
 import TorCoin
 import StoreHash
 import sys
+import os
+import random
+import hashlib
 
 class Tchain(LineReceiver):
 	'''
@@ -43,6 +48,25 @@ class Tchain(LineReceiver):
 		self.sender = None	# String representation of sender, in {"0","1","2","3"}
 		self.sender_pos = 0	# Integer representation of sender, in {0,1,2,3}
 		self.state = "GETSENDER" # Current state of protocol ("GETSENDER" or else)
+		# step 1
+		self.folder = datetime.now().strftime('%Y%m%d%H%M%S')
+		if not os.path.exists("operations/"+self.folder):
+			os.makedirs("operations/"+self.folder)
+		# step 2
+		sk = SigningKey.generate()
+		sk_pem = sk.to_pem()
+		with open("operations/"+self.folder+"/pvt.pem", "w") as text_file:
+			text_file.write(sk_pem)
+		vk = sk.get_verifying_key()
+		vk_pem = vk.to_pem()
+		with open("operations/"+self.folder+"/pub.pem", "w") as text_file:
+			text_file.write(vk_pem)
+		# step 3
+		self.temporary_key = random.randrange(1,1000000000000)
+		self.hash_temporary_key = hashlib.md5(str(self.temporary_key))
+		# step 4
+		with open("operations/"+str(self.pos)+".pem", "w") as text_file:
+			text_file.write(vk_pem)
 
 	def connectionMade(self):
 		print 'hello!!!'
@@ -170,7 +194,6 @@ class Tchain(LineReceiver):
 						protocol.sendLine('TCATTEMPT:' + hash_value)
 
 class TchainFactory(Factory):
-
 
 	def __init__(self, pos):
 		self.pos = pos

@@ -1,16 +1,12 @@
-The problem is that because we are not implementing the TorPath phase, there is no way to distribute the public keys of all the clients. We will have to do that manually.
+It took me a little bit of research to figure out the best python library to use. We need ECDSA signatures, generation and signing. Some of the others dont have all the functions. https://bitcointalk.org/index.php?topic=28231.0
+Finally, I went with python-ecdsa. You should install it with pip ecdsa
+
+Because we are not implementing the TorPath phase, there is no way to distribute the public keys of all the clients. We have to do that manually. This process is detailed below.
 
 Steps:
 Every time a client starts up
 1. it creates a directory named "<start time>". All its operations will be done in this directory
 2. It generates a public + pvt keypair in this directory
 3. It generates a temporary key R and its hash.
-4. For now, we need each client and relay to send its public key to every other relay (These will be needed during the verification step). For now, we just print the public key into a file called <position>.pem. *HACK*
+4. For now, we need each client and relay to send its public key to every other relay (These will be needed during the verification step). For now, we just print the public key into a file called <position>.pem. *THIS IS A HACK*
 5. From here, just follow the protocol on page 8 of the paper. 
-
-
-It took me a little bit of research to figure out the best python library to use, because it has ECDSA signatures and all the functinoality we need. Some of the others dont.
-https://bitcointalk.org/index.php?topic=28231.0
-
-I went with python-ecdsa.
-You should install it with pip ecdsa

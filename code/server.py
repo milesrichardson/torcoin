@@ -7,7 +7,7 @@ from twisted.protocols import basic
 from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor
 from datetime import datetime
-from ecdsa import SigningKey
+from ecdsa import SigningKey, VerifyingKey
 import TorCoin
 import StoreHash
 import sys
@@ -17,22 +17,24 @@ import hashlib
 
 class Tchain(LineReceiver):
 	'''
-		Protocol for passing messages between nodes. Capable of handling multiple
-		open connections. e.g. If server.pos=1, will have open connection with 
-		client_0 (node on the left) and client_2 (node on the right). Example:
+		Protocol for passing messages between nodes. Nodes can be thought to be
+		arranged like: 0 1 2 3
+		Capable of handling multiple open connections. e.g. If server.pos = 1,
+		will have open connection with client_0 (node on the left) and client_2
+		(node on the right). Example:
 
-				server.pos = 1
+			server.pos = 1
 
-				# Chat with server, client_0
-				server: I am position 1. What's your position?
-				client_0: 0
+			# Chat with server, client_0
+			server: I am position 1. What's your position?
+			client_0: 0
 
-				# Chat with server, client_2
-				server: I am position 1. What's your position?
-				client_2: 2
+			# Chat with server, client_2
+			server: I am position 1. What's your position?
+			client_2: 2
 
-				# All messages from client_0 go to handler_REC_L ("from the left")
-				# All messages from client_2 go to handler_REC_R ("from the right")
+			# All messages from client_0 go to handler_REC_L ("from the left")
+			# All messages from client_2 go to handler_REC_R ("from the right")
 
 		Tchain protocol is initialized by TchainFactory, which should provide the
 		args as specified in the Tchain constructor.
@@ -48,22 +50,22 @@ class Tchain(LineReceiver):
 		self.sender = None	# String representation of sender, in {"0","1","2","3"}
 		self.sender_pos = 0	# Integer representation of sender, in {0,1,2,3}
 		self.state = "GETSENDER" # Current state of protocol ("GETSENDER" or else)
-		# step 1
+		# step 1 (explained in readme)
 		self.folder = datetime.now().strftime('%Y%m%d%H%M%S')
 		if not os.path.exists("operations/"+self.folder):
 			os.makedirs("operations/"+self.folder)
 		# step 2
-		sk = SigningKey.generate()
-		sk_pem = sk.to_pem()
+		self.sk = SigningKey.generate()
+		sk_pem = self.sk.to_pem()
 		with open("operations/"+self.folder+"/pvt.pem", "w") as text_file:
 			text_file.write(sk_pem)
-		vk = sk.get_verifying_key()
+		vk = self.sk.get_verifying_key()
 		vk_pem = vk.to_pem()
 		with open("operations/"+self.folder+"/pub.pem", "w") as text_file:
 			text_file.write(vk_pem)
 		# step 3
-		self.temporary_key = random.randrange(1,1000000000000)
-		self.hash_temporary_key = hashlib.md5(str(self.temporary_key))
+		self.R = random.randrange(1,1000000000000) # R is defined in paper as temporary key
+		self.Rprime = hashlib.md5(str(self.R)).hexdigest() # Rprime is hash of R
 		# step 4
 		with open("operations/"+str(self.pos)+".pem", "w") as text_file:
 			text_file.write(vk_pem)
@@ -153,21 +155,40 @@ class Tchain(LineReceiver):
 		# TorCoin verifying code
 		# TorCoin Verify packet structure: TCVERIFY:hash_attempt_n:hash_value_n:hash_attempt_n-1:hash_value_n-1
 		message_split = message.split(":")
-		if message_split[0] == 'TCVERIFY':
-			stored_hash_value = StoreHash.retrieveFromTable("value", self.pos + 1)
-			# print "SHV: " + stored_hash_value
-			stored_hash_attempt = StoreHash.retrieveFromTable("attempt", self.pos + 1)
-			if TorCoin.tc_verify(self.pos, stored_hash_value, message_split[1:]):
+		if message_split[0] == 'TCATTEMPT':
+			B = message_split[0] + ":" + message_split[1] + ":" + message_split[2] + \
+			":" + message_split[3] + ":" + message_split[4] + ":" + message_split[5]
+			new_message = message + ":" + self.sk.sign(B) + ":" + str(self.R)
+			if self.pos > 0:
 				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
 					if str(receiver) == str(self.pos - 1):
-						protocol.sendLine('TCVERIFY:' + str(stored_hash_attempt) + ":" + str(stored_hash_value) + ":" + ":".join(message_split[1:]))
+						protocol.sendLine(new_message)
 			else:
-				print 'ERROR'
+				if client_verify(self, message):
+					print("VERIFIED")
+				else:
+					print("CORRUPTED")
 
+	def client_verify(self, message):
+		'''
+			This verifies the final candidate. Candidate fields arranged in this order
+			TCATTEMPT:Coin#:Rc':Re':Rm':Rx':Sx:Rx:Sm:Rm:Se:Re:Sc:Rc
+		'''
+		message_split = message.split(":")
+		assert message_split[2] == hashlib.md5(message_split[13]).hexdigest()
+		assert message_split[3] == hashlib.md5(message_split[11]).hexdigest()
+		assert message_split[4] == hashlib.md5(message_split[9]).hexdigest()
+		assert message_split[5] == hashlib.md5(message_split[7]).hexdigest()
+		vk1 = VerifyingKey.from_pem(open('operations/1.pem', 'r').read())
+		vk2 = VerifyingKey.from_pem(open('operations/2.pem', 'r').read())
+		vk3 = VerifyingKey.from_pem(open('operations/3.pem', 'r').read())
+		assert vk1.verify(message_split[10], B)
+		assert vk2.verify(message_split[8], B)
+		assert vk3.verify(message_split[6], B)
+		return true
 
 	def handle_REC_L(self, message):
 		''' Handler for messages received from left. '''
-
 		print 'Received from left'
 
 		# message_wrapped = "REC_L: <%s> %s" % (self.sender, message)
@@ -176,22 +197,21 @@ class Tchain(LineReceiver):
 		# 	protocol.sendLine(message_wrapped)
 
 		# TorCoin sending code
-		# Torcoin packet structure: TCATTEMPT:<HASH>
+		# Torcoin packet is components separated by :
+		# TODO: Find a better separator than colon.
 		message_split = message.split(":") 
-		if message_split[0] == 'TCATTEMPT': # this is how to distinguish torcoin packet
-			hash_attempt = self.pos # my hash attempt
-			received_hash = message_split[1] 
-			hash_value = TorCoin.tc_generate(self.pos, hash_attempt, received_hash)
-			StoreHash.storeInHashTable("value", self.pos + 1, hash_value) # self.pos + 1 is a substitute for IP address
-			StoreHash.storeInHashTable("attempt", self.pos + 1, hash_attempt)
+		if message_split[0] == 'TCATTEMPT': # To distinguish torcoin packet
+			new_message = message + ":" + self.Rprime
 			if self.pos == 3:
+				B = new_message
 				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
 					if str(receiver) == str(self.pos - 1):
-						protocol.sendLine('TCVERIFY:' + str(hash_attempt) + ":" + hash_value)
+						new_message = B + ":" + self.sk.sign(B) + ":" + str(self.R)
+						protocol.sendLine(new_message)
 			else:
 				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
 					if str(receiver) == str(self.pos + 1): # This guy is the relay to the right
-						protocol.sendLine('TCATTEMPT:' + hash_value)
+						protocol.sendLine(new_message)
 
 class TchainFactory(Factory):
 

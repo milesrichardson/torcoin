@@ -14,6 +14,7 @@ import sys
 import os
 import random
 import hashlib
+import base64
 
 class Tchain(LineReceiver):
 	'''
@@ -40,7 +41,7 @@ class Tchain(LineReceiver):
 		args as specified in the Tchain constructor.
 	'''
 
-	def __init__(self, pos, users):
+	def __init__(self, pos, users, sk, vk, R, Rprime):
 		'''
 			pos = integer position of the server
 			users = dictionary of currently connected users (left and/or right)
@@ -50,25 +51,10 @@ class Tchain(LineReceiver):
 		self.sender = None	# String representation of sender, in {"0","1","2","3"}
 		self.sender_pos = 0	# Integer representation of sender, in {0,1,2,3}
 		self.state = "GETSENDER" # Current state of protocol ("GETSENDER" or else)
-		# step 1 (explained in readme)
-		self.folder = datetime.now().strftime('%Y%m%d%H%M%S')
-		if not os.path.exists("operations/"+self.folder):
-			os.makedirs("operations/"+self.folder)
-		# step 2
-		self.sk = SigningKey.generate()
-		sk_pem = self.sk.to_pem()
-		with open("operations/"+self.folder+"/pvt.pem", "w") as text_file:
-			text_file.write(sk_pem)
-		vk = self.sk.get_verifying_key()
-		vk_pem = vk.to_pem()
-		with open("operations/"+self.folder+"/pub.pem", "w") as text_file:
-			text_file.write(vk_pem)
-		# step 3
-		self.R = random.randrange(1,1000000000000) # R is defined in paper as temporary key
-		self.Rprime = hashlib.md5(str(self.R)).hexdigest() # Rprime is hash of R
-		# step 4
-		with open("operations/"+str(self.pos)+".pem", "w") as text_file:
-			text_file.write(vk_pem)
+		self.sk = sk
+		self.vk = vk
+		self.R = R
+		self.Rprime = Rprime
 
 	def connectionMade(self):
 		print 'hello!!!'
@@ -142,40 +128,13 @@ class Tchain(LineReceiver):
 		# Call the appropriate handler
 		handler(message)
 
-	def handle_REC_R(self, message):
-		''' Handler for messages received from right. '''
-
-		print 'Received from right'
-
-		# message_wrapped = "REC_R: <%s> %s" % (self.sender, message)
-		# for sender, protocol in self.users.iteritems():
-		# 	# if protocol != self:
-		# 	protocol.sendLine(message_wrapped)
-
-		# TorCoin verifying code
-		# TorCoin Verify packet structure: TCVERIFY:hash_attempt_n:hash_value_n:hash_attempt_n-1:hash_value_n-1
-		message_split = message.split(":")
-		if message_split[0] == 'TCATTEMPT':
-			B = message_split[0] + ":" + message_split[1] + ":" + message_split[2] + \
-			":" + message_split[3] + ":" + message_split[4] + ":" + message_split[5]
-			new_message = message + ":" + self.sk.sign(B) + ":" + str(self.R)
-			if self.pos > 0:
-				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
-					if str(receiver) == str(self.pos - 1):
-						protocol.sendLine(new_message)
-			else:
-				if client_verify(self, message):
-					print("VERIFIED")
-				else:
-					print("CORRUPTED")
-
-	def client_verify(self, message):
+	def client_verify(self, message, B):
 		'''
 			This verifies the final candidate. Candidate fields arranged in this order
 			TCATTEMPT:Coin#:Rc':Re':Rm':Rx':Sx:Rx:Sm:Rm:Se:Re:Sc:Rc
 		'''
 		message_split = message.split(":")
-		assert message_split[2] == hashlib.md5(message_split[13]).hexdigest()
+		# assert message_split[2] == hashlib.md5(message_split[13]).hexdigest()
 		assert message_split[3] == hashlib.md5(message_split[11]).hexdigest()
 		assert message_split[4] == hashlib.md5(message_split[9]).hexdigest()
 		assert message_split[5] == hashlib.md5(message_split[7]).hexdigest()
@@ -187,15 +146,35 @@ class Tchain(LineReceiver):
 		assert vk3.verify(message_split[6], B)
 		return true
 
+	def handle_REC_R(self, message):
+		''' Handler for messages received from right. '''
+		print 'Received from right'
+		message = base64.b64decode(message)
+		# TorCoin verifying code
+		# TorCoin Verify packet structure: TCVERIFY:hash_attempt_n:hash_value_n:hash_attempt_n-1:hash_value_n-1
+		message_split = message.split(":")
+		if message_split[0] == 'TCATTEMPT':
+			B = message_split[0] + ":" + message_split[1] + ":" + message_split[2] + \
+			":" + message_split[3] + ":" + message_split[4] + ":" + message_split[5]
+			sig = self.sk.sign(B)
+			new_message = message + ":" + sig + ":" + str(self.R)
+			if self.pos > 0:
+				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
+					if str(receiver) == str(self.pos - 1):
+						print(new_message)
+						new_message = base64.b64encode(new_message)
+						protocol.sendLine(new_message)
+			else:
+				if self.client_verify(new_message, B):
+					print("VERIFIED")
+				else:
+					print("CORRUPTED")
+
 	def handle_REC_L(self, message):
 		''' Handler for messages received from left. '''
 		print 'Received from left'
 
-		# message_wrapped = "REC_L: <%s> %s" % (self.sender, message)
-		# for sender, protocol in self.users.iteritems():
-		# 	# if protocol != self:
-		# 	protocol.sendLine(message_wrapped)
-
+		message = base64.b64decode(message)
 		# TorCoin sending code
 		# Torcoin packet is components separated by :
 		# TODO: Find a better separator than colon.
@@ -207,10 +186,12 @@ class Tchain(LineReceiver):
 				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
 					if str(receiver) == str(self.pos - 1):
 						new_message = B + ":" + self.sk.sign(B) + ":" + str(self.R)
+						new_message = base64.b64encode(new_message)
 						protocol.sendLine(new_message)
 			else:
 				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
 					if str(receiver) == str(self.pos + 1): # This guy is the relay to the right
+						new_message = base64.b64encode(new_message)
 						protocol.sendLine(new_message)
 
 class TchainFactory(Factory):
@@ -218,9 +199,29 @@ class TchainFactory(Factory):
 	def __init__(self, pos):
 		self.pos = pos
 		self.users = {}
+		# step 1 (explained in readme)
+		folder = datetime.now().strftime('%Y%m%d%H%M%S')
+		if not os.path.exists("operations/"+folder):
+			os.makedirs("operations/"+folder)
+		# step 2
+		self.sk = SigningKey.generate()
+		sk_pem = self.sk.to_pem()
+		with open("operations/"+folder+"/"+str(self.pos)+"pvt.pem", "w") as text_file:
+			text_file.write(sk_pem)
+		self.vk = self.sk.get_verifying_key()
+		vk_pem = self.vk.to_pem()
+		with open("operations/"+folder+"/"+str(self.pos)+"pub.pem", "w") as text_file:
+			text_file.write(vk_pem)
+		# step 3
+		# R = random.randrange(1,1000000000000) # R is defined in paper as temporary key
+		self.R = self.pos # for testing
+		self.Rprime = hashlib.md5(str(self.R)).hexdigest() # Rprime is hash of R
+		# step 4
+		with open("operations/"+str(self.pos)+".pem", "w") as text_file:
+			text_file.write(vk_pem)
 
 	def buildProtocol(self, addr):
-		return Tchain(self.pos, self.users)
+		return Tchain(self.pos, self.users, self.sk, self.vk, self.R, self.Rprime)
 
 if __name__ == '__main__':
 	reactor.listenTCP(8120 + int(sys.argv[1]), TchainFactory(int(sys.argv[1])))

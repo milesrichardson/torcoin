@@ -1,3 +1,8 @@
+WHAT THIS IS
+====
+
+This is the repository to hold all work related to TorCoin research, specificially research done during CS 490 by Miles and Mainak.
+
 CS 490
 ------
 

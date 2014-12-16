@@ -1,3 +1,0 @@
-  o Minor features:
-    - Warn when the Extended ORPort should be set, but it isn't. Resolves
-      ticket 9651.

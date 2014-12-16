@@ -10,175 +10,191 @@ import TorCoin
 import StoreHash
 import sys
 
+
 class Tchain(LineReceiver):
-	'''
-		Protocol for passing messages between nodes. Capable of handling multiple
-		open connections. e.g. If server.pos=1, will have open connection with 
-		client_0 (node on the left) and client_2 (node on the right). Example:
 
-				server.pos = 1
+    '''
+            Protocol for passing messages between nodes. Capable of handling multiple
+            open connections. e.g. If server.pos=1, will have open connection with
+            client_0 (node on the left) and client_2 (node on the right). Example:
 
-				# Chat with server, client_0
-				server: I am position 1. What's your position?
-				client_0: 0
+                            server.pos = 1
 
-				# Chat with server, client_2
-				server: I am position 1. What's your position?
-				client_2: 2
+                            # Chat with server, client_0
+                            server: I am position 1. What's your position?
+                            client_0: 0
 
-				# All messages from client_0 go to handler_REC_L ("from the left")
-				# All messages from client_2 go to handler_REC_R ("from the right")
+                            # Chat with server, client_2
+                            server: I am position 1. What's your position?
+                            client_2: 2
 
-		Tchain protocol is initialized by TchainFactory, which should provide the
-		args as specified in the Tchain constructor.
-	'''
+                            # All messages from client_0 go to handler_REC_L ("from the left")
+                            # All messages from client_2 go to handler_REC_R ("from the right")
 
-	def __init__(self, pos, users):
-		'''
-			pos = integer position of the server
-			users = dictionary of currently connected users (left and/or right)
-		'''
-		self.users = users	# List of connected peers (should be max left, right)
-		self.pos = pos			# Integer representation of our position
-		self.sender = None	# String representation of sender, in {"0","1","2","3"}
-		self.sender_pos = 0	# Integer representation of sender, in {0,1,2,3}
-		self.state = "GETSENDER" # Current state of protocol ("GETSENDER" or else)
+            Tchain protocol is initialized by TchainFactory, which should provide the
+            args as specified in the Tchain constructor.
+    '''
 
-	def connectionMade(self):
-		print 'hello!!!'
-		self.sendLine("I am position %d. What's your position?" % self.pos)
+    def __init__(self, pos, users):
+        '''
+                pos = integer position of the server
+                users = dictionary of currently connected users (left and/or right)
+        '''
+        self.users = users  # List of connected peers (should be max left, right)
+        self.pos = pos			# Integer representation of our position
+        # String representation of sender, in {"0","1","2","3"}
+        self.sender = None
+        self.sender_pos = 0  # Integer representation of sender, in {0,1,2,3}
+        # Current state of protocol ("GETSENDER" or else)
+        self.state = "GETSENDER"
 
-	def connectionLost(self, reason):
-		if self.users.has_key(self.sender):
-			del self.users[self.sender]
+    def connectionMade(self):
+        print 'hello!!!'
+        self.sendLine("I am position %d. What's your position?" % self.pos)
 
-	def lineReceived(self, line):
-		print 'Received message: ' + line
+    def connectionLost(self, reason):
+        if self.users.has_key(self.sender):
+            del self.users[self.sender]
 
-		if self.state == "GETSENDER":
-			self.handle_GETSENDER(line)
-		else:
-			print "Length of line:" + str(len(line))
-			self.handle_REC(line)
+    def lineReceived(self, line):
+        print 'Received message: ' + line
 
-	def sendMessage(self, target, sender):
-		if target == 2:
-			host = '127.0.0.1'
-			port = 8122
+        if self.state == "GETSENDER":
+            self.handle_GETSENDER(line)
+        else:
+            print "Length of line:" + str(len(line))
+            self.handle_REC(line)
 
-		factory = protocol.ClientFactory()
-		factory.protocol = TchainClientProtocol
-		reactor.connectTCP(host, port, factory)
-		# reactor.run()
+    def sendMessage(self, target, sender):
+        if target == 2:
+            host = '127.0.0.1'
+            port = 8122
 
-	def handle_GETSENDER(self, sender):
-		'''
-			Handler for identification. Node on left or right sends its position
-			as 'sender'.  e.g. In torcoin chain, if I am client (pos=0), A (pos=1)
-			identifies as sender=1. We use this to determine if we received a 
-			message from the right or the left.
-		'''
+        factory = protocol.ClientFactory()
+        factory.protocol = TchainClientProtocol
+        reactor.connectTCP(host, port, factory)
+        # reactor.run()
 
-		try:
-			self.sender_pos = int(sender)
-			if self.sender_pos < 0 or self.sender_pos > 3:
-				raise Exception
-			if self.users.has_key(sender):
-				raise Exception
-		except Exception:
-			self.sendLine("Invalid position specified. Must be in {0,1,2,3} and not\
+    def handle_GETSENDER(self, sender):
+        '''
+                Handler for identification. Node on left or right sends its position
+                as 'sender'.  e.g. In torcoin chain, if I am client (pos=0), A (pos=1)
+                identifies as sender=1. We use this to determine if we received a
+                message from the right or the left.
+        '''
+
+        try:
+            self.sender_pos = int(sender)
+            if self.sender_pos < 0 or self.sender_pos > 3:
+                raise Exception
+            if self.users.has_key(sender):
+                raise Exception
+        except Exception:
+            self.sendLine("Invalid position specified. Must be in {0,1,2,3} and not\
 										 already taken.")
-			return
+            return
 
-		self.sendLine("Welcome, %s!" % (sender,))
-		self.sender = sender
-		self.users[sender] = self
-		self.state = "CHAT"
+        self.sendLine("Welcome, %s!" % (sender,))
+        self.sender = sender
+        self.users[sender] = self
+        self.state = "CHAT"
 
-	def handle_REC(self, message):
-		'''
-			Determine if message received from left or right, and call the 
-			appropriate handler.
-		'''
+    def handle_REC(self, message):
+        '''
+                Determine if message received from left or right, and call the
+                appropriate handler.
+        '''
 
-		handler = None
+        handler = None
 
-		if self.pos < self.sender_pos:
-			handler = self.handle_REC_R
+        if self.pos < self.sender_pos:
+            handler = self.handle_REC_R
 
-		elif self.pos > self.sender_pos:
-			handler = self.handle_REC_L
+        elif self.pos > self.sender_pos:
+            handler = self.handle_REC_L
 
-		# Only other possibility is self.pos == sender_pos ... which makes no sense
-		if handler is None:
-			raise Exception('Cannot receive from myself!')
+        # Only other possibility is self.pos == sender_pos ... which makes no
+        # sense
+        if handler is None:
+            raise Exception('Cannot receive from myself!')
 
-		# Call the appropriate handler
-		handler(message)
+        # Call the appropriate handler
+        handler(message)
 
-	def handle_REC_R(self, message):
-		''' Handler for messages received from right. '''
+    def handle_REC_R(self, message):
+        ''' Handler for messages received from right. '''
 
-		print 'Received from right'
+        print 'Received from right'
 
-		# message_wrapped = "REC_R: <%s> %s" % (self.sender, message)
-		# for sender, protocol in self.users.iteritems():
-		# 	# if protocol != self:
-		# 	protocol.sendLine(message_wrapped)
+        # message_wrapped = "REC_R: <%s> %s" % (self.sender, message)
+        # for sender, protocol in self.users.iteritems():
+        # if protocol != self:
+        # 	protocol.sendLine(message_wrapped)
 
-		# TorCoin verifying code
-		# TorCoin Verify packet structure: TCVERIFY:hash_attempt_n:hash_value_n:hash_attempt_n-1:hash_value_n-1
-		message_split = message.split(":")
-		if message_split[0] == 'TCVERIFY':
-			stored_hash_value = StoreHash.retrieveFromTable("value", self.pos + 1)
-			# print "SHV: " + stored_hash_value
-			stored_hash_attempt = StoreHash.retrieveFromTable("attempt", self.pos + 1)
-			if TorCoin.tc_verify(self.pos, stored_hash_value, message_split[1:]):
-				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
-					if str(receiver) == str(self.pos - 1):
-						protocol.sendLine('TCVERIFY:' + str(stored_hash_attempt) + ":" + str(stored_hash_value) + ":" + ":".join(message_split[1:]))
-			else:
-				print 'ERROR'
+        # TorCoin verifying code
+        # TorCoin Verify packet structure:
+        # TCVERIFY:hash_attempt_n:hash_value_n:hash_attempt_n-1:hash_value_n-1
+        message_split = message.split(":")
+        if message_split[0] == 'TCVERIFY':
+            stored_hash_value = StoreHash.retrieveFromTable(
+                "value", self.pos + 1)
+            # print "SHV: " + stored_hash_value
+            stored_hash_attempt = StoreHash.retrieveFromTable(
+                "attempt", self.pos + 1)
+            if TorCoin.tc_verify(self.pos, stored_hash_value, message_split[1:]):
+                # figure out how to get to right relay directly
+                for receiver, protocol in self.users.iteritems():
+                    if str(receiver) == str(self.pos - 1):
+                        protocol.sendLine('TCVERIFY:' + str(stored_hash_attempt) + ":" + str(
+                            stored_hash_value) + ":" + ":".join(message_split[1:]))
+            else:
+                print 'ERROR'
 
+    def handle_REC_L(self, message):
+        ''' Handler for messages received from left. '''
 
-	def handle_REC_L(self, message):
-		''' Handler for messages received from left. '''
+        print 'Received from left'
 
-		print 'Received from left'
+        # message_wrapped = "REC_L: <%s> %s" % (self.sender, message)
+        # for sender, protocol in self.users.iteritems():
+        # if protocol != self:
+        # 	protocol.sendLine(message_wrapped)
 
-		# message_wrapped = "REC_L: <%s> %s" % (self.sender, message)
-		# for sender, protocol in self.users.iteritems():
-		# 	# if protocol != self:
-		# 	protocol.sendLine(message_wrapped)
+        # TorCoin sending code
+        # Torcoin packet structure: TCATTEMPT:<HASH>
+        message_split = message.split(":")
+        # this is how to distinguish torcoin packet
+        if message_split[0] == 'TCATTEMPT':
+            hash_attempt = self.pos  # my hash attempt
+            received_hash = message_split[1]
+            hash_value = TorCoin.tc_generate(
+                self.pos, hash_attempt, received_hash)
+            # self.pos + 1 is a substitute for IP address
+            StoreHash.storeInHashTable("value", self.pos + 1, hash_value)
+            StoreHash.storeInHashTable("attempt", self.pos + 1, hash_attempt)
+            if self.pos == 3:
+                # figure out how to get to right relay directly
+                for receiver, protocol in self.users.iteritems():
+                    if str(receiver) == str(self.pos - 1):
+                        protocol.sendLine(
+                            'TCVERIFY:' + str(hash_attempt) + ":" + hash_value)
+            else:
+                # figure out how to get to right relay directly
+                for receiver, protocol in self.users.iteritems():
+                    # This guy is the relay to the right
+                    if str(receiver) == str(self.pos + 1):
+                        protocol.sendLine('TCATTEMPT:' + hash_value)
 
-		# TorCoin sending code
-		# Torcoin packet structure: TCATTEMPT:<HASH>
-		message_split = message.split(":") 
-		if message_split[0] == 'TCATTEMPT': # this is how to distinguish torcoin packet
-			hash_attempt = self.pos # my hash attempt
-			received_hash = message_split[1] 
-			hash_value = TorCoin.tc_generate(self.pos, hash_attempt, received_hash)
-			StoreHash.storeInHashTable("value", self.pos + 1, hash_value) # self.pos + 1 is a substitute for IP address
-			StoreHash.storeInHashTable("attempt", self.pos + 1, hash_attempt)
-			if self.pos == 3:
-				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
-					if str(receiver) == str(self.pos - 1):
-						protocol.sendLine('TCVERIFY:' + str(hash_attempt) + ":" + hash_value)
-			else:
-				for receiver, protocol in self.users.iteritems(): # figure out how to get to right relay directly
-					if str(receiver) == str(self.pos + 1): # This guy is the relay to the right
-						protocol.sendLine('TCATTEMPT:' + hash_value)
 
 class TchainFactory(Factory):
 
+    def __init__(self, pos):
+        self.pos = pos
+        self.users = {}
 
-	def __init__(self, pos):
-		self.pos = pos
-		self.users = {}
-
-	def buildProtocol(self, addr):
-		return Tchain(self.pos, self.users)
+    def buildProtocol(self, addr):
+        return Tchain(self.pos, self.users)
 
 if __name__ == '__main__':
-	reactor.listenTCP(8120 + int(sys.argv[1]), TchainFactory(int(sys.argv[1])))
-	reactor.run()
+    reactor.listenTCP(8120 + int(sys.argv[1]), TchainFactory(int(sys.argv[1])))
+    reactor.run()

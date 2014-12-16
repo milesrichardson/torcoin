@@ -1,2 +1,0 @@
-  o Tool changes:
-    - Make tor-gencert create 2048 bit signing keys. Addresses ticket #10324.

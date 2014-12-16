@@ -1,1 +1,4 @@
 paper.pdf
+code/operations/*
+*.pyc
+*pyc

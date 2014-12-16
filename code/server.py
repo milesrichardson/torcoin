@@ -6,9 +6,15 @@ from twisted.internet.protocol import Factory
 from twisted.protocols import basic
 from twisted.protocols.basic import LineReceiver
 from twisted.internet import reactor
+from datetime import datetime
+from ecdsa import SigningKey, VerifyingKey
 import TorCoin
 import StoreHash
 import sys
+import os
+import random
+import hashlib
+import base64
 
 
 class Tchain(LineReceiver):
@@ -185,15 +191,35 @@ class Tchain(LineReceiver):
                     if str(receiver) == str(self.pos + 1):
                         protocol.sendLine('TCATTEMPT:' + hash_value)
 
-
 class TchainFactory(Factory):
 
-    def __init__(self, pos):
-        self.pos = pos
-        self.users = {}
+	def __init__(self, pos):
+		self.pos = pos
+		self.users = {}
+		# step 1 (explained in readme)
+		folder = datetime.now().strftime('%Y%m%d%H%M%S')
+		if not os.path.exists("operations/"+folder):
+			os.makedirs("operations/"+folder)
+		# step 2
+		self.sk = SigningKey.generate()
+		sk_pem = self.sk.to_pem()
+		with open("operations/"+folder+"/"+str(self.pos)+"pvt.pem", "w") as text_file:
+			text_file.write(sk_pem)
+		self.vk = self.sk.get_verifying_key()
+		vk_pem = self.vk.to_pem()
+		with open("operations/"+folder+"/"+str(self.pos)+"pub.pem", "w") as text_file:
+			text_file.write(vk_pem)
+		# step 3
+		# R = random.randrange(1,1000000000000) # R is defined in paper as temporary key
+		self.R = self.pos # for testing
+		self.Rprime = hashlib.md5(str(self.R)).hexdigest() # Rprime is hash of R
+		# step 4
+		with open("operations/"+str(self.pos)+".pem", "w") as text_file:
+			text_file.write(vk_pem)
 
-    def buildProtocol(self, addr):
-        return Tchain(self.pos, self.users)
+	def buildProtocol(self, addr):
+		return Tchain(self.pos, self.users, self.sk, self.vk, self.R, self.Rprime)
+>>>>>>> 61165c4f49cfb0ba058e1c1cc783364e058aee27
 
 if __name__ == '__main__':
     reactor.listenTCP(8120 + int(sys.argv[1]), TchainFactory(int(sys.argv[1])))
